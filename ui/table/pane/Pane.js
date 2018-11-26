@@ -414,6 +414,7 @@ qx.Class.define("qx.ui.table.pane.Pane",
       cellInfo.tableModel = tableModel;
       cellInfo.scroller = this.getPaneScroller();
       cellInfo.columnModel = table.getTableColumnModel();
+      cellInfo.rightToLeft = table.getRtl();
 
       // We don't want to execute the row loop below more than necessary. If
       // onlyRow is not null, we want to do the loop only for that row.
@@ -476,13 +477,18 @@ qx.Class.define("qx.ui.table.pane.Pane",
       var cols = [];
 
       // @ITG:Wisej: RightToLeft support.
-      var rtl = table.getRtl();
+      var rtl = table.isRtl();
 
+      // @ITG:Wisej: RightToLeft support.
       // precompute column properties
-      for (var x=0; x<colCount; x++)
+      for (var x =
+        rtl ? (colCount - 1) : (0);
+        rtl ? (x > -1) : (x < colCount);
+        rtl ? (x--) : (x++))
       {
         var col = paneModel.getColumnAtX(x);
         var cellWidth = columnModel.getColumnWidth(col);
+
         cols.push({
           col: col,
           xPos: x,

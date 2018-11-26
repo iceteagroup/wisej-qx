@@ -134,9 +134,6 @@ qx.Class.define("qx.ui.menu.AbstractButton",
     // Listens to "changeRtl" to mirror child controls and update the associated menu.
     _onRtlChange: function (e) {
 
-      if (!qx.core.Environment.get("qx.rtl.supported"))
-        return;
-
       if (e.getData() === e.getOldData())
         return;
 
@@ -376,6 +373,26 @@ qx.Class.define("qx.ui.menu.AbstractButton",
       // @ITG:Wisej: RightToLeft support. 
       if (value)
         value.setRtl(this.getRtl());
+
+      // @ITG:Wisej: Added "changeMenuVisibility" to notify listeners that the related menu is shown or hidden.
+      if (value) {
+        value.addListener("changeVisibility", this._onChangeMenuVisibility, this);
+      }
+      if (old) {
+        old.removeListener("changeVisibility", this._onChangeMenuVisibility, this);
+      }
+
+    },
+
+    /**
+     * Event listener for visibility changes of the menu
+     *
+     * @param e {qx.event.type.Data} property change event
+     */
+    _onChangeMenuVisibility : function(e)
+    {
+      // ITG:Wisej: Notify listeners that the related menu is shown or hidden.
+      this.fireDataEvent("changeMenuVisibility", this.getMenu());
     },
 
     // property apply

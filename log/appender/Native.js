@@ -59,11 +59,17 @@ qx.Bootstrap.define("qx.log.appender.Native",
           console[level](args);
         }
       }
-    }
+    },
+
+    /**
+     * Used by the object registry to dispose this instance e.g. remove listeners etc.
+     *
+     */
+    dispose : function()
+    {
+      qx.log.Logger.unregister(this);
+    },
   },
-
-
-
 
   /*
   *****************************************************************************

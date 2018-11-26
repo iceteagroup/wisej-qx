@@ -129,6 +129,9 @@ qx.Bootstrap.define("qx.log.Logger",
           appender.process(entries[i]);
         }
       }
+
+      // @ITG:Wisej: Performance improvement. Detect appender presence.
+      this.__anyAppender = !qx.lang.Object.isEmpty(this.__appender);
     },
 
 
@@ -146,6 +149,10 @@ qx.Bootstrap.define("qx.log.Logger",
 
       delete this.__appender[id];
       delete appender.$$id;
+
+      // @ITG:Wisej: Performance improvement. Detect appender presence.
+      this.__anyAppender = !qx.lang.Object.isEmpty(this.__appender);
+
     },
 
 
@@ -414,6 +421,10 @@ qx.Bootstrap.define("qx.log.Logger",
      */
     __log : function(level, args)
     {
+      // @ITG:Wisej: Performance improvement. Detect appender presence.
+      if (this.__anyAppender === false)
+        return;
+
       // Filter according to level
       var levels = this.__levels;
       if (levels[level] < levels[this.__level]) {

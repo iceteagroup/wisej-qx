@@ -855,7 +855,7 @@ qx.Class.define("qx.util.format.DateFormat",
         var date = new Date();
         var language = this.__locale.split("_")[0];
         var localeDate = date.toLocaleDateString(language);
-        return (parseInt(localeDate.match(/(\d+)(?!.*\d)/)[0]) - date.getFullYear()) || 0;
+        return (parseInt(localeDate.match(/(\d{4})/)[0]) - date.getFullYear()) || 0;
       }
       catch (er) {
         qx.log.Logger.error(er);

@@ -387,6 +387,9 @@ qx.Class.define("qx.ui.form.SplitButton",
       if (!this.getMenu().isVisible() && this.__cursorIsOut) {
         this.removeState("hovered");
       }
+
+      // ITG:Wisej: Notify listeners that the related menu is shown or hidden.
+      this.fireDataEvent("changeMenuVisibility", this.getMenu());
     }
   }
 

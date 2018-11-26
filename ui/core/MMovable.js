@@ -94,7 +94,12 @@ qx.Mixin.define("qx.ui.core.MMovable",
     _activateMoveHandle : function(widget)
     {
       if (this.__moveHandle) {
-        throw new Error("The move handle could not be redefined!");
+        // @ITG:Wisej: Let widgets change the move handle target to allow composite widgets to become movable.
+        // throw new Error("The move handle could not be redefined!");
+        if (this.__moveHandle == widget)
+          return;
+
+        this._releaseMoveHandle();
       }
 
       this.__moveHandle = widget;
@@ -104,6 +109,21 @@ qx.Mixin.define("qx.ui.core.MMovable",
       widget.addListener("losecapture", this.__onMoveLoseCapture, this);
     },
 
+    // @ITG:Wisej: Let widgets change the move handle target to allow composite widgets to become movable.
+    /**
+     * Detaches the current move handle.
+     */
+    _releaseMoveHandle: function()
+    {
+      if (this.__moveHandle) {
+        var widget = this.__moveHandle;
+        widget.removeListener("pointerdown", this._onMovePointerDown, this);
+        widget.removeListener("pointerup", this._onMovePointerUp, this);
+        widget.removeListener("pointermove", this._onMovePointerMove, this);
+        widget.removeListener("losecapture", this.__onMoveLoseCapture, this);
+        this.__moveHandle = null;
+      }
+    },
 
     /**
      * Get the widget, which draws the resize/move frame.
@@ -163,10 +183,21 @@ qx.Mixin.define("qx.ui.core.MMovable",
       var viewportLeft = this.__dragLeft + pointerLeft;
       var viewportTop = this.__dragTop + pointerTop;
 
+      // @ITG:Wisej: Adjust the element's coordinates to the possible element's CSS rotation.
+      var adjustTop = 0;
+      var adjustLeft = 0;
+      var domEl = this.getContentElement().getDomElement();
+      if (domEl) {
+      	var clientRect = domEl.getBoundingClientRect();
+      	var parentRect = domEl.parentNode.getBoundingClientRect();
+      	adjustTop = parseInt(domEl.style.top) - clientRect.top + parentRect.top;
+      	adjustLeft = parseInt(domEl.style.left) - clientRect.left + parentRect.left;
+      }
+
       // @ITG:Wisej: Added support for keeping the movable widget wholly in the view area.
       if (this.isKeepOnScreen()) {
-        var parentLeft = parseInt(viewportLeft - this.__parentLeft, 10);
-        var parentTop = parseInt(viewportTop - this.__parentTop, 10);
+        var parentLeft = parseInt(viewportLeft - this.__parentLeft, 10) + adjustLeft;
+        var parentTop = parseInt(viewportTop - this.__parentTop, 10) + adjustTop;
 
         var windowBounds = this.getBounds();
         var containerBounds = this.getLayoutParent().getBounds();
@@ -189,16 +220,14 @@ qx.Mixin.define("qx.ui.core.MMovable",
         };
       }
 
-      return {
+     return {
         viewportLeft : parseInt(viewportLeft, 10),
         viewportTop : parseInt(viewportTop, 10),
 
-        parentLeft : parseInt(viewportLeft - this.__parentLeft, 10),
-        parentTop : parseInt(viewportTop - this.__parentTop, 10)
-      };
+        parentLeft : parseInt(viewportLeft - this.__parentLeft, 10) + adjustLeft,
+        parentTop : parseInt(viewportTop - this.__parentTop, 10) + adjustTop
+     };
     },
-
-
 
 
     /*
@@ -272,15 +301,16 @@ qx.Mixin.define("qx.ui.core.MMovable",
       // Enable capturing
       this.__moveHandle.capture();
 
+      // @ITG:Wisej: Notify that this widget is being dragged.
+      this.fireEvent("startmove");
+
       // Enable drag frame
       if (this.getUseMoveFrame()) {
         this.__showMoveFrame();
       }
 
       // Stop event
-      // @ITG:Wisej: Need to stop the event completely or the change of focus may release the captured pointer.
-      // e.stopPropagation();
-      e.stop();
+      e.stopPropagation();
     },
 
 
@@ -303,8 +333,10 @@ qx.Mixin.define("qx.ui.core.MMovable",
         this.__getMoveFrame().setDomPosition(coords.viewportLeft, coords.viewportTop);
       } else {
         var insets = this.getLayoutParent().getInsets();
-        this.setDomPosition(coords.parentLeft - (insets.left || 0),
-          coords.parentTop - (insets.top || 0));
+        // @ITG:Wisej: Deducting insets causes a jump when moving inside a parent.
+        // this.setDomPosition(coords.parentLeft - (insets.left || 0),
+        //  coords.parentTop - (insets.top || 0));
+        this.setDomPosition(coords.parentLeft, coords.parentTop);
       }
 
       e.stopPropagation();
@@ -358,15 +390,21 @@ qx.Mixin.define("qx.ui.core.MMovable",
       var coords = this.__computeMoveCoordinates(e);
       var insets = this.getLayoutParent().getInsets();
       this.setLayoutProperties({
-        left: coords.parentLeft - (insets.left || 0),
-        top: coords.parentTop - (insets.top || 0)
+        // @ITG:Wisej: Deducting insets causes a jump when moving inside a parent.
+        //left: coords.parentLeft - (insets.left || 0),
+        //top: coords.parentTop - (insets.top || 0)
+        left: coords.parentLeft,
+        top: coords.parentTop
       });
 
       // @ITG:Wisej: MMovable doesn't work for widgets with user bounds.
       if (this.hasUserBounds()) {
         this.setUserBounds(
-            coords.parentLeft - (insets.left || 0),
-            coords.parentTop - (insets.top || 0),
+            // @ITG:Wisej: Deducting insets causes a jump when moving inside a parent.
+            //coords.parentLeft - (insets.left || 0),
+            //coords.parentTop - (insets.top || 0),
+            coords.parentLeft,
+            coords.parentTop,
             this.getWidth(),
             this.getHeight());
       }
@@ -377,6 +415,9 @@ qx.Mixin.define("qx.ui.core.MMovable",
       }
 
       e.stopPropagation();
+
+      // @ITG:Wisej: Notify that this widget is done being dragged.
+      this.fireEvent("endmove");
     },
 
 
@@ -399,6 +440,9 @@ qx.Mixin.define("qx.ui.core.MMovable",
       if (this.getUseMoveFrame()) {
         this.__getMoveFrame().exclude();
       }
+
+      // @ITG:Wisej: Notify that this widget is done being dragged.
+      this.fireEvent("endmove");
     }
   },
 

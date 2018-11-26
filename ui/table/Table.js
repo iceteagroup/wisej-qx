@@ -221,7 +221,7 @@ qx.Class.define("qx.ui.table.Table",
     }
 
     // @ITG:Wisej: RightToLeft support.
-    // this.addListener("changeRtl", this._onRtlChange, this);
+    this.addListener("changeRtl", this._onRtlChange, this);
   },
 
 
@@ -802,11 +802,13 @@ qx.Class.define("qx.ui.table.Table",
     {
       var scrollerArr = this._getPaneScrollerArr();
 
+      // @ITG:Wisej: Hide or show the "header-container" instead of the child "header", otherwise the header-container may still show its borders.
+
       for (var i=0; i<scrollerArr.length; i++) {
         if (value) {
-          scrollerArr[i]._showChildControl("header");
+          scrollerArr[i]._showChildControl("header-container");
         } else {
-          scrollerArr[i]._excludeChildControl("header");
+          scrollerArr[i]._excludeChildControl("header-container");
         }
       }
       // also hide the column visibility button
@@ -955,7 +957,14 @@ qx.Class.define("qx.ui.table.Table",
       if (value) {
         this._showChildControl("column-button");
       } else {
-        this._excludeChildControl("column-button");
+
+        // @ITG:Wisej: When the last scroller's v-scrollbar is visible, hide the menu instead of excluding it to preserve the scrollbar space.
+        var scrollerArr = this._getPaneScrollerArr();
+        var lastScroller = scrollerArr[scrollerArr.length - 1];
+        if (lastScroller && lastScroller.getVerticalScrollBarVisible())
+          this._hideChildControl("column-button");
+        else
+          this._excludeChildControl("column-button");
       }
     },
 
@@ -1109,7 +1118,9 @@ qx.Class.define("qx.ui.table.Table",
       }
 
       if (!this.isColumnVisibilityButtonVisible()) {
-        this._excludeChildControl("column-button");
+        // @ITG:Wisej: Update the column button visibility in a single place to hide it or exclude it depending on the v-scroll visibility.
+        // this._excludeChildControl("column-button");
+        this._applyColumnVisibilityButtonVisible(this.getColumnVisibilityButtonVisible());
       }
 
       this._updateScrollerWidths();
@@ -1227,9 +1238,6 @@ qx.Class.define("qx.ui.table.Table",
     // Listens to "changeRtl" to mirror scroll panes.
     _onRtlChange: function (e) {
 
-      if (!qx.core.Environment.get("qx.rtl.supported"))
-        return;
-
       if (e.getData() === e.getOldData())
         return;
 
@@ -1237,6 +1245,8 @@ qx.Class.define("qx.ui.table.Table",
       if (rtl != null) {
         this.__scrollerParent._mirrorChildren(rtl);
       }
+
+      this._applyColumnVisibilityButtonVisible(this.getColumnVisibilityButtonVisible());
     },
 
     /**
@@ -1359,13 +1369,12 @@ qx.Class.define("qx.ui.table.Table",
 
       var rowCount = this.getTableModel().getRowCount();
 
-      if (rowCount != this.__lastRowCount)
-      {
-        this.__lastRowCount = rowCount;
+      // @ITG:Wisej: Row heights may have changed.
+      // if (rowCount != this.__lastRowCount)
+      this.__lastRowCount = rowCount;
 
-        this._updateScrollBarVisibility();
-        this._updateStatusBar();
-      }
+      this._updateScrollBarVisibility();
+      this._updateStatusBar();
     },
 
 
@@ -1643,7 +1652,7 @@ qx.Class.define("qx.ui.table.Table",
     {
       if (!this.isEditing() && (col != this.__focusedCol || row != this.__focusedRow))
       {
-		// @ITG:Wisej: We can have a null focused col to remove the focused cell.
+        // @ITG:Wisej: We can have a null focused col to remove the focused cell.
         //if (col === null) {
         //  col = 0;
         //}
@@ -1767,6 +1776,10 @@ qx.Class.define("qx.ui.table.Table",
         return;
       }
 
+      // @ITG:Wisej: RightToLeft support.
+      if (this.isRtl())
+        deltaX = deltaX * -1;
+
       if (deltaX != 0)
       {
         var columnModel = this.getTableColumnModel();
@@ -1831,14 +1844,15 @@ qx.Class.define("qx.ui.table.Table",
         if (this.getTableColumnModel().getVisibleColumnCount() == 0)
           return false;
 
-      	var x = this.getTableColumnModel().getVisibleX(this.__focusedCol);
+        var x = this.getTableColumnModel().getVisibleX(this.__focusedCol);
 
         // @ITG:Wisej: The column may be hidden.
         if (x == null)
           return false;
 
+        // ITG:Wisej: The meta column may return -1 leading to a null scroller.
         var metaColumn = this._getMetaColumnAtColumnX(x);
-        return this.getPaneScroller(metaColumn).isEditing();
+        return metaColumn != -1 ? this.getPaneScroller(metaColumn).isEditing() : false;
       }
       return false;
     },
@@ -1860,8 +1874,9 @@ qx.Class.define("qx.ui.table.Table",
         if (x == null)
         	return false;
 
+      	// ITG:Wisej: The meta column may return -1 leading to a null scroller.
         var metaColumn = this._getMetaColumnAtColumnX(x);
-        var started = this.getPaneScroller(metaColumn).startEditing();
+        var started = metaColumn != -1 ? this.getPaneScroller(metaColumn).startEditing() : false;
         return started;
       }
 
@@ -1877,8 +1892,10 @@ qx.Class.define("qx.ui.table.Table",
       if (this.__focusedCol != null)
       {
         var x = this.getTableColumnModel().getVisibleX(this.__focusedCol);
+        // ITG:Wisej: The meta column may return -1 leading to a null scroller.
         var metaColumn = this._getMetaColumnAtColumnX(x);
-        this.getPaneScroller(metaColumn).stopEditing();
+        if (metaColumn != -1)
+          this.getPaneScroller(metaColumn).stopEditing();
       }
     },
 
@@ -1891,8 +1908,10 @@ qx.Class.define("qx.ui.table.Table",
       if (this.__focusedCol != null)
       {
         var x = this.getTableColumnModel().getVisibleX(this.__focusedCol);
+        // ITG:Wisej: The meta column may return -1 leading to a null scroller.
         var metaColumn = this._getMetaColumnAtColumnX(x);
-        this.getPaneScroller(metaColumn).cancelEditing();
+        if (metaColumn != -1)
+          this.getPaneScroller(metaColumn).cancelEditing();
       }
     },
 

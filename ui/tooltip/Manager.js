@@ -118,7 +118,8 @@ qx.Class.define("qx.ui.tooltip.Manager",
      */
     getSharedTooltip : function()
     {
-      if (!this.__sharedToolTip)
+      // @ITG:Wisej: Shared tooltips may get disposed if the root is disposed.
+      if (!this.__sharedToolTip || this.__sharedToolTip.isDisposed())
       {
         this.__sharedToolTip = new qx.ui.tooltip.ToolTip().set({
           rich: true
@@ -146,7 +147,8 @@ qx.Class.define("qx.ui.tooltip.Manager",
      */
     getSharedErrorTooltip : function()
     {
-      if (!this.__sharedErrorToolTip)
+      // @ITG:Wisej: Shared tooltips may get disposed if the root is disposed.
+      if (!this.__sharedErrorToolTip || this.__sharedErrorToolTip.isDisposed())
       {
         this.__sharedErrorToolTip = new qx.ui.tooltip.ToolTip().set({
           appearance: "tooltip-error",

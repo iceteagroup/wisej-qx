@@ -47,7 +47,7 @@ qx.Class.define("qx.ui.table.pane.Header",
     this.__paneScroller = paneScroller;
 
     // @ITG:Wisej: RightToLeft support.
-    // this.addListener("changeRtl", function (e) { this._mirrorChildren(e.getData()); }, this);
+    this.addListener("changeRtl", function (e) { this._getLayout().setReversed(e.getData()); }, this);
   },
 
 

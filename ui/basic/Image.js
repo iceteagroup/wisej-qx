@@ -203,36 +203,42 @@ qx.Class.define("qx.ui.basic.Image",
             // change the fill on path elements.
             // check that all the fill colors are the same before changing.
             var isMono = true;
-            var fillColor = null;
-            var paths = svgEl.getElementsByTagName("path");
+            var monoColor = null;
+            var paths = svgEl.getElementsByTagName("*");
             for (var i = 0; i < paths.length; i++) {
 
                 var path = paths[i];
+                if (!path.style)
+                    continue;
 
                 var pathFill = path.getAttribute("fill") || path.style.fill;
+                if (!pathFill || pathFill == "none")
+                    continue;
 
-                if (fillColor == null) {
-                    fillColor = pathFill;
-                } else if (fillColor != pathFill) {
+                if (monoColor == null) {
+                    monoColor = pathFill;
+                } else if (monoColor != pathFill) {
                     isMono = false;
                     break;
                 }
             }
 
             if (isMono) {
-                svgEl.removeAttribute("fill");
+                svgEl.setAttribute("fill", color);
 
                 for (var i = 0; i < paths.length; i++) {
 
                     var path = paths[i];
+                    if (!path.style)
+                        continue;
 
                     var pathFill = path.getAttribute("fill");
-                    if (pathFill) {
+                    if (pathFill == monoColor) {
                         path.setAttribute("fill", color);
                     }
 
                     var pathFill = path.style.fill;
-                    if (pathFill) {
+                    if (pathFill == monoColor) {
                         path.style.fill = color;
                     }
                 }
@@ -304,13 +310,14 @@ qx.Class.define("qx.ui.basic.Image",
 
         if (urlOrName) {
 
-            urlOrName = unescape(urlOrName);
+            // urlOrName = unescape(urlOrName);
             var colorPos = urlOrName.indexOf("?color=");
 
             if (colorPos > -1) {
-
-                imageColor.source= qx.util.AliasManager.getInstance().resolve(urlOrName.substring(0, colorPos));
-                imageColor.color = qx.theme.manager.Color.getInstance().resolve(urlOrName.substring(colorPos + "?color=".length));
+                var name = urlOrName.substring(0, colorPos);
+                var color = urlOrName.substring(colorPos + "?color=".length);
+                imageColor.source= qx.util.AliasManager.getInstance().resolve(name);
+                imageColor.color = qx.theme.manager.Color.getInstance().resolve(color);
             }
             else if (color) {
 
@@ -458,7 +465,6 @@ qx.Class.define("qx.ui.basic.Image",
         // @ITG:Wisej: Extract the color from the image source URL or name.
         this.__sourceColor = null;
         if (value) {
-            value = unescape(value);
             var colorPos = value.indexOf("?color=");
             if (colorPos > -1)
                 this.__sourceColor = value.substring(colorPos + "?color=".length);
@@ -762,6 +768,9 @@ qx.Class.define("qx.ui.basic.Image",
           styles.left = parseInt(currentContentElement.getStyle("left") || insets.left) + pixel;
           styles.top = parseInt(currentContentElement.getStyle("top") || insets.top) + pixel;
 
+           // @ITG:Wisej: Propagate the color as well, it's used by svg icons.
+          styles.color = currentContentElement.getStyle("color");
+
           styles.zIndex = 10;
 
           var newEl = this.__wrapper ? elementToAdd.getChild(0) : elementToAdd;
@@ -790,14 +799,16 @@ qx.Class.define("qx.ui.basic.Image",
           newEl.tagNameHint = hint;
           newEl.setAttribute("class", currentEl.getAttribute("class"));
 
+          // @ITG:Wisej: Don't flush here. It may cause the dom to be created too soon and fire the "appear" event before the correct bounds are set.
           // Flush elements to make sure the DOM elements are created.
-          qx.html.Element.flush();
+          //qx.html.Element.flush();
+
           var currentDomEl = currentEl.getDomElement();
           var newDomEl = elementToAdd.getDomElement();
 
           // @ITG:Wisej: When a theme switch changes the scaled property, the element stays hidden.
-          if (newDomEl && this.isVisible())
-            newDomEl.style.display = "";
+          if (this.isVisible())
+            elementToAdd.show();
 
           // copy event listeners
           var listeners = currentContentElement.getListeners() || [];

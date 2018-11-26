@@ -158,6 +158,15 @@ qx.Mixin.define("qx.ui.window.MDesktop",
     },
 
 
+    // @ITG:Wisej: Update the stack also when changing the alwaysOnTop property.
+    /**
+     * Event handler. Called if one of the managed windows changes its alwaysOnTop
+     * state.
+     */
+    _onChangeAlwaysOnTop: function () {
+      this.getWindowManager().updateStack();
+    },
+
     /**
      * Overrides the method {@link qx.ui.core.Widget#_afterAddChild}
      *
@@ -187,6 +196,9 @@ qx.Mixin.define("qx.ui.window.MDesktop",
         win.addListener("changeActive", this._onChangeActive, this);
         win.addListener("changeModal", this._onChangeModal, this);
         win.addListener("changeVisibility", this._onChangeVisibility, this);
+
+        // @ITG:Wisej: Update the stack also when changing the alwaysOnTop property.
+        win.addListener("changeAlwaysOnTop", this._onChangeAlwaysOnTop, this);
       }
 
       if (win.getActive()) {

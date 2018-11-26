@@ -159,6 +159,7 @@ qx.Class.define("qx.ui.form.AbstractSelectBox",
 
           // @ITG:Wisej: Inherit the font from the owner, otherwise the drop down will always have its own font.
           control.setFont(this.getFont());
+          this.addListener("changeFont", function (e) { control.setFont(this.getFont());}, this);
 
           control.addListener("changeVisibility", this._onPopupChangeVisibility, this);
           break;
@@ -276,9 +277,6 @@ qx.Class.define("qx.ui.form.AbstractSelectBox",
     // @ITG:Wisej: RightToLeft support. 
     // Listens to "changeRtl" to mirror child controls and the "list".
     _onRtlChange: function (e) {
-
-      if (!qx.core.Environment.get("qx.rtl.supported"))
-        return;
 
       if (e.getData() === e.getOldData())
         return;

@@ -250,7 +250,7 @@ qx.Class.define("qx.ui.core.Blocker",
         if (source) {
           this.__setBlockersStyle("backgroundRepeat" ,"no-repeat");
           this.__setBlockersStyle("backgroundPosition", "center center");
-          this.__setBlockersStyle("backgroundImage", "url(" + source + ")");
+          this.__setBlockersStyle("backgroundImage", "url(\"" + source + "\")");
 
           return;
         }
@@ -432,7 +432,11 @@ qx.Class.define("qx.ui.core.Blocker",
       {
         this._backupActiveWidget();
 
-        var bounds = this._widget.getBounds();
+        // @ITG:Wisej: Gets the wrong bounds when not blocking the root.
+        // var bounds = this._widget.getBounds();
+        var widget = this._isRoot ? this._widget : this._widget.getLayoutParent();
+        var bounds = widget.getBounds();
+
         // no bounds -> widget not yet rendered -> bounds will be set on resize
         if (bounds) {
           this._updateBlockerBounds(bounds);

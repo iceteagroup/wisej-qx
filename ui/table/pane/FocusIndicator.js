@@ -123,12 +123,26 @@ qx.Class.define("qx.ui.table.pane.FocusIndicator",
           var firstRow = this.__scroller.getTablePane().getFirstVisibleRow();
           var rowHeight = table.getRowHeight();
 
-          this.setUserBounds(
+          // @ITG:Wisej: RightToLeft support.
+          if (table.isRtl()) {
+
+            this.setUserBounds(
+              paneModel.getTotalWidth() - paneModel.getColumnLeft(col) - columnModel.getColumnWidth(col) - 2,
+              (row - firstRow) * rowHeight - 2,
+              columnModel.getColumnWidth(col) + 3,
+              rowHeight + 3
+            );
+
+          }
+          else {
+            this.setUserBounds(
               paneModel.getColumnLeft(col) - 2,
               (row - firstRow) * rowHeight - 2,
               columnModel.getColumnWidth(col) + 3,
               rowHeight + 3
-          );
+            );
+          }
+
           this.show();
 
           this.setRow(row);

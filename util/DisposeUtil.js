@@ -195,7 +195,7 @@ qx.Class.define("qx.util.DisposeUtil",
         }
       }
 
-      var arr=[];
+      var arr = [];
       this._collectContainerChildren(container, arr);
 
       var len = arr.length;

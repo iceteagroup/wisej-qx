@@ -157,6 +157,10 @@ qx.Class.define("qx.ui.menubar.Button",
           menubar._setAllowMenuOpenHover(false);
         }
       }
+
+      // ITG:Wisej: Notify listeners that the related menu is shown or hidden.
+      this.fireDataEvent("changeMenuVisibility", menu);
+
     },
 
     // overridden

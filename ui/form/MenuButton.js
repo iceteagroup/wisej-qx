@@ -155,8 +155,8 @@ qx.Class.define("qx.ui.form.MenuButton",
         qx.ui.menu.Manager.getInstance().hideAll();
 
         // Open the attached menu
-		// @ITG:Wisej: Don't override the opener of the menu.
-      	// menu.setOpener(this);
+        // @ITG:Wisej: Don't override the opener of the menu.
+        // menu.setOpener(this);
         menu.open();
 
         // Select first item
@@ -183,9 +183,6 @@ qx.Class.define("qx.ui.form.MenuButton",
     // Listens to "changeRtl" to update the associated menu.
     _onRtlChange: function (e) {
 
-      if (!qx.core.Environment.get("qx.rtl.supported"))
-        return;
-
       if (e.getData() === e.getOldData())
         return;
 
@@ -209,6 +206,9 @@ qx.Class.define("qx.ui.form.MenuButton",
       } else {
         this.removeState("pressed");
       }
+
+      // ITG:Wisej: Notify listeners that the related menu is shown or hidden.
+      this.fireDataEvent("changeMenuVisibility", menu);
     },
 
 

@@ -470,13 +470,20 @@ qx.Class.define("qx.ui.control.DateChooser",
     // applies the new date constraints to the specified value.
     __limitValue: function(value)
     {
-        switch (this.__checkLimits(value)) {
+    	switch (this._checkLimits(value)) {
             case 1: return this.getMaxValue();
             case -1: return this.getMinValue();
             default: return value;
         }
     },
-    __checkLimits: function(value)
+
+    /**
+     * Checks whether the specified value is between the min/max limits.
+     *
+     * @param value {Date} the value to check.
+     * @return {Integer} -1 when value is below minValue, +1 when value is greater than maxValue, 0 when value is in range.
+     */
+    _checkLimits: function (value)
     {
         if (value == null)
             return 0;
@@ -876,7 +883,7 @@ qx.Class.define("qx.ui.control.DateChooser",
 
           // @ITG:Wisej: Added the "MinValue" and "MaxValue: properties to limit the calendar navigation.
           // hide the day label if it's outside of the date range.
-          if (this.__checkLimits(helpDate) != 0)
+          if (this._checkLimits(helpDate) != 0)
             dayLabel.hide();
           else
             dayLabel.show();

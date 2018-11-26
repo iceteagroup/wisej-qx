@@ -38,6 +38,13 @@ qx.Class.define("qx.log.appender.Console",
 {
   statics :
   {
+
+    // ITG:Wisej: Added limit to the console elements.
+   /**
+    * Maximum number of entries in the console.
+    */
+    maxEntries: 1000,
+
     /*
     ---------------------------------------------------------------------------
       INITIALIZATION AND SHUTDOWN
@@ -100,7 +107,9 @@ qx.Class.define("qx.log.appender.Console",
       var markup =
       [
         '<div class="qxconsole">',
-        '<div class="control"><a href="javascript:qx.log.appender.Console.clear()">Clear</a> | <a href="javascript:qx.log.appender.Console.toggle()">Hide</a></div>',
+        // @ITG:Wisej: Added Copy link.
+        // '<div class="control"><a href="javascript:qx.log.appender.Console.clear()">Clear</a> | <a href="javascript:qx.log.appender.Console.toggle()">Hide</a></div>',
+        '<div class="control"><a href="javascript:qx.log.appender.Console.clear()">Clear</a> | <a href="javascript:qx.log.appender.Console.toggle()">Hide</a> | <a href="javascript:qx.log.appender.Console.copy()">Copy</a></div>',
         '<div class="messages">',
         '</div>',
         '<div class="command">',
@@ -138,6 +147,7 @@ qx.Class.define("qx.log.appender.Console",
     dispose : function()
     {
       qx.event.Registration.removeListener(document.documentElement, "keypress", this.__onKeyPress, this);
+      qx.event.Registration.removeListener(document.documentElement, "longtap", this.__onKeyPress, this);
       qx.log.Logger.unregister(this);
     },
 
@@ -163,6 +173,34 @@ qx.Class.define("qx.log.appender.Console",
 
 
     /**
+     * Copies the content of the console to the browser's clipboard.
+     *
+     */
+    copy : function () {
+
+      // create a hidden textarea.
+      var clipboard = document.createElement("textarea");
+      clipboard.style.position = 'absolute';
+      clipboard.style.top = "-10000px";
+      clipboard.style.left = "-10000px";
+      clipboard.setAttribute('readonly', 'readonly');
+      clipboard.value = this.__log.innerText;
+      document.body.appendChild(clipboard);
+
+      try {
+        qx.bom.Selection.setAll(clipboard);
+        document.execCommand("copy");
+      }
+      finally {
+
+        // remove the hidden textarea.
+        clipboard.value = "";
+        document.body.removeChild(clipboard);
+      }
+    },
+
+
+    /**
      * Processes a single log entry
      *
      * @signature function(entry)
@@ -172,6 +210,11 @@ qx.Class.define("qx.log.appender.Console",
     {
       // Append new content
       this.__log.appendChild(qx.log.appender.Util.toHtml(entry));
+
+      // ITG:Wisej: Limit the number of elements.
+      while (this.__log.childNodes.length > this.maxEntries) {
+        this.__log.removeChild(this.__log.childNodes[0]);
+      }
 
       // Scroll down
       this.__scrollDown();
@@ -231,6 +274,17 @@ qx.Class.define("qx.log.appender.Console",
       } else {
         this.__main.style.display = "block";
         this.__log.scrollTop = this.__log.scrollHeight;
+      }
+    },
+
+    /**
+     * Hides the console.
+     *
+     */
+    hide : function()
+    {
+      if (this.__main) {
+        this.__main.style.display = "none";
       }
     },
 

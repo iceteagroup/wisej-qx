@@ -34,6 +34,8 @@ qx.Class.define("qx.bom.Shortcut",
   *****************************************************************************
   */
 
+  // @ITG:Wisej: Added capture parameter to the constructor to let the shortcut get the event in the capturing phase.
+
   /**
    * Create a new instance of Command
    *
@@ -42,13 +44,18 @@ qx.Class.define("qx.bom.Shortcut",
    *    If no non modifier key is specified, the second parameter is evaluated.
    *    The key must be separated by a <code>+</code> or <code>-</code> character.
    *    Examples: Alt+F1, Control+C, Control+Alt+Delete
+   *
+   * @param capture {Boolean} Whether to attach the event to the
+   *         capturing phase or the bubbling phase of the event. The default is
+   *         to attach the event handler to the bubbling phase.
    */
-  construct : function(shortcut)
+  construct : function(shortcut, capture)
   {
     this.base(arguments);
 
     this.__modifier = {};
     this.__key = null;
+    this.__capture = capture === true;
 
     if (shortcut != null) {
       this.setShortcut(shortcut);
@@ -125,7 +132,8 @@ qx.Class.define("qx.bom.Shortcut",
   members :
   {
     __modifier : "",
-    __key : "",
+    __key: "",
+    __capture: false,
 
 
     /*
@@ -190,11 +198,11 @@ qx.Class.define("qx.bom.Shortcut",
     _applyEnabled : function(value, old)
     {
       if (value) {
-        qx.event.Registration.addListener(document.documentElement, "keydown", this.__onKeyDown, this);
-        qx.event.Registration.addListener(document.documentElement, "keypress", this.__onKeyPress, this);
+      	qx.event.Registration.addListener(document.documentElement, "keydown", this.__onKeyDown, this, this.__capture);
+      	qx.event.Registration.addListener(document.documentElement, "keypress", this.__onKeyPress, this, this.__capture);
       } else {
-        qx.event.Registration.removeListener(document.documentElement, "keydown", this.__onKeyDown, this);
-        qx.event.Registration.removeListener(document.documentElement, "keypress", this.__onKeyPress, this);
+      	qx.event.Registration.removeListener(document.documentElement, "keydown", this.__onKeyDown, this, this.__capture);
+      	qx.event.Registration.removeListener(document.documentElement, "keypress", this.__onKeyPress, this, this.__capture);
       }
     },
 

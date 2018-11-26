@@ -305,13 +305,19 @@ qx.Mixin.define("qx.ui.core.MResizable",
     {
       1  : "n-resize",
       2  : "s-resize",
+      3  : "ns-resize",
       4  : "w-resize",
-      8  : "e-resize",
-
       5  : "nw-resize",
       6  : "sw-resize",
+      7  : "move",
+      8  : "e-resize",
       9  : "ne-resize",
-      10 : "se-resize"
+      10 : "se-resize",
+      11 : "move",
+      12 : "ew-resize",
+      13 : "move",
+      14 : "move",
+      15 : "move",
     },
 
 
@@ -334,6 +340,7 @@ qx.Mixin.define("qx.ui.core.MResizable",
 
       // check again in case we have a corner [BUG #1200]
       if (resizeActive > 0) {
+
         // this is really a | (or)!
         resizeActive = resizeActive | this.__computeResizeActive(
           location, pointerLeft, pointerTop, pointerTolerance * 2
@@ -418,6 +425,9 @@ qx.Mixin.define("qx.ui.core.MResizable",
 
       // Add resize state
       this.addState("resize");
+
+      // @ITG:Wisej: Notify that this widget is being resized.
+      this.fireEvent("startresize");
 
       // Store pointer coordinates
       this.__resizeLeft = e.getDocumentLeft();
@@ -518,6 +528,9 @@ qx.Mixin.define("qx.ui.core.MResizable",
       this.releaseCapture();
 
       e.stopPropagation();
+
+      // @ITG:Wisej: Notify that this widget is done being resized.
+      this.fireEvent("endresize");
     },
 
 
@@ -546,6 +559,9 @@ qx.Mixin.define("qx.ui.core.MResizable",
       if (this.getUseResizeFrame()) {
         this._getResizeFrame().exclude();
       }
+
+      // @ITG:Wisej: Notify that this widget is done being resized.
+      this.fireEvent("endresize");
     },
 
 

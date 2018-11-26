@@ -320,7 +320,7 @@ qx.Class.define("qx.ui.treevirtual.SimpleTreeDataCellRenderer",
       // even if both are enclosed in a div specified as content box.  Instead,
       // add the image as the background image of a div.
       html.push('<div style="');
-      html.push('background-image:url(' + source + ');');
+      html.push('background-image:url(\" + source + \");');
       html.push('background-repeat:no-repeat;');
 
       if (imageInfo.imageWidth && imageInfo.imageHeight)

@@ -63,11 +63,12 @@ qx.Class.define("qx.event.handler.Focus",
     this._root = this._document.documentElement;
     this._body = this._document.body;
 
-    if ((qx.core.Environment.get("os.name") == "ios" && parseFloat(qx.core.Environment.get("os.version")) > 6) &&
-      (!qx.application.Inline || !qx.core.Init.getApplication() instanceof qx.application.Inline) )
-    {
-      this.__needsScrollFix = true;
-    }
+    // @ITG:Wisej: Not needed anymore.
+    //if ((qx.core.Environment.get("os.name") == "ios" && parseFloat(qx.core.Environment.get("os.version")) > 6) &&
+	//	(!qx.application.Inline || !qx.core.Init.getApplication() instanceof qx.application.Inline) )
+    //{
+    //  this.__needsScrollFix = true;
+    //}
 
     // Initialize
     this._initObserver();
@@ -651,18 +652,40 @@ qx.Class.define("qx.event.handler.Focus",
         }
       },
 
-      "webkit" : function(domEvent)
+       "webkit" : qx.core.Environment.select("browser.name",
       {
-        var target = qx.bom.Event.getTarget(domEvent);
+        // fix for [ISSUE #9174]
+        // distinguish between MS Edge, which is reported
+        // as engine webkit and all other webkit browsers
+        "edge" : function(domEvent)
+        {
+          var relatedTarget = qx.bom.Event.getRelatedTarget(domEvent);
 
-        if (target === this.getFocus()) {
-          this.resetFocus();
-        }
+          // If the focus goes to nowhere (the document is blurred)
+          if (relatedTarget == null)
+          {
+            // Update internal representation
+            this.__doWindowBlur();
 
-        if (target === this.getActive()) {
-          this.resetActive();
+            // Reset active and focus
+            this.resetFocus();
+            this.resetActive();
+          }
+        },
+
+        "default" : function(domEvent)
+        {
+          var target = qx.bom.Event.getTarget(domEvent);
+
+          if (target === this.getFocus()) {
+            this.resetFocus();
+          }
+
+          if (target === this.getActive()) {
+            this.resetActive();
+          }
         }
-      },
+      }),
 
       "opera" : function(domEvent)
       {
@@ -818,7 +841,7 @@ qx.Class.define("qx.event.handler.Focus",
             // So we clear it
             try {
               // @ITG:Wisej: Avoid throwing errors when not necessary.
-              if (document.selection != undefined)
+              if (document.selection)
                 document.selection.empty();
             } catch (ex) {
               // ignore 'Unknown runtime error'
@@ -1141,7 +1164,8 @@ qx.Class.define("qx.event.handler.Focus",
       if (value) {
         this.__fireEvent(value, old, "activate", true);
       }
-      // correct scroll position for iOS 7
+
+      // correct scroll position for IE
       if (this.__needsScrollFix) {
         window.scrollTo(0, 0);
       }

@@ -74,6 +74,13 @@ qx.Class.define("qx.ui.core.scroll.NativeScrollBar",
       this.initOrientation();
     }
 
+    // @ITG:Wisej: Scrollbar should not steal the focus.
+    this.initKeepFocus();
+    this.initKeepActive();
+
+    // @ITG:Wisej: RighToLeft support.
+    this.initMaximum();
+
     // prevent drag & drop on scrolling
     this.addListener("track", function(e) {
       e.stopPropagation();
@@ -136,6 +143,19 @@ qx.Class.define("qx.ui.core.scroll.NativeScrollBar",
       init : 20
     },
 
+  	// @ITG:Wisej: Added pageStep to make NativeScrollBar compatible with the ScrollBar class, otherwise this property is missing.
+  	/**
+     * The amount to increment on each event. Typically corresponds
+     * to the user pressing <code>PageUp</code> or <code>PageDown</code>.
+     * <br/>
+     * <br/>
+     * <b>This property is ignored by the NativeScrollBar.</b>
+     */
+    pageStep:
+    {
+    	check: "Integer",
+    	init: 100,
+    },
 
     // interface implementation
     knobFactor :
@@ -216,6 +236,11 @@ qx.Class.define("qx.ui.core.scroll.NativeScrollBar",
     // property apply
     _applyMaximum : function(value) {
       this._updateScrollBar();
+
+      // @ITG:Wisej: RightToLeft support.
+      if (this.isRtl() && this.getOrientation() == "horizontal")
+        this.setPosition(value);
+
     },
 
 

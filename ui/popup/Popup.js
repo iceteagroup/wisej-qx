@@ -82,7 +82,7 @@ qx.Class.define("qx.ui.popup.Popup",
     {
       check : "Boolean",
       init : true
-    }
+    },
   },
 
 

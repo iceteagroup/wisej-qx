@@ -56,17 +56,17 @@ qx.Class.define("qx.bom.webfonts.Manager", {
      */
     // FONT_FORMATS : ["eot", "woff", "ttf", "svg"],
     // @ITG:Wisej: Added support for "woff2" and "data" formats.
-  	FONT_FORMATS : ["eot", "woff", "ttf", "svg", "woff2"],
+    FONT_FORMATS : ["eot", "woff", "ttf", "svg", "woff2", "data"],
 
     /**
      * Timeout (in ms) to wait before deciding that a web font was not loaded.
      */
-  	VALIDATION_TIMEOUT: 5000,
+    VALIDATION_TIMEOUT: 8000,
 
 
-  	// @ITG:Wisej: Add an environment check to detect support for woff2 fonts.
-  	supportsWoff2: function()
-  	{
+    // @ITG:Wisej: Add an environment check to detect support for woff2 fonts.
+    supportsWoff2: function()
+    {
       if (!("FontFace" in window)) {
         return false;
       }
@@ -190,38 +190,43 @@ qx.Class.define("qx.bom.webfonts.Manager", {
       var os = qx.core.Environment.get("os.name");
       var osVersion = qx.core.Environment.get("os.version");
 
-      // @ITG:Wisej: Added support for "data" format.
-      preferredFormats.push("data");
-
       // @ITG:Wisej: Added support for "edge" browser.
       if ((browser == "ie" && qx.core.Environment.get("browser.documentmode") >= 9) ||
           (browser == "firefox" && browserVersion >= 3.6) ||
           (browser == "chrome" && browserVersion >= 6) || 
           (browser == "edge")) {
-
         preferredFormats.push("woff");
-
-      	// @ITG:Wisej: Added support for "woff2" format.
-        if (qx.core.Environment.get("font.woff2"))
-          preferredFormats.push("woff2");
       }
 
       if ((browser == "opera" && browserVersion >= 10) ||
           (browser == "safari" && browserVersion >= 3.1) ||
           (browser == "firefox" && browserVersion >= 3.5) ||
           (browser == "chrome" && browserVersion >= 4) ||
+          (browser == "mobileSafari" && os == "ios" && osVersion >= 4.2) ||
           (browser == "mobile safari" && os == "ios" && osVersion >= 4.2)) {
         preferredFormats.push("ttf");
+        preferredFormats.push("woff");
       }
 
       // @ITG:Wisej: Added support for "edge" browser.
-      if ((browser == "ie" && browserVersion >= 4) ||
-		  (browser == "edge")) {
+      if ((browser == "ie" && browserVersion >= 4) || (browser == "edge")) {
         preferredFormats.push("eot");
+        preferredFormats.push("woff");
       }
 
-      if (browser == "mobileSafari" && os == "ios" && osVersion >= 4.1) {
+      if ((browser == "mobileSafari" && os == "ios" && osVersion >= 4.1) ||
+          (browser == "mobile safari" && os == "ios" && osVersion >= 4.1)) {
         preferredFormats.push("svg");
+        preferredFormats.push("woff");
+      }
+
+      // @ITG:Wisej: Added support for "data" and "woff2" formats.
+      if (preferredFormats.length > 0) {
+
+        if (qx.core.Environment.get("font.woff2"))
+          preferredFormats.splice(0, 0, "woff2");
+
+        preferredFormats.splice(0, 0, "data");
       }
 
       return preferredFormats;
@@ -371,13 +376,13 @@ qx.Class.define("qx.bom.webfonts.Manager", {
 
           // @ITG:Wisej: Added support for "woff2" and "data" formats.
           if (qx.lang.String.startsWith(sources[i], "data:")) {
-          	type = "data";
+            type = "data";
           }
           else {
-          	var match = reg.exec(sources[i]);
-          	if (match) {
-          		type = match[1];
-          	}
+            var match = reg.exec(sources[i]);
+            if (match) {
+              type = match[1];
+            }
           }
         }
 
@@ -433,20 +438,27 @@ qx.Class.define("qx.bom.webfonts.Manager", {
     __getSourceForFormat : function(format, url)
     {
       switch(format) {
-        case "eot": return "url('" + url + "');" +
-          "src: url('" + url + "?#iefix') format('embedded-opentype')";
+        case "eot":
+         return "url(\"" + url + "\");" +
+           "src: url(\"" + url + "?#iefix\") format('embedded-opentype')";
+
         case "woff":
-          return "url('" + url + "') format('woff')";
+        	return "url(\"" + url + "\") format('woff')";
+
         // @ITG:Wisej: Added support for woff2
-      	case "woff2":
-      		return "url('" + url + "') format('woff2')";
+        case "woff2":
+          return "url(\"" + url + "\") format('woff2')";
+
         // @ITG:Wisej: Added support for data
-      	case "data":
-      		return "url('" + url + "')";
-      	case "ttf":
-          return "url('" + url + "') format('truetype')";
+        case "data":
+          return "url(\"" + url + "\")";
+
+        case "ttf":
+          return "url(\"" + url + "\") format('truetype')";
+
         case "svg":
-          return "url('" + url + "') format('svg')";
+          return "url(\"" + url + "\") format('svg')";
+
         default:
           return null;
       }

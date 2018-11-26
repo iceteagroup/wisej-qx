@@ -73,7 +73,8 @@ qx.Class.define("qx.ui.form.DateField",
     // register listeners
     this.addListener("tap", this._onTap, this);
     this.addListener("blur", this._onBlur, this);
-	// @ITG:Wisej: Added missing event handler.
+
+    // @ITG:Wisej: Added missing event handler.
     this.addListener("keypress", this._onKeyPress);
 
     // forward the focusin and focusout events to the textfield. The textfield

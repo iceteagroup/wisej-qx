@@ -160,8 +160,8 @@ qx.Class.define("qx.ui.root.Application",
 
       root.setStyles({
         "position" : "absolute",
-        "overflowX": "visible",
-        "overflowY": "visible"
+        "overflowX": "hidden",
+        "overflowY": "hidden"
       });
 
       // Store "weak" reference to the widget in the DOM element.

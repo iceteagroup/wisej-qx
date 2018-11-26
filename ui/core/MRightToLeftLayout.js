@@ -63,9 +63,6 @@ qx.Mixin.define("qx.ui.core.MRightToLeftLayout",
         // Listens to "changeRtl" to mirror the child controls.
         __onRtlChange: function (e) {
 
-          if (!qx.core.Environment.get("qx.rtl.supported"))
-            return;
-
           if (e.getData() === e.getOldData())
             return;
 
@@ -79,9 +76,6 @@ qx.Mixin.define("qx.ui.core.MRightToLeftLayout",
          * Applies the rtlLayout property.
          */
         _applyRtlLayout: function (value, old) {
-
-          if (!qx.core.Environment.get("qx.rtl.supported"))
-            return;
 
           var rtl = this.getRtl();
           if (rtl != null) {

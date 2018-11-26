@@ -717,7 +717,12 @@ qx.Class.define("qx.ui.tree.VirtualTree",
           }
         }
 
-        if (this.__lookupTable.indexOf(item) != -1) {
+        // @ITG:Wisej: Adding nodes to the root when hideRoot is true doesn't update the list.
+        if (this.isHideRoot() && this.getModel() == item) {
+          this.__applyModelChanges();
+        }
+
+        else if (this.__lookupTable.indexOf(item) != -1) {
           this.__applyModelChanges();
         }
       }

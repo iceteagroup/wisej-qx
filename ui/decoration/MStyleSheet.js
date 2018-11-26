@@ -120,7 +120,7 @@ qx.Mixin.define("qx.ui.decoration.MStyleSheet", {
                         }
                     }
 
-                    value = "url('" + source + "')";
+                    value = "url(\"" + source + "\")";
                 }
                 else if (name == "content") {
 

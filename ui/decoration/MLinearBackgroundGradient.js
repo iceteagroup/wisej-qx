@@ -210,7 +210,7 @@ qx.Mixin.define("qx.ui.decoration.MLinearBackgroundGradient",
           ctx.fillStyle = lingrad;
           ctx.fillRect(0, 0, width, height);
 
-          var value = "url(" + this.__canvas.toDataURL() + ")";
+          var value = "url(\"" + this.__canvas.toDataURL() + "\")";
           styles["background-image"] = value;
           if (unit === "%") {
             if (isVertical) {

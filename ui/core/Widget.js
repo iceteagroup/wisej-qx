@@ -2462,8 +2462,6 @@ qx.Class.define("qx.ui.core.Widget",
     // property apply
     _applyRtl: function (value, old) {
 
-      if (!qx.core.Environment.get("qx.rtl.supported"))
-        return;
 
       if (value)
         this.addState("rightToLeft")
@@ -2481,9 +2479,6 @@ qx.Class.define("qx.ui.core.Widget",
     _mirrorChildren: function (mirror) {
 
       if (mirror == null)
-        return;
-
-      if (!qx.core.Environment.get("qx.rtl.supported"))
         return;
 
       if (this.$$mirrored === mirror)
@@ -2776,7 +2771,7 @@ qx.Class.define("qx.ui.core.Widget",
 
 
     /** @type {Boolean} Whether the selectors needs to be recomputed before updating appearance */
-    __updateSelector : null,
+    __updateSelector : false,
 
 
     /**
@@ -2798,7 +2793,7 @@ qx.Class.define("qx.ui.core.Widget",
       if (this.__updateSelector)
       {
         // Clear flag
-        delete this.__updateSelector;
+        this.__updateSelector = false;
 
         // Check if the selector was created previously
         if (selector)
@@ -2916,7 +2911,7 @@ qx.Class.define("qx.ui.core.Widget",
      */
     updateAppearance : function()
     {
-      // Clear selector
+      // Set selector
       this.__updateSelector = true;
 
       // Add to appearance queue
@@ -3695,6 +3690,17 @@ qx.Class.define("qx.ui.core.Widget",
       }
     },
 
+  	/**
+     * Hides the given child control by ID
+     *
+     * @param id {String} ID of the child control
+     */
+    _hideChildControl: function (id) {
+      var control = this.getChildControl(id, true);
+      if (control) {
+        control.hide();
+      }
+    },
 
     /**
      * Whether the given child control is visible.
@@ -3789,6 +3795,9 @@ qx.Class.define("qx.ui.core.Widget",
       // Establish connection to parent
       control.$$subcontrol = id;
       control.$$subparent = this;
+
+      // ITG:Wisej: Name child controls for automation and accessibility apps.
+      control.getContentElement().setAttribute("name", control.$$subcontrol);
 
       // Support for state forwarding
       var states = this.__states;

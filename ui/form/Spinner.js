@@ -95,6 +95,7 @@ qx.Class.define("qx.ui.form.Spinner",
     this.addListener("keydown", this._onKeyDown, this);
     this.addListener("keyup", this._onKeyUp, this);
     this.addListener("roll", this._onRoll, this);
+
     // @ITG:Wisej: Stop the keypress event from bubbling otherwise this control cannot be used as a cell editor.
     this.addListener("keypress", this._onKeyPress, this);
 

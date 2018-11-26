@@ -152,12 +152,12 @@ qx.Mixin.define("qx.ui.decoration.MBackgroundImage",
         }
       }
 
-      // @ITG:Wisej: Added quotes around url() in case it's a data uri and check for null image.
+      // @ITG:Wisej: Added quotes in url() in case it's a data uri and check for null image.
       if (source) {
         if (styles["background-image"]) {
-          styles["background-image"] +=  ", url('" + source + "')";
+          styles["background-image"] += ", url(\"" + source + "\")";
         } else {
-          styles["background-image"] = "url('" + source + "')";
+          styles["background-image"] = "url(\"" + source + "\")";
         }
       }
 

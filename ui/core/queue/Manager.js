@@ -371,7 +371,7 @@ qx.Class.define("qx.ui.core.queue.Manager",
      * Handler used on touch devices to prevent the queue from manipulating
      * the dom during the touch - mouse - ... event sequence. Usually, iOS
      * devices fire a click event 300ms after the touchend event. So using
-     * 500ms should be a good value to be on the save side. This is necessary
+     * 500ms should be a good value to be on the safe side. This is necessary
      * due to the fact that the event chain is stopped if a manipulation in
      * the DOM is done.
      *
@@ -379,7 +379,10 @@ qx.Class.define("qx.ui.core.queue.Manager",
      */
     __onUserAction : function(e)
     {
-      qx.ui.core.queue.Manager.flush();
+      // @ITG:Wisej: Implemented the delay described in the comment.
+     // setTimeout(function () {
+        qx.ui.core.queue.Manager.flush();
+      //}, 500);
     }
   },
 

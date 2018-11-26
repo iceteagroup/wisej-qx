@@ -1265,12 +1265,12 @@ qx.Class.define("qx.html.Element",
     {
       var parent = this.__parent;
 
-      parent.__moveChildHelper(this);
-
+      // @ITG:Wisej: Fixed to be a bit more lenient.
+      // parent.__moveChildHelper(this);
       var oldIndex = parent.__children.indexOf(this);
-
       if (oldIndex === index) {
-        throw new Error("Could not move to same index!");
+        return;
+        // throw new Error("Could not move to same index!");
       } else if (oldIndex < index) {
         index--;
       }
@@ -1279,6 +1279,7 @@ qx.Class.define("qx.html.Element",
       // qx.lang.Array.removeAt(parent.__children, oldIndex);
       // qx.lang.Array.insertAt(parent.__children, this, index);
       qx.lang.Array.move(parent.__children, oldIndex, index);
+      parent.__moveChildHelper(this);
 
       return this;
     },

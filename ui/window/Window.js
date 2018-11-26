@@ -1005,9 +1005,6 @@ qx.Class.define("qx.ui.window.Window",
     // Listens to "changeRtl" to mirror the captionbar and child controls.
     _onRtlChange: function (e) {
 
-      if (!qx.core.Environment.get("qx.rtl.supported"))
-        return;
-
       if (e.getData() === e.getOldData())
         return;
 

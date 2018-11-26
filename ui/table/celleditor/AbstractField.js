@@ -67,6 +67,9 @@ qx.Class.define("qx.ui.table.celleditor.AbstractField",
       }
       cellEditor.setValue("" + cellInfo.value);
 
+      // @ITG:Wisej: RightToLeft support. 
+      editor.setRtl(cellInfo.table.isRtl());
+
       cellEditor.addListener("appear", function() {
         cellEditor.selectAllText();
       });

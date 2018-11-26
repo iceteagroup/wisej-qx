@@ -765,6 +765,12 @@ qx.Class.define("qx.event.handler.DragDrop",
 
       // Fire drop event in success case
       if (this.__validDrop && this.__validAction) {
+
+        // @ITG:Wisej: Added support for "drop" state.
+        var dropTargetWidget = qx.ui.core.Widget.getWidgetByElement(this.__dropTarget);
+        if (dropTargetWidget)
+          dropTargetWidget.removeState("drop");
+
         this.__fireEvent("drop", this.__dropTarget, this.__dragTarget, false, e);
       }
 

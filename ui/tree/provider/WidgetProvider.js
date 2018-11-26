@@ -271,9 +271,12 @@ qx.Class.define("qx.ui.tree.provider.WidgetProvider",
     __onOpenChanged : function(event)
     {
       var widget = event.getTarget();
-
       var row = widget.getUserData("cell.row");
       var item = this._tree.getLookupTable().getItem(row);
+
+      // @ITG:Wisej: row and/or item may be null when the open property is set by the model.
+      if (!row || !item)
+        return;
 
       if (event.getData()) {
         this._tree.openNodeWithoutScrolling(item);

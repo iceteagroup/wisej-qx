@@ -43,9 +43,11 @@ qx.Class.define("qx.event.dispatch.MouseCapture",
     this.__window = manager.getWindow();
     this.__registration = registration;
 
-    manager.addListener(this.__window, "blur", this.releaseCapture, this);
-    manager.addListener(this.__window, "focus", this.releaseCapture, this);
-    manager.addListener(this.__window, "scroll", this.releaseCapture, this);
+    // @ITG:Wisej: When clicking to move/resize a form causes a child IFrame
+    // to gain the focus, it resets the capture and fails to move/resize.
+    // manager.addListener(this.__window, "blur", this.releaseCapture, this);
+    // manager.addListener(this.__window, "focus", this.releaseCapture, this);
+    // manager.addListener(this.__window, "scroll", this.releaseCapture, this);
   },
 
 
@@ -132,9 +134,14 @@ qx.Class.define("qx.event.dispatch.MouseCapture",
       "pointerover" : 1,
       "pointerout" : 1,
       "tap" : 1,
-      "dbltap" : 1
-    },
+      "dbltap": 1,
 
+      // @ITG:Wisej: Capture touch events.
+      "touchstart": 1,
+      "touchend": 1,
+      "touchmove": 1,
+      "touchcancel": 1
+    },
 
     /*
     ---------------------------------------------------------------------------

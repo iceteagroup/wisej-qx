@@ -338,7 +338,8 @@ qx.Class.define("qx.event.handler.Application",
           throw e;
         }
       	finally {
-          // @ITG:Wisej: No need to run through all the dispose call.
+
+          // @ITG:Wisej: No need to run through all the dispose calls.
           // Execute registry shutdown
           // qx.core.ObjectRegistry.shutdown();
         }

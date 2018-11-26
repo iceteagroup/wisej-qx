@@ -248,7 +248,7 @@ qx.Class.define("qx.theme.manager.Appearance",
       var entry = theme.appearances[resolved];
       if (!entry)
       {
-        this.warn("Missing appearance: " + id);
+        this.warn("Missing appearance: ", id);
         return null;
       }
 

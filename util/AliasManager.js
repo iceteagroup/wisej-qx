@@ -95,9 +95,6 @@ qx.Class.define("qx.util.AliasManager",
 
       var dynamics = this._getDynamic();
 
-      // @ITG:Wisej: Bug fix. The AliasManager doesn't work with escaped URLs. i.e. "http%3a%2f%2ficonshow.me%2fmedia%2fimages%2fSystem%2fplex-icons%2fpng%2fOther%2f32%2fhtml5.png"
-      var value = unescape(value);
-
       // @ITG:Wisej: Remove the ?color=[Color] parameter added to svg images.
       var colorPos = value.indexOf("?color=");
       if (colorPos > 0)

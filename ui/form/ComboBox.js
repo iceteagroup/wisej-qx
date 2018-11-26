@@ -159,7 +159,7 @@ qx.Class.define("qx.ui.form.ComboBox",
           control.setFocusable(false);
           control.setKeepActive(true);
           control.addState("inner");
-          control.addListener("execute", this.toggle, this)
+          control.addListener("execute", this.toggle, this);
           this._add(control);
           break;
 

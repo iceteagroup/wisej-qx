@@ -52,7 +52,7 @@ qx.Bootstrap.define("qx.io.ImageLoader",
     // __dataUrlRegExp : /^data:image\/(png|gif|jpg|jpeg|bmp)\b/i,
     __dataUrlRegExp: /^data:image\/(png|gif|jpg|jpeg|bmp|svg)\b/i,
 
-  	/**
+    /**
      * Whether the given image has previously been loaded using the
      * {@link #load} method.
      *
@@ -105,8 +105,8 @@ qx.Bootstrap.define("qx.io.ImageLoader",
 
       if (! entry || ! entry.format)
       {
-		// @ITG:Wisej: Fixed to return the format of a regular URL as well as a data uri.
-      	var result = this.__dataUrlRegExp.exec(source) || this.__knownImageTypesRegExp.exec(source);
+        // @ITG:Wisej: Fixed to return the format of a regular URL as well as a data uri.
+        var result = this.__dataUrlRegExp.exec(source) || this.__knownImageTypesRegExp.exec(source);
 
         if (result != null)
         {
@@ -236,7 +236,7 @@ qx.Bootstrap.define("qx.io.ImageLoader",
         if (source && (source.indexOf(".svg") > -1 || source.indexOf("data:image/svg+xml;") == 0)) {
 
             // load http urls using an XMLHttpRequest.
-        	if (source.indexOf("data:image/svg+xml;") == -1) {
+            if (source.indexOf("data:image/svg+xml;") == -1) {
                 this.__loadSvgUrl(entry, source);
                 return;
             }
@@ -305,9 +305,9 @@ qx.Bootstrap.define("qx.io.ImageLoader",
                         entry.loaded = true;
                         entry.svg = xhr.responseXML;
                         qx.io.ImageLoader.__setSvgSize(entry, entry.svg);
-					}
+                    }
                     else {
-                    	entry.failed = true;
+                        entry.failed = true;
                         qx.log.Logger.error("Invalid SVG: " + url);
                     }
 
@@ -476,7 +476,7 @@ qx.Bootstrap.define("qx.io.ImageLoader",
         delete entry.element;
         delete entry.loading;
 
-		// Abort
+        // Abort
         entry.aborted = true;
 
         for (var i = 0, l = callbacks.length; i < l; i += 2) {
@@ -496,7 +496,23 @@ qx.Bootstrap.define("qx.io.ImageLoader",
       var callback = qx.core.Environment.select("qx.globalErrorHandling", {
         "true": qx.event.GlobalError.observeMethod(this.__onLoadHandler),
         "false": this.__onLoadHandler
-        }); // @ITG:Wisej: Missing semicolon...
+      }); // @ITG:Wisej: Missing semicolon...
+
+      // @ITG:Wisej: Fix preload flickering error with FireFox, IE and Edge by
+      // processing the image using the 2D canvas sync drawImage call.
+      if (qx.core.Environment.get("browser.name") != "chrome") {
+        try {
+          var ctx = this.__image2dContext;
+          if (ctx == null) {
+            ctx = this.__image2dContext = document.createElement("canvas").getContext("2d");
+          }
+          if (ctx)
+            ctx.drawImage(arguments[1], 0, 0);
+        }
+        catch (error) {
+          qx.log.Logger.error("Error pre-rendering the image: " + arguments[2], error);
+        }
+      }
 
       callback.apply(this, arguments);
     },
@@ -569,7 +585,7 @@ qx.Bootstrap.define("qx.io.ImageLoader",
       }
       else {
 
-      	entry.failed = true;
+        entry.failed = true;
       }
 
       if(qx.bom.client.Engine.getName() == "mshtml" &&
@@ -595,13 +611,13 @@ qx.Bootstrap.define("qx.io.ImageLoader",
       }
     },
 
-  	// @ITG:Wisej: Use a smaller key to find images in the __data collection.
-	// Otherwise when we load large base64 images the keys are huge.
-  	/**
-	 * Returns a (more or less) unique key for the source.
-	 */
+    // @ITG:Wisej: Use a smaller key to find images in the __data collection.
+    // Otherwise when we load large base64 images the keys are huge.
+    /**
+     * Returns a (more or less) unique key for the source.
+     */
     __getKey: function (source) {
-    	return qx.lang.String.toHashCode(source);
+        return qx.lang.String.toHashCode(source);
     },
 
     /**

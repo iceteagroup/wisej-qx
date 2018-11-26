@@ -47,7 +47,7 @@ qx.Class.define("qx.ui.form.core.AbstractVirtualBox",
     // Register listeners
     this.addListener("keypress", this._handleKeyboard, this);
     this.addListener("tap", this._handlePointer, this);
-	// @ITG:Wisej: VirtualComboBox doesn't close the dropdown when losing the focus.
+    // @ITG:Wisej: VirtualComboBox doesn't close the dropdown when losing the focus.
     this.addListener("focusout", this._onBlur, this);
     // this.addListener("blur", this._onBlur, this);
     this.addListener("resize", this._onResize, this);

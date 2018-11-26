@@ -99,7 +99,8 @@ qx.Class.define("qx.ui.core.FocusHandler",
     removeRoot : function(widget)
     {
       // this.debug("Remove focusRoot: " + widget);
-      delete this.__roots[widget.$$hash];
+      if (this.__roots)
+        delete this.__roots[widget.$$hash];
     },
 
 

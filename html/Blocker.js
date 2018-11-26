@@ -47,7 +47,7 @@ qx.Class.define("qx.html.Blocker",
     if ((qx.core.Environment.get("engine.name") == "mshtml"))
     {
       // @ITG:Wisej: Replaced link to bank.gif with the existing PLACEHOLDER_IMAGE.
-      styles.backgroundImage = "url(" + qx.ui.basic.Image.PLACEHOLDER_IMAGE + ")";
+    	styles.backgroundImage = "url(\"" + qx.ui.basic.Image.PLACEHOLDER_IMAGE + "\")";
       styles.backgroundRepeat = "repeat";
     }
 

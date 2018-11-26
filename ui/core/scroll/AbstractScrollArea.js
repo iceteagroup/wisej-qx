@@ -196,9 +196,6 @@ qx.Class.define("qx.ui.core.scroll.AbstractScrollArea",
     // Listens to "changeRtl" to move the vertical scrollbar to the left side.
     _onRtlChange: function (e) {
 
-      if (!qx.core.Environment.get("qx.rtl.supported"))
-        return;
-
       if (e.getData() === e.getOldData())
         return;
 
@@ -240,8 +237,6 @@ qx.Class.define("qx.ui.core.scroll.AbstractScrollArea",
     _updateScrollAreaLayout : function(paneCell, controls) {
 
         var rtl = this.getRtl();
-        if (!qx.core.Environment.get("qx.rtl.supported"))
-            rtl = false;
 
         // the default layout.
         paneCell = paneCell || { row: 0, column: 0 };

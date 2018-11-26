@@ -160,12 +160,13 @@ qx.Class.define("qx.bom.element.Background",
       var position = this.__computePosition(left, top);
       var backgroundImageUrl = qx.util.ResourceManager.getInstance().toUri(source);
 
-      var backgroundImageCssString;
-      if (this.__isBase64EncodedImage(backgroundImageUrl)) {
-        backgroundImageCssString = "url('" + backgroundImageUrl + "')";
-      } else {
-        backgroundImageCssString = "url(" + backgroundImageUrl + ")";
-      }
+      // @ITG:Wisej: The url() css function should always enclose the argument in quotes.
+      var backgroundImageCssString = "url(\"" + backgroundImageUrl + "\")";
+      //if (this.__isBase64EncodedImage(backgroundImageUrl)) {
+      //  backgroundImageCssString = "url('" + backgroundImageUrl + "')";
+      //} else {
+      //  backgroundImageCssString = "url(" + backgroundImageUrl + ")";
+      //}
 
       var map = {
         backgroundPosition : position,

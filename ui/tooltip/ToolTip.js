@@ -137,7 +137,7 @@ qx.Class.define("qx.ui.tooltip.ToolTip",
     opener :
     {
       check : "qx.ui.core.Widget",
-      nullable : true
+      nullable: true
     },
 
 

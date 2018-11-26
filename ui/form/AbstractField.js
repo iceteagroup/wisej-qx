@@ -391,7 +391,7 @@ qx.Class.define("qx.ui.form.AbstractField",
         (qx.core.Environment.get("browser.documentmode") == 8)) {
         el.setStyles({
           // @ITG:Wisej: Replaced link to bank.gif with the existing PLACEHOLDER_IMAGE.
-      	  backgroundImage: "url(" + qx.ui.basic.Image.PLACEHOLDER_IMAGE + ")"
+        	backgroundImage: "url(\"" + qx.ui.basic.Image.PLACEHOLDER_IMAGE + "\")"
         });
       }
 
@@ -1013,12 +1013,14 @@ qx.Class.define("qx.ui.form.AbstractField",
       if (value)
       {
         this.addState("readonly");
-        this.setFocusable(false);
+        // @ITG:Wisej: Setting readonly should not change the focusable property.
+        //this.setFocusable(false);
       }
       else
       {
         this.removeState("readonly");
-        this.setFocusable(true);
+        // @ITG:Wisej: Setting readonly should not change the focusable property.
+        //this.setFocusable(true);
       }
     }
 

@@ -65,10 +65,13 @@ qx.Class.define("qx.ui.table.pane.Scroller",
     this.__tablePane = this._showChildControl("pane");
 
     // the top line containing the header clipper and the top right widget
-    this.__top = new qx.ui.container.Composite(new qx.ui.layout.HBox()).set({
-      minWidth: 0
-    });
-    this._add(this.__top, {row: 0, column: 0, colSpan: 2});
+    //this.__top = new qx.ui.container.Composite(new qx.ui.layout.HBox()).set({
+    //  minWidth: 0
+    //});
+    //this._add(this.__top, {row: 0, column: 0, colSpan: 2});
+
+    // @ITG:Wisej: Add as a child control to be able to style it.
+    this.__top = this._createChildControl("header-container");
 
     // embed header into a scrollable container
     this._headerClipper = this._createHeaderClipper();
@@ -112,22 +115,19 @@ qx.Class.define("qx.ui.table.pane.Scroller",
 
     // init focus indicator
     this.__focusIndicator = this.getChildControl("focus-indicator");
-    // need to run the apply method at least once [BUG #4057]
-    this.initShowCellFocusIndicator();
+
+  	// need to run the apply method at least once [BUG #4057]
+  	// @ITG:Wisej: Should preserve the focus indicator visibility set in table.
+    this.setShowCellFocusIndicator(table.getShowCellFocusIndicator());
+    // this.initShowCellFocusIndicator();
 
     // force creation of the resize line
     this.getChildControl("resize-line").hide();
 
     this.addListener("pointerout", this._onPointerout, this);
-    this.addListener("appear", this._onAppear, this);
-    this.addListener("disappear", this._onDisappear, this);
-
-    this.__timer = new qx.event.Timer();
-    this.__timer.addListener("interval", this._oninterval, this);
-    this.initScrollTimeout();
 
     // @ITG:Wisej: RightToLeft support.
-    // this.addListener("changeRtl", this._onRtlChange, this);
+    this.addListener("changeRtl", this._onRtlChange, this);
   },
 
 
@@ -321,18 +321,6 @@ qx.Class.define("qx.ui.table.pane.Scroller",
     },
 
 
-    /**
-     * Interval time (in milliseconds) for the table update timer.
-     * Setting this to 0 clears the timer.
-     */
-    scrollTimeout :
-    {
-      check : "Integer",
-      init : 100,
-      apply : "_applyScrollTimeout"
-    },
-
-
     appearance :
     {
       refine : true,
@@ -353,10 +341,6 @@ qx.Class.define("qx.ui.table.pane.Scroller",
   {
     __lastRowCount : null,
     __table : null,
-
-    __updateInterval : null,
-    __updateContentPlanned : null,
-    __onintervalWrapper : null,
 
     _moveColumn : null,
     __lastMoveColPos : null,
@@ -390,8 +374,6 @@ qx.Class.define("qx.ui.table.pane.Scroller",
     __clipperContainer : null,
     __focusIndicator : null,
     __top : null,
-
-    __timer : null,
 
 
     /**
@@ -434,20 +416,19 @@ qx.Class.define("qx.ui.table.pane.Scroller",
     // Listens to "changeRtl" to mirror the captionbar and child controls.
     _onRtlChange: function (e) {
 
-      if (!qx.core.Environment.get("qx.rtl.supported"))
-        return;
-
       if (e.getData() === e.getOldData())
         return;
 
       var rtl = e.getData();
-        if (rtl != null) {
-          this.__top._mirrorChildren(rtl);
-          this.__updateLayout(rtl);
-        }
+      if (rtl != null) {
+        this.__top._mirrorChildren(rtl);
+        this.setTopRightWidget(this.getTopRightWidget());
+        this._applyHorizontalScrollBarVisible(this.getHorizontalScrollBarVisible());
+        this._updateLayout(rtl);
+      }
     },
 
-    __updateLayout: function (rtl) {
+    _updateLayout: function (rtl) {
 
         var scrollX = this.__horScrollBar;
         var scrollY = this.__verScrollBar;
@@ -456,11 +437,11 @@ qx.Class.define("qx.ui.table.pane.Scroller",
         if (overlayed) {
 
             if (rtl) {
-                scrollY.setLayoutProperties({ left: 0, bottom: 0, top: 0 });
+                scrollY.setLayoutProperties({ left: 0, right: null, bottom: 0, top: 0 });
                 scrollX.setLayoutProperties({ bottom: 0, right: 0, left: 0 });
             }
             else {
-                scrollY.setLayoutProperties({ right: 0, bottom: 0, top: 0 });
+                scrollY.setLayoutProperties({ left: null, right: 0, bottom: 0, top: 0 });
                 scrollX.setLayoutProperties({ bottom: 0, right: 0, left: 0 });
             }
         }
@@ -497,6 +478,12 @@ qx.Class.define("qx.ui.table.pane.Scroller",
       {
         case "header":
           control = (this.getTable().getNewTablePaneHeader())(this);
+          break;
+
+        // @ITG:Wisej: Add as a child control to be able to style it.
+        case "header-container":
+          control = new qx.ui.container.Composite(new qx.ui.layout.HBox());
+          this._add(control, {row: 0, column: 0, colSpan: 2});
           break;
 
         case "pane":
@@ -558,12 +545,35 @@ qx.Class.define("qx.ui.table.pane.Scroller",
       this.__horScrollBar.setVisibility(value ? "visible" : "excluded");
     },
 
-
     // property modifier
     _applyVerticalScrollBarVisible : function(value, old) {
+
       this.__verScrollBar.setVisibility(value ? "visible" : "excluded");
+
+      // @ITG:Wisej: RightToLeft support. Add a spacer to line up the left column with the content.
+      if (this.isRtl()) {
+
+      	if (!this.__verticalScrollBarFiller) {
+
+          this.__verticalScrollBarFiller = new qx.ui.core.Spacer();
+          this.__top.add(this.__verticalScrollBarFiller);
+
+          if (qx.core.Environment.get("qx.dyntheme")) {
+            qx.theme.manager.Meta.getInstance().addListener("changeTheme", function (e) {
+              this.__verticalScrollBarFiller.setWidth(this.__verScrollBar.getSizeHint().width);
+            }, this);
+          }
+        }
+
+        this.__verticalScrollBarFiller.setWidth(value ? this.__verScrollBar.getSizeHint().width : 0);
+      }
+      else if (this.__verticalScrollBarFiller) {
+        this.__verticalScrollBarFiller.setWidth(0);
+      }
     },
 
+	// @ITG:Wisej: RightToLeft support.
+    __verticalScrollBarFiller: null,
 
     // property modifier
     _applyTablePaneModel : function(value, old)
@@ -687,18 +697,15 @@ qx.Class.define("qx.ui.table.pane.Scroller",
      */
     setColumnWidth : function(col, width)
     {
+      // @ITG:Wisej: Save the update when the column doesn't belong to the scroller.
+      if (this.getTablePaneModel().getX(col) < 0)
+        return;
+
       this.__header.setColumnWidth(col, width);
       this.__tablePane.setColumnWidth(col, width);
 
-      var paneModel = this.getTablePaneModel();
-      var x = paneModel.getX(col);
-
-      if (x != -1)
-      {
-        // The change was in this scroller
-        this.updateHorScrollBarMaximum();
-        this._updateFocusIndicator();
-      }
+      this.updateHorScrollBarMaximum();
+      this._updateFocusIndicator();
     },
 
 
@@ -712,6 +719,7 @@ qx.Class.define("qx.ui.table.pane.Scroller",
       this.__tablePane.onColOrderChanged();
 
       this.updateHorScrollBarMaximum();
+      this._updateFocusIndicator();
     },
 
 
@@ -768,6 +776,9 @@ qx.Class.define("qx.ui.table.pane.Scroller",
     {
       this.__header.onTableModelMetaDataChanged();
       this.__tablePane.onTableModelMetaDataChanged();
+
+      this.updateHorScrollBarMaximum();
+      this._updateFocusIndicator();
     },
 
 
@@ -884,25 +895,6 @@ qx.Class.define("qx.ui.table.pane.Scroller",
 
 
     /**
-     * Event handler for the scroller's appear event
-     */
-    _onAppear : function() {
-      // after the Scroller appears we start the interval again
-      this._startInterval(this.getScrollTimeout());
-    },
-
-
-    /**
-     * Event handler for the disappear event
-     */
-    _onDisappear : function()
-    {
-      // before the scroller disappears we need to stop it
-      this._stopInterval();
-    },
-
-
-    /**
      * Event handler. Called when the horizontal scroll bar moved.
      *
      * @param e {Map} the event.
@@ -925,7 +917,7 @@ qx.Class.define("qx.ui.table.pane.Scroller",
     _onScrollY : function(e)
     {
       this.fireDataEvent("changeScrollY", e.getData(), e.getOldData());
-      this._postponedUpdateContent();
+      this._updateContent();
     },
 
 
@@ -1793,7 +1785,7 @@ qx.Class.define("qx.ui.table.pane.Scroller",
     {
       if (!this.isEditing())
       {
-        this.__tablePane.setFocusedCell(col, row, this.__updateContentPlanned);
+        this.__tablePane.setFocusedCell(col, row);
 
         this.__focusedCol = col;
         this.__focusedRow = row;
@@ -1843,13 +1835,18 @@ qx.Class.define("qx.ui.table.pane.Scroller",
 
         var columnModel = this.getTable().getTableColumnModel();
 
-        var colLeft = paneModel.getColumnLeft(col);
         var colWidth = columnModel.getColumnWidth(col);
         var rowHeight = this.getTable().getRowHeight();
         var rowTop = row * rowHeight;
 
         var scrollX = this.getScrollX();
         var scrollY = this.getScrollY();
+
+        // @ITG:Wisej: RightToLeft support.
+        //var colLeft = paneModel.getColumnLeft(col);
+        var colLeft = (!this.isRtl())
+          ? paneModel.getColumnLeft(col)
+          : paneModel.getTotalWidth() - paneModel.getColumnLeft(col) - colWidth;
 
         // NOTE: We don't use qx.lang.Number.limit, because min should win if max < min
         var minScrollX = Math.min(colLeft, colLeft + colWidth - clipperSize.width);
@@ -2091,8 +2088,14 @@ qx.Class.define("qx.ui.table.pane.Scroller",
       var location = this.__tablePane.getContentLocation();
       var currX = location != null ? location.left : 0;
 
-     for (var x = 0; x < colCount; x++)
-     {
+      // @ITG:Wisej: RightToLeft support.
+      var rtl = this.isRtl();
+
+      for (var x =
+        rtl ? (colCount - 1) : (0);
+        rtl ? (x > -1) : (x < colCount);
+        rtl ? (x--) : (x++))
+      {
         var col = paneModel.getColumnAtX(x);
         var colWidth = columnModel.getColumnWidth(col);
         currX += colWidth;
@@ -2121,7 +2124,13 @@ qx.Class.define("qx.ui.table.pane.Scroller",
       var currX = this.__header.getContentLocation().left;
       var regionRadius = qx.ui.table.pane.Scroller.RESIZE_REGION_RADIUS;
 
-      for (var x=0; x<colCount; x++)
+      // @ITG:Wisej: RightToLeft support.
+      var rtl = this.isRtl();
+
+      for (var x =
+        rtl ? (colCount - 1) : (0) ;
+        rtl ? (x > -1) : (x < colCount) ;
+        rtl ? (x--) : (x++))
       {
         var col = paneModel.getColumnAtX(x);
         var colWidth = columnModel.getColumnWidth(col);
@@ -2207,7 +2216,12 @@ qx.Class.define("qx.ui.table.pane.Scroller",
       }
 
       if (widget != null) {
-        this.__top.add(widget);
+
+        // @ITG:Wisej: RightToLeft support. Keep the top right widget (visibility menu) to the right, or the cell layout gets shifted.
+        if (this.isRtl())
+          this.__top.addAt(widget, 0);
+        else
+          this.__top.add(widget);
       }
 
       this.__topRightWidget = widget;
@@ -2351,62 +2365,6 @@ qx.Class.define("qx.ui.table.pane.Scroller",
     },
 
 
-    // property apply method
-    _applyScrollTimeout : function(value, old) {
-      this._startInterval(value);
-    },
-
-
-    /**
-     * Starts the current running interval
-     *
-     * @param timeout {Integer} The timeout between two table updates
-     */
-    _startInterval : function (timeout)
-    {
-      this.__timer.setInterval(timeout);
-      this.__timer.start();
-    },
-
-
-    /**
-     * stops the current running interval
-     */
-    _stopInterval : function ()
-    {
-      this.__timer.stop();
-    },
-
-
-    /**
-     * Does a postponed update of the content.
-     *
-     * @see #_updateContent
-     */
-    _postponedUpdateContent : function()
-    {
-      //this.__updateContentPlanned = true;
-      this._updateContent();
-    },
-
-
-    /**
-     * Timer event handler. Periodically checks whether a table update is
-     * required. The update interval is controlled by the {@link #scrollTimeout}
-     * property.
-     *
-     * @signature function()
-     */
-    _oninterval : qx.event.GlobalError.observeMethod(function()
-    {
-      if (this.__updateContentPlanned && !this.__tablePane._layoutPending)
-      {
-        this.__updateContentPlanned = false;
-        this._updateContent();
-      }
-    }),
-
-
     /**
      * Updates the content. Sets the right section the table pane should show and
      * does the scrolling.
@@ -2484,8 +2442,6 @@ qx.Class.define("qx.ui.table.pane.Scroller",
 
   destruct : function()
   {
-    this._stopInterval();
-
     // this object was created by the table on init so we have to clean it up.
     var tablePaneModel = this.getTablePaneModel();
     if (tablePaneModel)
@@ -2496,7 +2452,7 @@ qx.Class.define("qx.ui.table.pane.Scroller",
     this.__lastPointerDownCell = this.__topRightWidget = this.__table = null;
     this._disposeObjects("__horScrollBar", "__verScrollBar",
                          "_headerClipper", "_paneClipper", "__focusIndicator",
-                         "__header", "__tablePane", "__top", "__timer",
-                         "__clipperContainer");
+                         "__header", "__tablePane", "__top",
+                         "__clipperContainer", "__verticalScrollBarFiller");
   }
 });

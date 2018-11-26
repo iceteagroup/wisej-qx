@@ -448,6 +448,7 @@ qx.Bootstrap.define("qx.event.handler.GestureCore", {
         x: -deltaX,
         y: -deltaY
       };
+
       domEvent.momentum = true;
       domEvent.timeoutId = timeoutId;
       this._fireEvent(domEvent, "roll", domEvent.target || target);

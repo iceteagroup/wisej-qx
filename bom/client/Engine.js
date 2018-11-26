@@ -218,10 +218,9 @@ qx.Bootstrap.define("qx.bom.client.Engine",
      *     *
      * @return {Boolean} true, if its gecko.
      */
-    __isGecko : function() {
-      return (window.navigator.mozApps || window.navigator.buildID) &&
-       window.navigator.product === "Gecko" &&
-       window.navigator.userAgent.indexOf("Trident") == -1;
+     __isGecko: function () {
+       return window.navigator.product === "Gecko" 
+         && window.navigator.userAgent.indexOf("Trident") == -1;
     },
 
 

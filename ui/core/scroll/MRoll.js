@@ -8,8 +8,7 @@
      2004-2014 1&1 Internet AG, Germany, http://www.1und1.de
 
    License:
-     LGPL: http://www.gnu.org/licenses/lgpl.html
-     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     MIT: https://opensource.org/licenses/MIT
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
@@ -28,18 +27,15 @@ qx.Mixin.define("qx.ui.core.scroll.MRoll",
 {
   members :
   {
-    // @ITG:Wisej: Not needed, saving the pointer id is pointless since it changes on each impulse roll.
-    // __cancelRoll: null,
+    _cancelRoll : null,
+
 
     /**
      * Responsible for adding the event listener needed for scroll handling.
      */
     _addRollHandling : function() {
       this.addListener("roll", this._onRoll, this);
-      // @ITG:Wisej: Added to stop momentum scrolling on a single tap.
-      this.addListener("tap", this._onPointerTap, this);
-      // @ITG:Wisej: Not needed, saving the pointer id is pointless since it changes on each impulse roll.
-      // this.addListener("pointerdown", this._onPointerDownForRoll, this);
+      this.addListener("pointerdown", this._onPointerDownForRoll, this);
     },
 
 
@@ -48,19 +44,19 @@ qx.Mixin.define("qx.ui.core.scroll.MRoll",
      */
     _removeRollHandling : function() {
       this.removeListener("roll", this._onRoll, this);
-      // @ITG:Wisej: Added to stop momentum scrolling on a single tap.
-      this.removeListener("tap", this._onPointerTap, this);
-      // @ITG:Wisej: Not needed, saving the pointer id is pointless since it changes on each impulse roll.
-      // this.removeListener("pointerdown", this._onPointerDownForRoll, this);
+      this.removeListener("pointerdown", this._onPointerDownForRoll, this);
     },
 
-    // @ITG:Wisej: Cancel scroll momentum on a single tap.
+
     /**
-     * Handler for the tap event, used to cancel momentum scrolling.
+     * Handler for the pointerdown event which simply stops the momentum scrolling.
+     *
+     * @param e {qx.event.type.Pointer} pointerdown event
      */
-    _onPointerTap: function (e) {
-      this.__stopMomentum = true;
+    _onPointerDownForRoll : function(e) {
+      this._cancelRoll = e.getPointerId();
     },
+
 
     /**
      * Roll event handler
@@ -74,22 +70,12 @@ qx.Mixin.define("qx.ui.core.scroll.MRoll",
         return;
       }
 
-      // @ITG:Wisej: Let mobile users keep rolling and accelerating and cancel momentum scrolling
-      // only on a single tap, see the onPointerTap handler.
-
-      if (!e.getMomentum())
-        this.__stopMomentum = false;
-
-      if (this.__stopMomentum && e.getMomentum()) {
-        qx.event.Registration.getManager(e.getOriginalTarget())
-          .getHandler(qx.event.handler.Gesture)
-          .gestureCancel(e.getPointerId());
-
+      if (this._cancelRoll && e.getMomentum()) {
         e.stopMomentum();
+        this._cancelRoll = null;
         return;
       }
-      // @ITG:Wisej: Not needed, saving the pointer id is pointless since it changes on each impulse roll.
-      this.__cancelRoll = null;
+      this._cancelRoll = null;
 
       var showX = this._isChildControlVisible("scrollbar-x");
       var showY = this._isChildControlVisible("scrollbar-y");
@@ -132,11 +118,9 @@ qx.Mixin.define("qx.ui.core.scroll.MRoll",
         }
       }
 
-      // @ITG:Wisej: Don't stop the momentum when "rolling" on a scrollable widget
-      // without scrollbars, it may be a child of a scrollable panel.
-      //if (endX && endY) {
-      //  e.stopMomentum();
-      //}
+      if (endX && endY) {
+        e.stopMomentum();
+      }
 
       // pass the event to the parent if both scrollbars are at the end
       if ((!endY && deltaX === 0) ||
