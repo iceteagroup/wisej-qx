@@ -183,7 +183,7 @@ qx.Class.define("qx.html.Element",
         obj = modified[hc];
         // Ignore all hidden elements except iframes
         // but keep them until they get visible (again)
-        if (obj.__willBeSeeable() || obj.classname == "qx.html.Iframe")
+        if (obj.__willBeSeeable() || obj.classname === "qx.html.Iframe")
         {
           // Separately queue rendered elements
           if (obj.__element && qx.dom.Hierarchy.isRendered(obj.__element)) {
@@ -249,13 +249,14 @@ qx.Class.define("qx.html.Element",
         // cause an disposed object in the visibility queue [BUG #3607]
         if (!obj.$$disposed) {
           element.style.display = obj.__visible ? "" : "none";
+
+          // @ITG:Wisej: Speed improvement, we don't support IE < 10.
           // also hide the element (fixed some rendering problem in IE<8 & IE8 quirks)
-          if ((qx.core.Environment.get("engine.name") == "mshtml"))
-          {
-            if (!(document.documentMode >= 8)) {
-              element.style.visibility = obj.__visible ? "visible" : "hidden";
-            }
-          }
+          // if ((qx.core.Environment.get("engine.name") == "mshtml")){
+          //  if (!(document.documentMode >= 8)) {
+          //    element.style.visibility = obj.__visible ? "visible" : "hidden";
+          //  }
+          //}
         }
 
         delete visibility[hc];
@@ -333,7 +334,7 @@ qx.Class.define("qx.html.Element",
         "releaseCapture": 1,
         "blur": 1,
         "deactivate": 1
-      }
+      };
 
       // Process action list
       for (var i=0; i<this._actions.length; i++)
@@ -630,13 +631,13 @@ qx.Class.define("qx.html.Element",
       // Remove children from DOM which are excluded or remove first
       for (var i=domChildren.length-1; i>=0; i--)
       {
-      	domEl = domChildren[i];
+        domEl = domChildren[i];
 
-      	// @ITG:Wisej: Use the body as the root element. Don't remove "foreign" elements.
-      	if (qx.core.Environment.get("qx.usebody")) {
+        // @ITG:Wisej: Use the body as the root element. Don't remove "foreign" elements.
+        if (qx.core.Environment.get("qx.usebody")) {
           if (domEl.$$element === undefined)
             continue;
-      	}
+        }
 
         dataEl = ObjectRegistry.fromHashCode(domEl.$$element);
 
@@ -1402,10 +1403,11 @@ qx.Class.define("qx.html.Element",
       // when we try to use the same DOM node again. I am not sure
       // why this happens. Would be a good performance improvement,
       // but does not seem to work.
-      if (qx.core.Environment.get("engine.name") == "mshtml") {
-        var helper = document.createElement("div");
+      var helper;
+      if (qx.core.Environment.get("engine.name") === "mshtml") {
+        helper = document.createElement("div");
       } else {
-        var helper = qx.dom.Element.getHelperElement();
+        helper = qx.dom.Element.getHelperElement();
       }
 
       // Extract first element

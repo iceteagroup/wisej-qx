@@ -44,10 +44,10 @@ qx.Class.define("qx.html.Blocker",
     };
 
     // IE needs some extra love here to convince it to block events.
-    if ((qx.core.Environment.get("engine.name") == "mshtml"))
+    if ((qx.core.Environment.get("engine.name") === "mshtml"))
     {
-      // @ITG:Wisej: Replaced link to bank.gif with the existing PLACEHOLDER_IMAGE.
-    	styles.backgroundImage = "url(\"" + qx.ui.basic.Image.PLACEHOLDER_IMAGE + "\")";
+      // @ITG:Wisej: Replaced link to blank.gif with the existing PLACEHOLDER_IMAGE.
+      styles.backgroundImage = "url(\"" + qx.ui.basic.Image.PLACEHOLDER_IMAGE + "\")";
       styles.backgroundRepeat = "repeat";
     }
 

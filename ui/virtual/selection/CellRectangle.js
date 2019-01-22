@@ -138,7 +138,7 @@ qx.Class.define("qx.ui.virtual.selection.CellRectangle",
                 for (var column = 0; column < columnCount; column++) {
                     var index = row * columnCount + column;
                     if (this._isSelectable(index)) {
-                        return index
+						return index;
                     }
                 }
             }
@@ -156,7 +156,7 @@ qx.Class.define("qx.ui.virtual.selection.CellRectangle",
                 for (var row = rowCount - 1; row >= 0; row--) {
                     var index = row * columnCount + column;
                     if (this._isSelectable(index)) {
-                        return index
+						return index;
                     }
                 }
             }
@@ -260,7 +260,7 @@ qx.Class.define("qx.ui.virtual.selection.CellRectangle",
             return {
                 left: itemLeft,
                 right: itemRight
-            }
+            };
         },
 
 
@@ -280,7 +280,7 @@ qx.Class.define("qx.ui.virtual.selection.CellRectangle",
             return {
                 top: itemTop,
                 bottom: itemBottom
-            }
+            };
         }
     }
 });

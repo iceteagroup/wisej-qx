@@ -348,7 +348,7 @@ qx.Class.define("qx.ui.virtual.core.Pane",
       return {
         width: this.__columnConfig.getTotalSize(),
         height: this.__rowConfig.getTotalSize()
-      }
+      };
     },
 
 
@@ -780,7 +780,7 @@ qx.Class.define("qx.ui.virtual.core.Pane",
         bottom: layerBottom,
         left: layerLeft,
         right: layerRight
-      }
+      };
 
       this.__layerContainer.setUserBounds(
         (this.getPaddingLeft() || 0) + (this.__layerWindow.left - this.__scrollLeft),

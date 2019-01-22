@@ -43,7 +43,7 @@ qx.Mixin.define("qx.ui.decoration.MStyleSheet", {
             init: null,
             check: "String",
             apply: "_applyStyleSheet"
-        },
+        }
     },
 
 
@@ -88,27 +88,37 @@ qx.Mixin.define("qx.ui.decoration.MStyleSheet", {
                 fillColor = colorMgr.resolve(fillColor);
             }
 
+            var value = null;
+            var important = false;
             for (var name in css) {
 
-                var value = css[name];
+                value = css[name];
+
+                // preserve "!important".
+                important = false;
+                if (typeof value === "string") {
+                    important = qx.lang.String.endsWith(value, " !important");
+                    if (important)
+                        value = value.substring(0, value.length - 11);
+                }
 
                 // inner object? probably a pseudo element.
                 if (qx.Bootstrap.isObject(value)) {
 
                     value = this.__resolveValues(value);
                 }
-                else if (qx.lang.String.endsWith(name, "color")) {
+                else if (name === "color" || qx.lang.String.endsWith(name, "Color")) {
 
                     value = colorMgr.resolve(value);
                 }
-                else if (qx.lang.String.endsWith(name, "image")) {
+                else if (name === "image" || qx.lang.String.endsWith(name, "Image")) {
 
                     // resolve the image name, apply the fill color, if specified, and
                     // and change the css value to a valid url().
                     var source = aliasMgr.resolve(value);
                     source = resMgr.toUri(source);
 
-                    if (source && fillColor && imgLoader.getFormat(source) == "svg") {
+                    if (source && fillColor && imgLoader.getFormat(source) === "svg") {
 
                         // load the image directly (no callbacks) since it must be a data uri or preloaded.
                         imgLoader.load(source);
@@ -122,11 +132,14 @@ qx.Mixin.define("qx.ui.decoration.MStyleSheet", {
 
                     value = "url(\"" + source + "\")";
                 }
-                else if (name == "content") {
+                else if (name === "content") {
 
                     if (!qx.lang.String.startsWith(value, "'") && !qx.lang.String.startsWith(value, '"'))
                         value = "'" + value + "'";
                 }
+
+                if (important)
+                    value += " !important";
 
                 styles[qx.bom.Style.getCssName(name)] = value;
             }

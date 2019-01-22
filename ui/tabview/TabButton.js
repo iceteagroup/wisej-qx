@@ -178,7 +178,7 @@ qx.Class.define("qx.ui.tabview.TabButton",
 
       switch(id) {
         case "label":
-          var control = new qx.ui.basic.Label(this.getLabel());
+          control = new qx.ui.basic.Label(this.getLabel());
           control.setAnonymous(true);
           this._add(control, {row: 0, column: 2});
           this._getLayout().setColumnFlex(2, 1);

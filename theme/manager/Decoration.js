@@ -39,8 +39,6 @@ qx.Class.define("qx.theme.manager.Decoration",
   construct : function() {
     this.base(arguments);
     this.__rules = [];
-    this.__legacyIe = (qx.core.Environment.get("engine.name") == "mshtml" &&
-      qx.core.Environment.get("browser.documentmode") < 9);
   },
 
 
@@ -75,7 +73,6 @@ qx.Class.define("qx.theme.manager.Decoration",
   {
     __dynamic : null,
     __rules : null,
-    __legacyIe : false,
 
 
     /**
@@ -133,8 +130,7 @@ qx.Class.define("qx.theme.manager.Decoration",
             inner = true;
             innerCss += innerKey + ":" + innerStyles[innerKey] + ";";
           }
-          var innerSelector = this.__legacyIe ? selector :
-            selector + (inner ? ":" : "");
+          var innerSelector = selector + (inner ? ":" : "");
           this.__rules.push(innerSelector + key);
           sheet.addRule(innerSelector + key, innerCss);
           continue;

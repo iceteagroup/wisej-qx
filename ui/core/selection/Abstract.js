@@ -1714,8 +1714,11 @@ qx.Class.define("qx.ui.core.selection.Abstract",
 
       if (this.__selection[hash] == null)
       {
-        this.__selection[hash] = item;
-        this._styleSelectable(item, "selected", true);
+        // @ITG:Wisej: Prevent the selection of unselectable items.
+        if (this._isSelectable(item)) {
+          this.__selection[hash] = item;
+          this._styleSelectable(item, "selected", true);
+        }
       }
       else
       {

@@ -54,31 +54,25 @@ qx.Class.define("qx.ui.embed.Iframe",
   /**
    * @param source {String} URL which should initially set.
    */
-  construct : function(source)
-  {
-    if (source != null) {
-      this.__source = source;
-    }
+    construct: function (source) {
+      if (source != null) {
+          this.__source = source;
+      }
 
-    this.base(arguments, source);
+      this.base(arguments, source);
 
-	// @ITG:Wisej: Is it this needed? It seems to create lots of problems.
-    //qx.event.Registration.addListener(document.body, "pointerdown", this.block, this, true);
-    //qx.event.Registration.addListener(document.body, "pointerup", this.release, this, true);
-    //qx.event.Registration.addListener(document.body, "losecapture", this.release, this, true);
-	//
-    //this.__blockerElement = this._createBlockerElement();
+      qx.event.Registration.addListener(document.body, "pointerdown", this.block, this, true);
+      qx.event.Registration.addListener(document.body, "pointerup", this.release, this, true);
+      qx.event.Registration.addListener(document.body, "losecapture", this.release, this, true);
+        
+      this.__blockerElement = this._createBlockerElement();
 
-    if ((qx.core.Environment.get("engine.name") == "gecko"))
-    {
-      this.addListenerOnce("appear", function(e)
-      {
+      this.addListenerOnce("appear", function (e) {
         var element = this.getContentElement().getDomElement();
         qx.bom.Event.addNativeListener(element, "DOMNodeInserted", this._onDOMNodeInserted);
       });
       this._onDOMNodeInserted = qx.lang.Function.listener(this._syncSourceAfterDOMMove, this);
-    }
-  },
+    },
 
 
   properties :
@@ -143,7 +137,7 @@ qx.Class.define("qx.ui.embed.Iframe",
   members :
   {
     __source : null,
-    //__blockerElement : null,
+    __blockerElement : null,
 
 
     // overridden
@@ -154,12 +148,12 @@ qx.Class.define("qx.ui.embed.Iframe",
       var pixel = "px";
       var insets = this.getInsets();
 
-      //this.__blockerElement.setStyles({
-      //  "left": (left + insets.left) + pixel,
-      //  "top": (top + insets.top) + pixel,
-      //  "width": (width - insets.left - insets.right) + pixel,
-      //  "height": (height - insets.top - insets.bottom) + pixel
-      //});
+      this.__blockerElement.setStyles({
+        "left": (left + insets.left) + pixel,
+        "top": (top + insets.top) + pixel,
+        "width": (width - insets.left - insets.right) + pixel,
+        "height": (height - insets.top - insets.bottom) + pixel
+      });
     },
 
 
@@ -178,21 +172,21 @@ qx.Class.define("qx.ui.embed.Iframe",
     },
 
 
-    ///**
-    // * Creates <div> element which is aligned over iframe node to avoid losing pointer events.
-    // *
-    // * @return {Object} Blocker element node
-    // */
-    //_createBlockerElement : function()
-    //{
-    //  var el = new qx.html.Blocker();
-    //  el.setStyles({
-    //    "zIndex": 20,
-    //    "display": "none"
-    //  });
+    /**
+     * Creates <div> element which is aligned over iframe node to avoid losing pointer events.
+     *
+     * @return {Object} Blocker element node
+     */
+    _createBlockerElement : function()
+    {
+      var el = new qx.html.Blocker();
+      el.setStyles({
+        "zIndex": 20,
+        "display": "none"
+      });
 
-    //  return el;
-    //},
+      return el;
+    },
 
 
     /**
@@ -217,27 +211,33 @@ qx.Class.define("qx.ui.embed.Iframe",
     ---------------------------------------------------------------------------
     */
 
-    ///**
-    // * Cover the iframe with a transparent blocker div element. This prevents
-    // * pointer or key events to be handled by the iframe. To release the blocker
-    // * use {@link #release}.
-    // *
-    // */
-    //block : function() {
-    //  this.__blockerElement.setStyle("display", "block");
+    /**
+     * Cover the iframe with a transparent blocker div element. This prevents
+     * pointer or key events to be handled by the iframe. To release the blocker
+     * use {@link #release}.
+     *
+     */
+    block : function(e) {
 
-    //  // @ITG:Wisej: Adjust the blocker z-index, otherwise the fixed z-index at 20 blocks all clicks on all overlapping widgets.
-    //  this.__blockerElement.setStyle("z-index", this.getZIndex());
-    //},
+      // @ITG:Wisej: Don't block when the pointer event is originated by the iframe, or we disable embedded content.
+      if (e.getTarget().tagName === "IFRAME")
+        return;
 
 
-    ///**
-    // * Release the blocker set by {@link #block}.
-    // *
-    // */
-    //release : function() {
-    //  this.__blockerElement.setStyle("display", "none");
-    //},
+      this.__blockerElement.setStyle("display", "block");
+
+      // @ITG:Wisej: Adjust the blocker z-index, otherwise the fixed z-index at 20 blocks all clicks on all overlapping widgets.
+      this.__blockerElement.setStyle("z-index", this.getZIndex());
+    },
+
+
+    /**
+     * Release the blocker set by {@link #block}.
+     *
+     */
+    release : function() {
+      this.__blockerElement.setStyle("display", "none");
+    },
 
 
     /*
@@ -259,7 +259,7 @@ qx.Class.define("qx.ui.embed.Iframe",
       }
 
       try {
-        var documentElement = doc.documentElement
+        var documentElement = doc.documentElement;
       } catch(e) {
         // this may fail due to security restrictions
         return;
@@ -352,20 +352,20 @@ qx.Class.define("qx.ui.embed.Iframe",
     },
 
 
-    //// overridden
-    //setLayoutParent : function(parent)
-    //{
-    //  // @ITG:Wisej: Remove the blocker element from the layout parent, and avoid adding it twice causing a js error.
-    //  var oldParent = this.getLayoutParent();
-    //  if (oldParent)
-    //      oldParent.getContentElement().remove(this.__blockerElement);
+    // overridden
+    setLayoutParent : function(parent)
+    {
+      // @ITG:Wisej: Remove the blocker element from the layout parent, and avoid adding it twice causing a js error.
+      var oldParent = this.getLayoutParent();
+      if (oldParent)
+          oldParent.getContentElement().remove(this.__blockerElement);
 
-    //  this.base(arguments, parent);
+      this.base(arguments, parent);
 
-    //  if (parent) {
-    //    parent.getContentElement().add(this.__blockerElement);
-    //  }
-    //}
+      if (parent) {
+        parent.getContentElement().add(this.__blockerElement);
+      }
+    }
   },
 
 
@@ -377,13 +377,13 @@ qx.Class.define("qx.ui.embed.Iframe",
 
   destruct : function()
   {
-    //if (this.getLayoutParent() && this.__blockerElement.getParent()) {
-    //  this.getLayoutParent().getContentElement().remove(this.__blockerElement);
-    //}
-    //this._disposeObjects("__blockerElement");
+    if (this.getLayoutParent() && this.__blockerElement.getParent()) {
+      this.getLayoutParent().getContentElement().remove(this.__blockerElement);
+    }
+    this._disposeObjects("__blockerElement");
 
-    //qx.event.Registration.removeListener(document.body, "pointerdown", this.block, this, true);
-    //qx.event.Registration.removeListener(document.body, "pointerup", this.release, this, true);
-    //qx.event.Registration.removeListener(document.body, "losecapture", this.release, this, true);
+    qx.event.Registration.removeListener(document.body, "pointerdown", this.block, this, true);
+    qx.event.Registration.removeListener(document.body, "pointerup", this.release, this, true);
+    qx.event.Registration.removeListener(document.body, "losecapture", this.release, this, true);
   }
 });

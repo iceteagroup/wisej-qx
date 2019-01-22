@@ -97,10 +97,8 @@ qx.Class.define("qx.event.handler.Appear",
        for (var hash in all) {
          all[hash].refresh();
        }
-     }
+     },
   },
-
-
 
 
 
@@ -170,25 +168,29 @@ qx.Class.define("qx.event.handler.Appear",
     refresh : function()
     {
       var targets = this.__targets;
-      var elem;
+      var elem, displayed, evt;
 
-      var legacyIe = qx.core.Environment.get("engine.name") == "mshtml" &&
-        qx.core.Environment.get("browser.documentmode") < 9;
+      // @ITG:Wisej: Avoid unnecessary environment check (we don't support IE < 10) and speed up static reference.
+      var Registration = qx.event.Registration;
+      // var legacyIe = qx.core.Environment.get("engine.name") == "mshtml" &&
+      //     qx.core.Environment.get("browser.documentmode") < 9;
 
       for (var hash in targets)
       {
         elem = targets[hash];
 
-        var displayed = elem.offsetWidth > 0;
-        if (!displayed && legacyIe) {
-          // force recalculation in IE 8. See bug #7872
-          displayed = elem.offsetWidth > 0;
-        }
+        displayed = elem.offsetWidth > 0;
+
+        //if (!displayed && this.__legacyIe) {
+        //  // force recalculation in IE 8. See bug #7872
+        //  displayed = elem.offsetWidth > 0;
+        //}
+
         if ((!!elem.$$displayed) !== displayed)
         {
           elem.$$displayed = displayed;
 
-          var evt = qx.event.Registration.createEvent(displayed ? "appear" : "disappear");
+          evt = Registration.createEvent(displayed ? "appear" : "disappear");
           this.__manager.dispatchEvent(elem, evt);
         }
       }

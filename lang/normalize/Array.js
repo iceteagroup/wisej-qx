@@ -8,8 +8,7 @@
      2004-2011 1&1 Internet AG, Germany, http://www.1und1.de
 
    License:
-     LGPL: http://www.gnu.org/licenses/lgpl.html
-     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     MIT: https://opensource.org/licenses/MIT
      See the LICENSE file in the project's top-level directory for details.
 
    Authors:
@@ -25,6 +24,7 @@
  * MDN documentation &copy; Mozilla Contributors.
  *
  * @group (Polyfill)
+ * @use(qx.bom.client.EcmaScript)
  */
 qx.Bootstrap.define("qx.lang.normalize.Array", {
 
@@ -253,6 +253,58 @@ qx.Bootstrap.define("qx.lang.normalize.Array", {
     },
 
     /**
+     * The <code>find()</code> method returns a value in the array, if an element in the 
+     * array satisfies the provided testing function. Otherwise undefined is returned.
+     *
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find">MDN documentation</a> |
+     *
+     * @param callback {Function} Function to test for each element.
+     * @param obj {Object?} Value to use as <code>this</code> when executing <code>callback</code>.
+     * @return {Object} result, undefined if not found
+     */
+    find : function(callback, obj) {
+      if (qx.core.Environment.get("qx.debug")) {
+        qx.core.Assert.assertFunction(callback);
+      }
+      
+      var l = this.length;
+      for (var i = 0; i < l; i++) {
+        var value = this[i];
+        if (callback.call(obj || window, value, i, this)) {
+          return value;
+        }
+      }
+      
+      return undefined;
+    },
+
+    /**
+     * The <code>findIndex()</code> method returns an index in the array, if an element in the 
+     * array satisfies the provided testing function. Otherwise -1 is returned.
+     *
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex">MDN documentation</a> |
+     *
+     * @param callback {Function} Function to test for each element.
+     * @param obj {Object?} Value to use as <code>this</code> when executing <code>callback</code>.
+     * @return {Integer} the index in the array, -1 if not found
+     */
+    findIndex : function(callback, obj) {
+      if (qx.core.Environment.get("qx.debug")) {
+        qx.core.Assert.assertFunction(callback);
+      }
+      
+      var l = this.length;
+      for (var i = 0; i < l; i++) {
+        var value = this[i];
+        if (callback.call(obj || window, value, i, this)) {
+          return i;
+        }
+      }
+      
+      return -1;
+    },
+
+    /**
      * The <code>reduce()</code> method applies a function against
      * an accumulator and each value of the array (from left-to-right)
      * has to reduce it to a single value.
@@ -330,44 +382,90 @@ qx.Bootstrap.define("qx.lang.normalize.Array", {
       }
 
       return ret;
+  },
+
+    /**
+     * The includes() method determines whether an array includes a certain element, returning
+     * true or false as appropriate.
+     *
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes">MDN documentation</a> |
+     *
+     * @param searchElement {var} Element which is checked for.
+     * @param fromIndex {Number} Index to start search from
+     * @return {bool} true if element is included
+     */
+    includes : function(searchElement, fromIndex)
+    {
+      if (this == null) {
+        throw new TypeError('"this" is null or not defined');
+    }
+
+      // 1. Let O be ? ToObject(this value).
+      var o = Object(this);
+
+      // 2. Let len be ? ToLength(? Get(O, "length")).
+      var len = o.length >>> 0;
+
+      // 3. If len is 0, return false.
+      if (len === 0) {
+        return false;
+    }
+
+      // 4. Let n be ? ToInteger(fromIndex).
+      //    (If fromIndex is undefined, this step produces the value 0.)
+      var n = fromIndex | 0;
+
+      // 5. If n = 0, then
+      //  a. Let k be n.
+      // 6. Else n < 0,
+      //  a. Let k be len + n.
+      //  b. If k < 0, let k be 0.
+      var k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
+
+      function sameValueZero(x, y) {
+        return x === y || (typeof x === 'number' && typeof y === 'number' && isNaN(x) && isNaN(y));
+      }
+
+      // 7. Repeat, while k < len
+      while (k < len) {
+        // a. Let elementK be the result of ? Get(O, ! ToString(k)).
+        // b. If SameValueZero(searchElement, elementK) is true, return true.
+        if (sameValueZero(o[k], searchElement)) {
+          return true;
+    }
+        // c. Increase k by 1. 
+        k++;
+    }
+
+      // 8. Return false
+      return false;
     }
   },
 
+  /**
+   * @lint environmentNonLiteralKey()
+   */
   defer : function(statics) {
-    if (!qx.core.Environment.get("ecmascript.array.indexof")) {
-      Array.prototype.indexOf = statics.indexOf;
+    var install = function(key, name) {
+      if (!qx.core.Environment.get(key)) {
+        Object.defineProperty(Array.prototype, name, {
+          enumerable: false,
+          value: statics[name]
+        });
     }
+    };
 
-    if (!qx.core.Environment.get("ecmascript.array.lastindexof")) {
-      Array.prototype.lastIndexOf = statics.lastIndexOf;
-    }
-
-    if (!qx.core.Environment.get("ecmascript.array.foreach")) {
-      Array.prototype.forEach = statics.forEach;
-    }
-
-    if (!qx.core.Environment.get("ecmascript.array.filter")) {
-      Array.prototype.filter = statics.filter;
-    }
-
-    if (!qx.core.Environment.get("ecmascript.array.map")) {
-      Array.prototype.map = statics.map;
-    }
-
-    if (!qx.core.Environment.get("ecmascript.array.some")) {
-      Array.prototype.some = statics.some;
-    }
-
-    if (!qx.core.Environment.get("ecmascript.array.every")) {
-      Array.prototype.every = statics.every;
-    }
-
-    if (!qx.core.Environment.get("ecmascript.array.reduce")) {
-      Array.prototype.reduce = statics.reduce;
-    }
-
-    if (!qx.core.Environment.get("ecmascript.array.reduceright")) {
-      Array.prototype.reduceRight = statics.reduceRight;
-    }
+    install("ecmascript.array.indexof", "indexOf");
+    install("ecmascript.array.lastindexof", "lastIndexOf");
+    install("ecmascript.array.foreach", "forEach");
+    install("ecmascript.array.filter", "filter");
+    install("ecmascript.array.map", "map");
+    install("ecmascript.array.some", "some");
+    install("ecmascript.array.find", "find");
+    install("ecmascript.array.findIndex", "findIndex");
+    install("ecmascript.array.every", "every");
+    install("ecmascript.array.reduce", "reduce");
+    install("ecmascript.array.reduceright", "reduceRight");
+    install("ecmascript.array.includes", "includes");
   }
 });

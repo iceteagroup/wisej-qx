@@ -336,7 +336,14 @@ qx.Class.define("qx.ui.basic.Label",
 
     // property apply
     _applyFont : function(value, old)
-    {
+	{
+
+      // @ITG:Wisej: Added default implementation to set the font for the widget to let it inherit by child elements.
+      if (value == null) {
+        this.resetFont();
+        return;
+      }
+
       if (old && this.__font && this.__webfontListenerId) {
         this.__font.removeListenerById(this.__webfontListenerId);
         this.__webfontListenerId = null;

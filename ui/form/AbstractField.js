@@ -443,7 +443,13 @@ qx.Class.define("qx.ui.form.AbstractField",
 
     // overridden
     _applyFont : function(value, old)
-    {
+	{
+      // @ITG:Wisej: Added default implementation to set the font for the widget to let it inherit by child elements.
+      if (value == null) {
+        this.resetFont();
+        return;
+      }
+
       if (old && this.__font && this.__webfontListenerId) {
         this.__font.removeListenerById(this.__webfontListenerId);
         this.__webfontListenerId = null;
@@ -472,7 +478,7 @@ qx.Class.define("qx.ui.form.AbstractField",
       // apply the font to the content element
       // IE 8 - 10 (but not 11 Preview) will ignore the lineHeight value
       // unless it's applied directly.
-      if (qx.core.Environment.get("engine.name") == "mshtml" &&
+      if (qx.core.Environment.get("engine.name") === "mshtml" &&
         qx.core.Environment.get("browser.documentmode") < 11)
       {
         qx.html.Element.flush();

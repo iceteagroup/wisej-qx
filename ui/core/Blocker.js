@@ -133,21 +133,21 @@ qx.Class.define("qx.ui.core.Blocker",
       init : false
     },
 
-  	// @ITG:Wisej: Added support for an ajax loader image on a any blocker.
+    // @ITG:Wisej: Added support for an ajax loader image on a any blocker.
 
-  	/**
+    /**
      * loaderImage of the blocker.
-	 *
-	 * This is usually an ajax loaded animated gif.
+     *
+     * This is usually an ajax loaded animated gif.
      */
     loaderImage:
     {
-    	check: "String",
-    	init: null,
-    	apply: "_applyLoaderImage",
-    	themeable: true,
-		nullable: true
-    },
+        check: "String",
+        init: null,
+        apply: "_applyLoaderImage",
+        themeable: true,
+        nullable: true
+    }
 
   },
 
@@ -240,9 +240,9 @@ qx.Class.define("qx.ui.core.Blocker",
       this.__setBlockersStyle("backgroundColor", color);
     },
 
-  	// @ITG:Wisej: Added support for an ajax loader image on a any blocker.
+    // @ITG:Wisej: Added support for an ajax loader image on a any blocker.
 
-  	// property apply
+    // property apply
     _applyLoaderImage: function (value, old) {
 
       if (value) {
@@ -296,7 +296,7 @@ qx.Class.define("qx.ui.core.Blocker",
       for (var i = 0; i < blockers.length; i++) {
         blockers[i].setStyle(key, value);
       }
-	  */
+      */
       if (this.__blocker)
         this.__blocker.setStyle(key, value);
     },
@@ -540,7 +540,7 @@ qx.Class.define("qx.ui.core.Blocker",
      * @param e {qx.event.type.KeySequence} event to stop.
      */
     __stopTabEvent : function(e) {
-      if (e.getKeyIdentifier() == "Tab") {
+      if (e.getKeyIdentifier() === "Tab") {
         e.stop();
       }
     },
@@ -563,8 +563,8 @@ qx.Class.define("qx.ui.core.Blocker",
         //     https://github.com/qooxdoo/qooxdoo/issues/8104
         //
         if (this.getKeepBlockerActive() &&
-            !qx.ui.core.FocusHandler.getInstance().isFocusRoot(this._widget)) {
-            this.getBlockerElement().activate();
+          !qx.ui.core.FocusHandler.getInstance().isFocusRoot(this._widget)) {
+          this.getBlockerElement().activate();
         }
     }
   },
@@ -596,6 +596,6 @@ qx.Class.define("qx.ui.core.Blocker",
 
     this._disposeObjects("__blocker", "__timer");
     this.__activeElements = this.__focusElements =
-      this._widget = null;
+    this._widget = null;
   }
 });

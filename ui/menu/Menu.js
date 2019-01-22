@@ -540,7 +540,7 @@ qx.Class.define("qx.ui.menu.Menu",
       switch(id)
       {
         case "slidebar":
-          var control = new qx.ui.menu.MenuSlideBar();
+          control = new qx.ui.menu.MenuSlideBar();
 
           var layout = this._getLayout();
           this._setLayout(new qx.ui.layout.Grow());

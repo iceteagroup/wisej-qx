@@ -788,7 +788,7 @@ qx.Class.define("qx.ui.tree.VirtualTree",
             if (isNode && this.isNodeOpen(item)) {
               this.closeNode(item);
             } else {
-              var parent = this.getParent(item);
+              var parent = this._getParent(item);
               if (parent != null) {
                 selection.splice(0, 1, parent);
               }
@@ -1075,6 +1075,7 @@ qx.Class.define("qx.ui.tree.VirtualTree",
       this.getPane().fullUpdate();
     },
 
+    // @ITG:Wisej: Renamed getParent to _getParent. It conflicts with the parent property of Wisej widgets and ti's internal.
 
     /**
      * Helper method to get the parent node. Node! This only works with leaf and
@@ -1086,7 +1087,7 @@ qx.Class.define("qx.ui.tree.VirtualTree",
      *
      * @internal
      */
-    getParent : function(item)
+    _getParent: function (item)
     {
       var index = this.__lookupTable.indexOf(item);
       if (index < 0) {
@@ -1115,11 +1116,11 @@ qx.Class.define("qx.ui.tree.VirtualTree",
     __buildParentChain : function(item)
     {
       this.__parentChain = [];
-      var parent = this.getParent(item);
+      var parent = this._getParent(item);
       while(parent != null)
       {
         this.__parentChain.unshift(parent);
-        parent = this.getParent(parent);
+        parent = this._getParent(parent);
       }
     },
 
@@ -1152,7 +1153,7 @@ qx.Class.define("qx.ui.tree.VirtualTree",
 
   destruct : function()
   {
-    var pane = this.getPane()
+    var pane = this.getPane();
     if (pane != null)
     {
       if (pane.hasListener("cellDbltap")) {
