@@ -8,7 +8,7 @@
     qx.$$start = new Date();
     qx.$$environment = qx.$$environment || {};
 
-    var envinfo = { "qx.application": "qx.Application", "qx.revision": "", "qx.debug": false, "qx.debug.ui.queue": false, "qx.theme": "qx.theme.Simple", "qx.dynlocale": false, "qx.version": "5.1" };
+    var envinfo = { "qx.application": "qx.Application", "qx.revision": "", "qx.debug": false, "qx.debug.ui.queue": false, "qx.rtl.supported": true, "qx.theme": "qx.theme.Simple", "qx.dynlocale": false, "qx.version": "5.1" };
     for (var k in envinfo) qx.$$environment[k] = envinfo[k];
 
     qx.$$libraries = {};

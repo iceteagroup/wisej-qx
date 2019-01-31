@@ -18,6 +18,8 @@
 
 ************************************************************************ */
 
+// @ITG:Wisej: Added support for "hidden" scrollbar X and Y.
+
 /**
  * The ScrollArea provides a container widget with on demand scroll bars
  * if the content size exceeds the size of the container.
@@ -137,11 +139,12 @@ qx.Class.define("qx.ui.core.scroll.AbstractScrollArea",
      *   <li><b>auto</b>: Show scrollbar on demand</li>
      *   <li><b>on</b>: Always show the scrollbar</li>
      *   <li><b>off</b>: Never show the scrollbar</li>
+     *   <li><b>hide</b>: Hide the scrollbar.</li>
      * </ul>
      */
     scrollbarX :
     {
-      check : ["auto", "on", "off"],
+      check : ["auto", "on", "off", "hide"],
       init : "auto",
       themeable : true,
       apply : "_computeScrollbars"
@@ -158,7 +161,7 @@ qx.Class.define("qx.ui.core.scroll.AbstractScrollArea",
      */
     scrollbarY :
     {
-      check : ["auto", "on", "off"],
+      check: ["auto", "on", "off", "hide"],
       init : "auto",
       themeable : true,
       apply : "_computeScrollbars"
@@ -712,7 +715,7 @@ qx.Class.define("qx.ui.core.scroll.AbstractScrollArea",
       var scrollbarX = this.getScrollbarX();
       var scrollbarY = this.getScrollbarY();
 
-      if (scrollbarX === "auto" && scrollbarY === "auto")
+     if ((scrollbarX === "auto" || scrollbarX === "hide") && (scrollbarY === "auto" || scrollbarY === "hide"))
       {
         // Check if the container is big enough to show
         // the full content.
@@ -740,11 +743,11 @@ qx.Class.define("qx.ui.core.scroll.AbstractScrollArea",
 
         // Check auto values afterwards with already
         // corrected client dimensions
-        if (scrollSize.width > (showX ? paneSize.width : innerSize.width) && scrollbarX === "auto") {
+        if (scrollSize.width > (showX ? paneSize.width : innerSize.width) && (scrollbarX === "auto" || scrollbarX === "hide")) {
           showX = true;
         }
 
-        if (scrollSize.height > (showX ? paneSize.height : innerSize.height) && scrollbarY === "auto") {
+        if (scrollSize.height > (showX ? paneSize.height : innerSize.height) && (scrollbarY === "auto" || scrollbarY === "hide")) {
           showY = true;
         }
       }
@@ -755,6 +758,7 @@ qx.Class.define("qx.ui.core.scroll.AbstractScrollArea",
         var barX = this.getChildControl("scrollbar-x");
 
         barX.show();
+        scrollbarX === "hide" ? barX.setMaxHeight(0) : barX.resetMaxHeight();
         barX.setMaximum(Math.max(0, scrollSize.width - paneSize.width));
         barX.setKnobFactor((scrollSize.width === 0) ? 0 : paneSize.width / scrollSize.width);
       }
@@ -768,6 +772,7 @@ qx.Class.define("qx.ui.core.scroll.AbstractScrollArea",
         var barY = this.getChildControl("scrollbar-y");
 
         barY.show();
+        scrollbarY === "hide" ? barY.setMaxWidth(0) : barY.resetMaxWidth();
         barY.setMaximum(Math.max(0, scrollSize.height - paneSize.height));
         barY.setKnobFactor((scrollSize.height === 0) ? 0 : paneSize.height / scrollSize.height);
       }

@@ -107,11 +107,11 @@ qx.Mixin.define("qx.ui.decoration.MStyleSheet", {
 
                     value = this.__resolveValues(value);
                 }
-                else if (name === "color" || qx.lang.String.endsWith(name, "Color")) {
+                else if (name === "color" || qx.lang.String.endsWith(name, "Color") || qx.lang.String.endsWith(name, "-color")) {
 
                     value = colorMgr.resolve(value);
                 }
-                else if (name === "image" || qx.lang.String.endsWith(name, "Image")) {
+                else if (name === "image" || qx.lang.String.endsWith(name, "Image") || qx.lang.String.endsWith(name, "-image")) {
 
                     // resolve the image name, apply the fill color, if specified, and
                     // and change the css value to a valid url().

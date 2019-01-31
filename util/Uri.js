@@ -164,11 +164,19 @@ qx.Bootstrap.define("qx.util.Uri",
      * @param uri {String} relative URI
      * @return {String} absolute URI
      */
-    getAbsolute : function(uri)
-    {
-      var div = document.createElement("div");
-      div.innerHTML = '<a href="' + uri + '">0</a>';
-      return div.firstChild.href;
+    getAbsolute : function(uri) {
+      // @ITG:Wisej: Create only one element.
+      if (!this.__hrefEl) {
+        this.__hrefEl = document.createElement("A");
+        this.__hrefEl.innerText = "0";
     }
+
+      this.__hrefEl.setAttribute("href", uri);
+      return this.__hrefEl.href;
+    },
+
+    /** single element to create an absolute path. */
+    __hrefEl: null
+
   }
 });

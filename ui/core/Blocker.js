@@ -432,10 +432,7 @@ qx.Class.define("qx.ui.core.Blocker",
       {
         this._backupActiveWidget();
 
-        // @ITG:Wisej: Gets the wrong bounds when not blocking the root.
-        // var bounds = this._widget.getBounds();
-        var widget = this._isRoot ? this._widget : this._widget.getLayoutParent();
-        var bounds = widget.getBounds();
+        var bounds = this._widget.getBounds();
 
         // no bounds -> widget not yet rendered -> bounds will be set on resize
         if (bounds) {
