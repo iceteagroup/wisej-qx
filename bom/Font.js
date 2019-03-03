@@ -119,29 +119,29 @@ qx.Class.define("qx.bom.Font",
           case "px":
           case "pt":
           case "em":
-        		font.setUnit(part);
+            font.setUnit(part);
             break;
 
           default:
 
-          	// @ITG:Wisej: Added support for the unit property.
-          	var size = parseInt(part, 10);
+            // @ITG:Wisej: Added support for the unit property.
+            var size = parseInt(part, 10);
 
-          	if (!isNaN(size)) {
-          	  font.setSize(size);
+            if (!isNaN(size)) {
+              font.setSize(size);
 
-          	  if (qx.lang.String.endsWith(part, "px"))
+              if (qx.lang.String.endsWith(part, "px"))
                 font.setUnit("px");
-          	  else if (qx.lang.String.endsWith(part, "pt"))
-          	    font.setUnit("pt");
-          	  else if (qx.lang.String.endsWith(part, "em"))
-          	    font.setUnit("em");
-          	}
-          	else {
+              else if (qx.lang.String.endsWith(part, "pt"))
+                font.setUnit("pt");
+              else if (qx.lang.String.endsWith(part, "em"))
+                font.setUnit("em");
+            }
+            else {
               name.push(part);
-          	}
+            }
 
-			/*
+            /*
             var temp = parseInt(part, 10);
 
             if (temp == part || qx.lang.String.contains(part, "px")) {
@@ -149,7 +149,7 @@ qx.Class.define("qx.bom.Font",
             } else {
               name.push(part);
             }
-			*/
+            */
 
             break;
         }

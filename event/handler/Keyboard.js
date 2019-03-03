@@ -55,7 +55,7 @@ qx.Class.define("qx.event.handler.Keyboard",
     this.__window = manager.getWindow();
 
     // Gecko ignores key events when not explicitly clicked in the document.
-    if ((qx.core.Environment.get("engine.name") == "gecko")) {
+    if ((qx.core.Environment.get("engine.name") === "gecko")) {
       this.__root = this.__window;
     } else {
       this.__root = this.__window.document.documentElement;
@@ -200,10 +200,10 @@ qx.Class.define("qx.event.handler.Keyboard",
       //
       // FireFox suppresses "keypress" when "keydown" default action is prevented.
       // from version 29: https://bugzilla.mozilla.org/show_bug.cgi?id=935876.
-      if (event.getDefaultPrevented() && type == "keydown") {
-        if (qx.core.Environment.get("engine.name") == "mshtml" ||
-            qx.core.Environment.get("engine.name") == "webkit" ||
-            (qx.core.Environment.get("engine.name") == "gecko" && qx.core.Environment.get("browser.version") >= 29)) {
+      if (event.getDefaultPrevented() && type === "keydown") {
+        if (qx.core.Environment.get("engine.name") === "mshtml" ||
+            qx.core.Environment.get("engine.name") === "webkit" ||
+            (qx.core.Environment.get("engine.name") === "gecko" && qx.core.Environment.get("browser.version") >= 29)) {
 
           // some key press events are already emulated. Ignore these events.
           if (!qx.event.util.Keyboard.isNonPrintableKeyCode(keyCode) && !this._emulateKeyPress[keyCode]) {
@@ -231,12 +231,12 @@ qx.Class.define("qx.event.handler.Keyboard",
       var target = focusHandler.getActive();
 
       // Fallback to focused element when active is null or invisible
-      if (!target || target.offsetWidth == 0) {
+      if (!target || target.offsetWidth === 0) {
         target = focusHandler.getFocus();
       }
 
       // Fallback to body when focused is null or invisible
-      if (!target || target.offsetWidth == 0) {
+      if (!target || target.offsetWidth === 0) {
         target = this.__manager.getWindow().document.body;
       }
 
@@ -319,12 +319,12 @@ qx.Class.define("qx.event.handler.Keyboard",
         var type = domEvent.type;
 
         // Ignore the down in such sequences dp dp dp
-        if (!(this.__lastUpDownType[keyCode] == "keydown" && type == "keydown")) {
+        if (!(this.__lastUpDownType[keyCode] === "keydown" && type === "keydown")) {
           this._idealKeyHandler(keyCode, charCode, type, domEvent);
         }
 
         // On non print-able character be sure to add a keypress event
-        if (type == "keydown")
+        if (type === "keydown")
         {
           // non-printable, backspace or tab
           if (qx.event.util.Keyboard.isNonPrintableKeyCode(keyCode) || this._emulateKeyPress[keyCode]) {
@@ -344,13 +344,22 @@ qx.Class.define("qx.event.handler.Keyboard",
         var kbUtil = qx.event.util.Keyboard;
 
         // FF repeats under windows keydown events like IE
-        if (qx.core.Environment.get("os.name") == "win")
+        if (qx.core.Environment.get("os.name") === "win")
         {
           var keyIdentifier = keyCode ? kbUtil.keyCodeToIdentifier(keyCode) : kbUtil.charCodeToIdentifier(charCode);
 
-          if (!(this.__lastUpDownType[keyIdentifier] == "keydown" && type == "keydown")) {
+          if (!(this.__lastUpDownType[keyIdentifier] === "keydown" && type === "keydown")) {
             this._idealKeyHandler(keyCode, charCode, type, domEvent);
           }
+
+          // On non print-able character be sure to add a keypress event
+          if (type === "keydown" && qx.core.Environment.get("browser.version") >= 65 /* https://www.fxsitecompat.com/en-CA/docs/2018/non-printable-keys-no-longer-fire-keypress-event/ */) {
+            // non-printable, backspace or tab
+            if (qx.event.util.Keyboard.isNonPrintableKeyCode(keyCode) || this._emulateKeyPress[keyCode]) {
+            this._idealKeyHandler(keyCode, charCode, "keypress", domEvent);
+            }
+          }
+          
 
           // Store last type
           this.__lastUpDownType[keyIdentifier] = type;
@@ -360,6 +369,14 @@ qx.Class.define("qx.event.handler.Keyboard",
         else
         {
           this._idealKeyHandler(keyCode, charCode, type, domEvent);
+
+          // On non print-able character be sure to add a keypress event
+          if (type === "keydown" && qx.core.Environment.get("browser.version") >= 65 /* https://www.fxsitecompat.com/en-CA/docs/2018/non-printable-keys-no-longer-fire-keypress-event/ */) {
+            // non-printable, backspace or tab
+            if (qx.event.util.Keyboard.isNonPrintableKeyCode(keyCode) || this._emulateKeyPress[keyCode]) {
+              this._idealKeyHandler(keyCode, charCode, "keypress", domEvent);
+            }
+          }
         }
 
         this.__firefoxInputFix(domEvent.target, type, keyCode);
@@ -376,7 +393,7 @@ qx.Class.define("qx.event.handler.Keyboard",
         this._idealKeyHandler(keyCode, charCode, type, domEvent);
 
         // On non print-able character be sure to add a keypress event
-        if (type == "keydown")
+        if (type === "keydown")
         {
           // non-printable, backspace or tab
           if (qx.event.util.Keyboard.isNonPrintableKeyCode(keyCode) || this._emulateKeyPress[keyCode]) {
@@ -414,8 +431,8 @@ qx.Class.define("qx.event.handler.Keyboard",
       {
         if (
           type === "keydown" &&
-          (keyCode == 33 || keyCode == 34 || keyCode == 38 || keyCode == 40) &&
-          target.type == "text" &&
+          (keyCode === 33 || keyCode === 34 || keyCode === 38 || keyCode === 40) &&
+          target.type === "text" &&
           target.tagName.toLowerCase() === "input" &&
           target.getAttribute("autoComplete") !== "off"
         )
@@ -491,7 +508,7 @@ qx.Class.define("qx.event.handler.Keyboard",
         // So we store the last key up/down keycode and compare it to the
         // current keycode.
         // See http://bugzilla.qooxdoo.org/show_bug.cgi?id=603
-        if(keyCode != this.__lastKeyCode)
+        if(keyCode !== this.__lastKeyCode)
         {
           this._idealKeyHandler(0, this.__lastKeyCode, type, domEvent);
         }
@@ -578,6 +595,12 @@ qx.Class.define("qx.event.handler.Keyboard",
         27: true
       },
 
+      "gecko" : {
+        8: true,
+        9: true,
+        27: true
+      },
+
       "default" : {}
     }),
 
@@ -634,8 +657,8 @@ qx.Class.define("qx.event.handler.Keyboard",
     // register at the event handler
     qx.event.Registration.addHandler(statics);
 
-    if ((qx.core.Environment.get("engine.name") == "mshtml") ||
-      qx.core.Environment.get("engine.name") == "webkit")
+    if ((qx.core.Environment.get("engine.name") === "mshtml") ||
+      qx.core.Environment.get("engine.name") === "webkit")
     {
       members._charCode2KeyCode =
       {

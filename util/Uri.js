@@ -169,10 +169,12 @@ qx.Bootstrap.define("qx.util.Uri",
       if (!this.__hrefEl) {
         this.__hrefEl = document.createElement("A");
         this.__hrefEl.innerText = "0";
-    }
+      }
 
       this.__hrefEl.setAttribute("href", uri);
-      return this.__hrefEl.href;
+      var url = this.__hrefEl.href;
+      this.__hrefEl.href = "";
+      return url;
     },
 
     /** single element to create an absolute path. */

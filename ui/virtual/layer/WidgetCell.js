@@ -166,7 +166,7 @@ qx.Class.define("qx.ui.virtual.layer.WidgetCell",
             children[i].activate();
             break;
           }
-        };
+        }
       }
     },
 

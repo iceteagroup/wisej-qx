@@ -165,7 +165,7 @@ qx.Class.define("qx.ui.form.ComboBox",
 
         case "list":
           // Get the list from the AbstractSelectBox
-          control = this.base(arguments, id)
+          control = this.base(arguments, id);
 
           // Change selection mode
           control.setSelectionMode("single");

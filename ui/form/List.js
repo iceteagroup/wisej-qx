@@ -221,19 +221,7 @@ qx.Class.define("qx.ui.form.List",
      */
     handleKeyPress : function(e)
     {
-    	if (!this._onKeyPress(e)) {
-
-            // @ITG:Wisej: Enable keyboard lookup on the dropped down list.
-            var key = e.getKeyIdentifier();
-            if (key.length == 1) {
-                var ev = new qx.event.type.KeyInput();
-                ev.init(e.getNativeEvent(), e.getTarget(), key.charCodeAt(0));
-                this._onKeyInput(ev);
-
-                if (ev.getDefaultPrevented())
-                	e.stop();
-            }
-
+      if (!this._onKeyPress(e)) {
         this._getManager().handleKeyPress(e);
       }
     },
@@ -389,13 +377,14 @@ qx.Class.define("qx.ui.form.List",
       var items = this.getChildren();
 
       // go through all items
-      var startIndex = Math.max(0, Math.min(startIndex + 1 || 0, items.length));
+      startIndex = Math.max(0, Math.min(startIndex + 1 || 0, items.length));
       for (var i = startIndex, l = items.length; i < l; i++) {
+
         // get the label of the current item
         var currentLabel = this._getItemText(items[i]);
 
         // if the label fits with the search text (ignore case, begins with)
-        if (currentLabel && currentLabel.toLowerCase().indexOf(search) == 0)
+        if (currentLabel && currentLabel.toLowerCase().indexOf(search) === 0)
         {
           // just return the first found element
           return items[i];
@@ -409,7 +398,7 @@ qx.Class.define("qx.ui.form.List",
           var currentLabel = this._getItemText(items[i]);
 
           // if the label fits with the search text (ignore case, begins with)
-          if (currentLabel && currentLabel.toLowerCase().indexOf(search) == 0) {
+          if (currentLabel && currentLabel.toLowerCase().indexOf(search) === 0) {
             // just return the first found element
             return items[i];
           }
@@ -432,7 +421,7 @@ qx.Class.define("qx.ui.form.List",
       // lowercase search
       if (ignoreCase !== false) {
         search = search.toLowerCase();
-      };
+      }
 
       // get all items of the list
       var items = this.getChildren();
@@ -454,7 +443,7 @@ qx.Class.define("qx.ui.form.List",
             label = label.toLowerCase();
           }
 
-          if (label.toString() == search.toString()) {
+          if (label.toString() === search.toString()) {
             return item;
           }
         }
@@ -472,25 +461,14 @@ qx.Class.define("qx.ui.form.List",
      */
     _getItemText: function (item) {
 
-        // get the content of the label; text content when rich
-        var label;
-        if (item.isRich()) {
-            var control = item.getChildControl("label", true);
-            if (control) {
-                var labelNode = control.getContentElement().getDomElement();
-                if (labelNode) {
-                    label = qx.bom.element.Attribute.get(labelNode, "text");
-                } else {
-                    label = item.getLabel();
-                    label = qx.bom.String.unescape(label);
-                }
-            }
+      var text = null;
 
-        } else {
-            label = item.getLabel();
-        }
+      if (item) {
+        text = item.getLabel() || "";
+        text = qx.bom.String.toText(text);
+      }
 
-        return label || "";
+      return text;
     }
   },
 

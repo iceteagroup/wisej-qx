@@ -64,7 +64,7 @@ qx.Bootstrap.define("qx.bom.Label",
     __prepareHtml : function()
     {
       var el = this.__createMeasureElement(true);
-    	// document.body.insertBefore(el, document.body.firstChild);
+      // document.body.insertBefore(el, document.body.firstChild);
       document.body.appendChild(el);
 
       return this._htmlElement = el;

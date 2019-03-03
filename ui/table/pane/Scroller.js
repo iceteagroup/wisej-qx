@@ -1868,6 +1868,20 @@ qx.Class.define("qx.ui.table.pane.Scroller",
       return this._cellEditor != null;
     },
 
+    // @ITG:Wisej: Added overridable method isCellEditable.
+
+    /**
+     * Checks whether a cell is editable.
+     * @param col {Integer} column index.
+     * @param row {Integer} row index.
+     */
+    isCellEditable: function (col, row) { 
+      if (col != null && row != null) {
+        var tableModel = this.getTable().getTableModel();
+        return tableModel.isColumnEditable(col);
+      }
+      return false;
+    },
 
     /**
      * Starts editing the currently focused cell. Does nothing if already
@@ -1881,18 +1895,15 @@ qx.Class.define("qx.ui.table.pane.Scroller",
       var table = this.getTable();
       var tableModel = table.getTableModel();
       var col = this.__focusedCol;
+      var row = this.__focusedRow;
 
-      if (
-        !this.isEditing() &&
-        (col != null) &&
-        tableModel.isColumnEditable(col)
-      ) {
-        var row = this.__focusedRow;
+      if (!this.isEditing() && this.isCellEditable(col, row))
+      {
         var xPos = this.getTablePaneModel().getX(col);
         var value = tableModel.getValue(col, row);
 
         // scroll cell into view
-        this.scrollCellVisible(xPos, row);
+        this.scrollCellVisible(col, row);
 
         this.__cellEditorFactory = table.getTableColumnModel().getCellEditorFactory(col);
 
@@ -1929,7 +1940,7 @@ qx.Class.define("qx.ui.table.pane.Scroller",
           // someplace.  Modal window cell editors should provide their own
           // buttons or means to activate a cellEditor.close() or equivalently
           // cellEditor.hide().
-          // @ITG:Wisej: No reason to hide the close button. It's the minimize button that shoule be hidden.
+          // @ITG:Wisej: No reason to hide the close button. It's the minimize button that should be hidden.
           // this._cellEditor.setShowClose(false);
           this._cellEditor.setShowMinimize(false);
 
@@ -2004,7 +2015,7 @@ qx.Class.define("qx.ui.table.pane.Scroller",
     {
       if (this.isEditing())
       {
-      	this.__table.focus();
+        this.__table.focus();
 
         var dataModel = this.__table.getTableModel();
         var oldValue = dataModel.getValue(this.__focusedCol, this.__focusedRow);

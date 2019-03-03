@@ -336,7 +336,7 @@ qx.Class.define("qx.ui.basic.Label",
 
     // property apply
     _applyFont : function(value, old)
-	{
+    {
 
       // @ITG:Wisej: Added default implementation to set the font for the widget to let it inherit by child elements.
       if (value == null) {
@@ -415,8 +415,8 @@ qx.Class.define("qx.ui.basic.Label",
       if (!this.getContentElement()) {
         return;
       }
-      if (qx.core.Environment.get("os.name") == "osx" &&
-        qx.core.Environment.get("engine.name") == "gecko" &&
+      if (qx.core.Environment.get("os.name") === "osx" &&
+        qx.core.Environment.get("engine.name") === "gecko" &&
         parseInt(qx.core.Environment.get("engine.version"), 10) < 16 &&
         parseInt(qx.core.Environment.get("engine.version"), 10) > 9)
       {

@@ -160,7 +160,7 @@ qx.Mixin.define("qx.ui.virtual.selection.MModel",
             self._provider.styleUnselectabled(row);
           }
         }
-      }
+      };
 
       this._manager = new qx.ui.virtual.selection.Row(
         this.getPane(), selectionDelegate

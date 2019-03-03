@@ -60,6 +60,9 @@ qx.Class.define("qx.ui.core.Blocker",
     widget.addListener("move", this.__onBoundsChange, this);
     widget.addListener("disappear", this.__onWidgetDisappear, this);
 
+    // @ITG:Wisej: Update the zindex to stay on top of the blocked widget.
+    widget.addListener("changeZIndex", this.__onWidgetChangeZIndex, this);
+
     if (qx.Class.isDefined("qx.ui.root.Abstract") &&
         widget instanceof qx.ui.root.Abstract) {
       this._isRoot = true;
@@ -217,6 +220,18 @@ qx.Class.define("qx.ui.core.Blocker",
       }
     },
 
+    /**
+     * Keeps the blocker above the blocked widget.
+     */
+      __onWidgetChangeZIndex: function (e)
+      {
+        if (this.isBlocked()) {
+          var oldZIndex = e.getOldData();
+          var newZIndex = e.getData();
+          var myIndex = this.__blocker.getStyle("zIndex");
+          this.__blocker.setStyle("zIndex", myIndex - oldZIndex + newZIndex);
+        }
+      },
 
     /**
      * set the blocker's size and position
@@ -586,6 +601,7 @@ qx.Class.define("qx.ui.core.Blocker",
     this._widget.removeListener("move", this.__onBoundsChange, this);
     this._widget.removeListener("appear", this.__onWidgetAppear, this);
     this._widget.removeListener("disappear", this.__onWidgetDisappear, this);
+    this._widget.removeListener("changeZIndex", this.__onWidgetChangeZIndex, this);
 
     if (this.__appearListener) {
       this._widget.removeListenerById(this.__appearListener);

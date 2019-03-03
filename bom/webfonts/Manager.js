@@ -73,8 +73,8 @@ qx.Class.define("qx.bom.webfonts.Manager", {
 
       var f = new FontFace('t', 'url( "data:application/font-woff2;base64,d09GMgABAAAAAADcAAoAAAAAAggAAACWAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAABk4ALAoUNAE2AiQDCAsGAAQgBSAHIBtvAcieB3aD8wURQ+TZazbRE9HvF5vde4KCYGhiCgq/NKPF0i6UIsZynbP+Xi9Ng+XLbNlmNz/xIBBqq61FIQRJhC/+QA/08PJQJ3sK5TZFMlWzC/iK5GUN40psgqvxwBjBOg6JUSJ7ewyKE2AAaXZrfUB4v+hze37ugJ9d+DeYqiDwVgCawviwVFGnuttkLqIMGivmDg" ) format( "woff2" )', {});
       f.load()['catch'](function () { });
-      return f.status == 'loading' || f.status == 'loaded';
-  	}
+      return f.status === 'loading' || f.status === 'loaded';
+    }
   },
 
 
@@ -118,18 +118,22 @@ qx.Class.define("qx.bom.webfonts.Manager", {
     require : function(familyName, sourcesList, callback, context)
     {
       var sources = [];
-      for (var i=0,l=sourcesList.length; i<l; i++) {
-        var split = sourcesList[i].split("#");
-        var src = qx.util.ResourceManager.getInstance().toUri(split[0]);
-        if (split.length > 1) {
-          src = src + "#" + split[1];
+
+      // ITG:Wisej: Accept web fonts without sources. The family may be referring to another web font already loaded.
+      if (sourcesList) {
+        for (var i=0,l=sourcesList.length; i<l; i++) {
+          var split = sourcesList[i].split("#");
+          var src = qx.util.ResourceManager.getInstance().toUri(split[0]);
+          if (split.length > 1) {
+            src = src + "#" + split[1];
+          }
+          sources.push(src);
         }
-        sources.push(src);
       }
 
       // @ITG:Wisej: IE newer build (10, 11, Edge) still needs a break.
       // old IEs need a break in between adding @font-face rules
-      if (qx.core.Environment.get("browser.name") == "ie" || qx.core.Environment.get("browser.name") == "edge") { // && (
+      if (qx.core.Environment.get("browser.name") === "ie" || qx.core.Environment.get("browser.name") === "edge") { // && (
           //parseInt(qx.core.Environment.get("engine.version")) < 9 ||
           // qx.core.Environment.get("browser.documentmode") < 9)) {
         if (!this.__queueInterval) {
@@ -191,31 +195,31 @@ qx.Class.define("qx.bom.webfonts.Manager", {
       var osVersion = qx.core.Environment.get("os.version");
 
       // @ITG:Wisej: Added support for "edge" browser.
-      if ((browser == "ie" && qx.core.Environment.get("browser.documentmode") >= 9) ||
-          (browser == "firefox" && browserVersion >= 3.6) ||
-          (browser == "chrome" && browserVersion >= 6) || 
-          (browser == "edge")) {
+      if ((browser === "ie" && qx.core.Environment.get("browser.documentmode") >= 9) ||
+          (browser === "firefox" && browserVersion >= 3.6) ||
+          (browser === "chrome" && browserVersion >= 6) || 
+          (browser === "edge")) {
         preferredFormats.push("woff");
       }
 
-      if ((browser == "opera" && browserVersion >= 10) ||
-          (browser == "safari" && browserVersion >= 3.1) ||
-          (browser == "firefox" && browserVersion >= 3.5) ||
-          (browser == "chrome" && browserVersion >= 4) ||
-          (browser == "mobileSafari" && os == "ios" && osVersion >= 4.2) ||
-          (browser == "mobile safari" && os == "ios" && osVersion >= 4.2)) {
+      if ((browser === "opera" && browserVersion >= 10) ||
+          (browser === "safari" && browserVersion >= 3.1) ||
+          (browser === "firefox" && browserVersion >= 3.5) ||
+          (browser === "chrome" && browserVersion >= 4) ||
+          (browser === "mobileSafari" && os === "ios" && osVersion >= 4.2) ||
+          (browser === "mobile safari" && os === "ios" && osVersion >= 4.2)) {
         preferredFormats.push("ttf");
         preferredFormats.push("woff");
       }
 
       // @ITG:Wisej: Added support for "edge" browser.
-      if ((browser == "ie" && browserVersion >= 4) || (browser == "edge")) {
+      if ((browser === "ie" && browserVersion >= 4) || (browser === "edge")) {
         preferredFormats.push("eot");
         preferredFormats.push("woff");
       }
 
-      if ((browser == "mobileSafari" && os == "ios" && osVersion >= 4.1) ||
-          (browser == "mobile safari" && os == "ios" && osVersion >= 4.1)) {
+      if ((browser === "mobileSafari" && os === "ios" && osVersion >= 4.1) ||
+          (browser === "mobile safari" && os === "ios" && osVersion >= 4.1)) {
         preferredFormats.push("svg");
         preferredFormats.push("woff");
       }
@@ -443,7 +447,7 @@ qx.Class.define("qx.bom.webfonts.Manager", {
            "src: url(\"" + url + "?#iefix\") format('embedded-opentype')";
 
         case "woff":
-        	return "url(\"" + url + "\") format('woff')";
+          return "url(\"" + url + "\") format('woff')";
 
         // @ITG:Wisej: Added support for woff2
         case "woff2":
@@ -555,6 +559,6 @@ qx.Class.define("qx.bom.webfonts.Manager", {
 
   // @ITG:Wisej: Add an environment check to detect support for woff2 fonts.
   defer : function(statics) {
-    qx.core.Environment.add("font.woff2", statics.supportsWoff2)
+    qx.core.Environment.add("font.woff2", statics.supportsWoff2);
   }
 });

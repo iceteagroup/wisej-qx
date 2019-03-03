@@ -35,7 +35,7 @@ qx.Mixin.define("qx.ui.decoration.MTransform",
     ---------------------------------------------------------------------------
     */
 
-    /** the CSS3 Transform string */
+    /** the CSS3 transform string */
     transform :
     {
       init: null,
@@ -43,7 +43,15 @@ qx.Mixin.define("qx.ui.decoration.MTransform",
       apply : "_applyTransform"
     },
 
-    /** the CSS3 Transition string */
+    /** the CSS3 transform-origin string */
+    transformOrigin:
+    {
+      init: null,
+      check: "String",
+      apply: "_applyTransform"
+    },
+
+    /** the CSS3 transition string */
     transition:
     {
       init: null,
@@ -67,6 +75,10 @@ qx.Mixin.define("qx.ui.decoration.MTransform",
       // Add transform.
       if (this.getTransform() != null)
         styles["transform"] = this.getTransform();
+
+      // Add transform-origin.
+      if (this.getTransformOrigin() != null)
+        styles["transform-origin"] = this.getTransformOrigin();
 
      // Add transition.
      if (this.getTransition() != null)

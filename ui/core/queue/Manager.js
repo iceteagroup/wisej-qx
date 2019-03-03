@@ -380,8 +380,8 @@ qx.Class.define("qx.ui.core.queue.Manager",
     __onUserAction : function(e)
     {
       // @ITG:Wisej: Implemented the delay described in the comment.
-     // setTimeout(function () {
-        qx.ui.core.queue.Manager.flush();
+      // setTimeout(function () {
+      qx.ui.core.queue.Manager.flush();
       //}, 500);
     }
   },

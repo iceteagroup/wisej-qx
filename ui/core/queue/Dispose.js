@@ -92,8 +92,8 @@ qx.Class.define("qx.ui.core.queue.Dispose",
       var queue = this.__queue;
       var lookup = this.__lookup;
       for (var i = 0; i < queue.length; i++) {
-      	obj = queue[i];
-      	obj.dispose();
+        obj = queue[i];
+        obj.dispose();
       }
 
       // Clear the inner lists.

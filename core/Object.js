@@ -50,13 +50,19 @@ qx.Class.define("qx.core.Object",
   *****************************************************************************
   */
 
+  // @ITG:Wisej: Added option to create "weak" refereneces of qooxdoo objects. Will update with qooxdoo 6.
+
   /**
    * Create a new instance
+   * 
+   * @param weakReference {Boolean?False} When set to true, the object is not added to the registry but it still gets an hash code.
    */
-  construct : function() {
-    qx.core.ObjectRegistry.register(this);
+   construct: function (weakReference) {
+     if (weakReference === true)
+       qx.core.ObjectRegistry.toHashCode(this);
+     else
+       qx.core.ObjectRegistry.register(this);
   },
-
 
 
 

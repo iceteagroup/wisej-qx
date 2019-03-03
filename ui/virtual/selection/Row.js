@@ -135,13 +135,13 @@ qx.Class.define("qx.ui.virtual.selection.Row",
     // overridden
     _getRelatedSelectable : function(item, relation)
     {
-      if (relation == "above")
+      if (relation === "above")
       {
         var startIndex = item-1;
         var endIndex = 0;
         var increment = -1;
       }
-      else if (relation == "under")
+      else if (relation === "under")
       {
         var startIndex = item+1;
         var endIndex = this._getItemCount()-1;
@@ -165,11 +165,29 @@ qx.Class.define("qx.ui.virtual.selection.Row",
     // overridden
     _getPage : function(lead, up)
     {
-      if (up) {
-        return this._getFirstSelectable();
-      } else {
-        return this._getLastSelectable();
+      // @ITG:Wisej: Added paging support.
+      //if (up) {
+      //  return this._getFirstSelectable();
+      //} else {
+      //  return this._getLastSelectable();
+      //}
+
+      var item = lead;
+      var next = null;
+      var direction = up ? "above" : "under";
+      var rowConfig = this._pane.getRowConfig();
+      var paneHeight = this._pane.getBounds().height;
+      paneHeight -= rowConfig.getItemSize(item);
+      while (paneHeight > 0) {
+
+        next = this._getRelatedSelectable(item, direction);
+        if (next === null)
+          break;
+
+        item = next;
+        paneHeight -= rowConfig.getItemSize(item);
       }
+      return item;
     },
 
 
@@ -208,7 +226,7 @@ qx.Class.define("qx.ui.virtual.selection.Row",
       return {
         top: itemTop,
         bottom: itemBottom
-      }
+      };
     }
   }
 });

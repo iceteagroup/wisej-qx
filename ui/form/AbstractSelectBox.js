@@ -63,7 +63,7 @@ qx.Class.define("qx.ui.form.AbstractSelectBox",
     // register the resize listener
     this.addListener("resize", this._onResize, this);
 
-  	// @ITG:Wisej: RightToLeft support.
+    // @ITG:Wisej: RightToLeft support.
     this.addListener("changeRtl", this._onRtlChange, this);
 
   },

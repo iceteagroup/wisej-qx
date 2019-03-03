@@ -334,7 +334,7 @@ qx.Class.define("qx.ui.core.selection.Abstract",
     replaceSelection : function(items)
     {
       var mode = this.getMode();
-      if (mode == "one" || mode === "single")
+      if (mode === "one" || mode === "single")
       {
         if (items.length > 1)   {
           throw new Error("Could not select more than one items in mode: " + mode + "!");

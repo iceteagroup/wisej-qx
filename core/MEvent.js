@@ -105,11 +105,11 @@ qx.Mixin.define("qx.core.MEvent",
     removeListener : function(type, listener, self, capture)
     {
       if (!this.$$disposed) {
-      	// special handling for wrapped once listener
+        // special handling for wrapped once listener
         // @ITG:Wisej: Use self or this to get the hash, otherwise multiple once listeners are mixed up.
         if (listener.$$wrapped_callback && listener.$$wrapped_callback[type + (self||this).$$hash]) {
-        	var callback = listener.$$wrapped_callback[type + (self || this).$$hash];
-        	delete listener.$$wrapped_callback[type + (self || this).$$hash];
+          var callback = listener.$$wrapped_callback[type + (self || this).$$hash];
+          delete listener.$$wrapped_callback[type + (self || this).$$hash];
           listener = callback;
 
           // @ITG:Wisej: Fails to remove the once listener because it's registered using "this" instead of "self".

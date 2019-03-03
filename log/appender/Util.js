@@ -162,7 +162,7 @@ qx.Bootstrap.define("qx.log.appender.Util",
     /**
      * Converts a single log entry to an array of plain text
      *
-     * @param entry {Map} The entry to process
+     * @param entry {Map} The entry to process.
      * @return {Array} Argument list ready message array.
      */
     toTextArray : function(entry)

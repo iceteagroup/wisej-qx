@@ -3920,7 +3920,7 @@ qx.Class.define("qx.ui.core.Widget",
     getContentLocation : function(mode)
     {
       // @ITG:Wisej: getContentElement() may return null if the widget has been disposed
-	  // and a tooltip timer fires to position the tooltip using MPlacement.placeToWidget.
+      // and a tooltip timer fires to position the tooltip using MPlacement.placeToWidget.
       // var domEl = this.getContentElement().getDomElement();
 
       var el = this.getContentElement();

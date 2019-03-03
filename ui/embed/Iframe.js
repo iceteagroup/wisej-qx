@@ -223,7 +223,6 @@ qx.Class.define("qx.ui.embed.Iframe",
       if (e.getTarget().tagName === "IFRAME")
         return;
 
-
       this.__blockerElement.setStyle("display", "block");
 
       // @ITG:Wisej: Adjust the blocker z-index, otherwise the fixed z-index at 20 blocks all clicks on all overlapping widgets.

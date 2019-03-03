@@ -44,7 +44,8 @@ qx.Class.define("qx.data.Array",
    */
   construct : function(param)
   {
-    this.base(arguments);
+    this.base(arguments, true /* weak */);
+
     // if no argument is given
     if (param == undefined) {
       this.__array = [];
@@ -351,7 +352,7 @@ qx.Class.define("qx.data.Array",
         this.__updateLength();
       } else if (amount == arguments.length - 2) {
         // if we added as much items as we removed
-        var addedItems = qx.lang.Array.fromArguments(arguments, 2)
+        var addedItems = qx.lang.Array.fromArguments(arguments, 2);
         // check if the array content equals the content before the operation
         for (var i = 0; i < addedItems.length; i++) {
           if (addedItems[i] !== returnArray[i]) {
@@ -1058,7 +1059,7 @@ qx.Class.define("qx.data.Array",
     __updateEventPropagation : function(from, to) {
       for (var i=from; i < to; i++) {
         this._registerEventChaining(this.__array[i], this.__array[i], i);
-      };
+      }
     }
   },
 

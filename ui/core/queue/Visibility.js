@@ -32,8 +32,8 @@ qx.Class.define("qx.ui.core.queue.Visibility",
     /** @type {Map} Maps hash codes to visibility */
     __data : {},
 
-  	// @ITG:Wisej: Speed improvement. Using https://github.com/qooxdoo/qooxdoo/pull/9078.
-  	/** @type {Map} map of widgets by hash code which are in the queue */
+    // @ITG:Wisej: Speed improvement. Using https://github.com/qooxdoo/qooxdoo/pull/9078.
+    /** @type {Map} map of widgets by hash code which are in the queue */
     __lookup: {},
 
     /**

@@ -73,7 +73,7 @@ qx.Class.define("qx.ui.virtual.cell.AbstractWidget",
           // @ITG:Wisej: Bug fix. It never clears the state because !oldStates.state is always true.
           // if (!oldStates.state) {
           if (!oldStates[state]) {
-        	widget.addState(state);
+            widget.addState(state);
           }
         }
       }

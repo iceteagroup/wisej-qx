@@ -92,7 +92,7 @@ qx.Class.define("qx.theme.manager.Font",
       }
 
       // @ITG:Wisej: Get the font from the theme only if the value is a string (the name of the themed font).
-      if (typeof value == "string") {
+      if (typeof value === "string") {
 
         // If the font instance is not yet cached create a new one to return
         // This is true whenever a runtime include occurred (using "qx.Theme.include"
@@ -107,8 +107,8 @@ qx.Class.define("qx.theme.manager.Font",
       }
 
       // @ITG:Wisej: Added fallback resolution for CSS-style font strings.
-      if (typeof value == "string") {
-      	return cache[key] = qx.bom.Font.fromString(value);
+      if (typeof value === "string") {
+        return cache[key] = qx.bom.Font.fromString(value);
       }
 
       // @ITG:Wisej: Added fallback for font configurations.
@@ -123,8 +123,8 @@ qx.Class.define("qx.theme.manager.Font",
           var theme = this.getTheme();
           if (theme && theme.fonts)
           {
-          	for (var i = 0; i < config.family.length; i++)
-          	{
+            for (var i = 0; i < config.family.length; i++)
+            {
               var name = config.family[i];
               var themeFont = theme.fonts[name];
 
@@ -143,7 +143,8 @@ qx.Class.define("qx.theme.manager.Font",
           }
 
           config.family = family;
-          return cache[key] = qx.bom.Font.fromConfig(config);
+          var font = this.__getFontClass(config);
+          return cache[key] = (new font).set(config);
         }
       }
 

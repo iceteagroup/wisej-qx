@@ -576,7 +576,7 @@ qx.Class.define("qx.ui.table.model.Remote",
         this._rowBlockCount++;
 
         // @ITG:Wisej: Optimized property retrieval in loop
-        var count = this.getMaxCachedBlockCount()
+        var count = this.getMaxCachedBlockCount();
         while (this._rowBlockCount > count)
         {
           // Find the last recently used block

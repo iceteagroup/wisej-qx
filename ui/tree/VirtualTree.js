@@ -352,20 +352,30 @@ qx.Class.define("qx.ui.tree.VirtualTree",
 
 
     // overridden
-    syncWidget : function(jobs)
-    {
-      var firstRow = this._layer.getFirstRow();
-      var rowSize = this._layer.getRowSizes().length;
+    syncWidget: function (jobs) {
 
-      for (var row = firstRow; row < firstRow + rowSize; row++)
-      {
-        var widget = this._layer.getRenderedCellWidget(row, 0);
-        if (widget != null) {
-          this._itemWidth = Math.max(this._itemWidth, widget.getSizeHint().width);
+        var pane = this.getPane();
+        var sizeHint = null;
+        var maxWidth = 0;
+        var maxHeight = this.getItemHeight() || 0;
+        var firstRow = this._layer.getFirstRow();
+        var rowSize = this._layer.getRowSizes().length;
+        var paneWidth = pane.getInnerSize().width;
+
+        for (var row = firstRow; row < firstRow + rowSize; row++) {
+            var widget = this._layer.getRenderedCellWidget(row, 0);
+            if (widget !== null) {
+                sizeHint = widget.getSizeHint();
+                maxHeight = Math.max(maxHeight, sizeHint.height);
+                maxWidth = Math.max(paneWidth, maxWidth, sizeHint.width);
+            }
         }
-      }
-      var paneWidth = this.getPane().getInnerSize().width;
-      this.getPane().getColumnConfig().setItemSize(0, Math.max(this._itemWidth, paneWidth));
+
+        if (maxHeight && pane.getRowConfig().getDefaultItemSize() !== maxHeight)
+            pane.getRowConfig().setDefaultItemSize(maxHeight);
+
+        if (maxWidth && pane.getColumnConfig().getItemSize(0) !== maxWidth)
+            pane.getColumnConfig().setItemSize(0, maxWidth);
     },
 
 

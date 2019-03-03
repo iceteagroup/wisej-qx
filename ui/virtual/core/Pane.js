@@ -545,7 +545,7 @@ qx.Class.define("qx.ui.virtual.core.Pane",
       )
       {
         var left = Math.min(this.__scrollLeft, maxLeft);
-        var right = Math.min(rightAvailable, maxRight)
+        var right = Math.min(rightAvailable, maxRight);
         this._setLayerWindow(
           layers,
           this.__scrollLeft - left,
@@ -592,7 +592,7 @@ qx.Class.define("qx.ui.virtual.core.Pane",
       )
       {
         var above = Math.min(this.__scrollTop, maxAbove);
-        var below = Math.min(belowAvailable, maxBelow)
+        var below = Math.min(belowAvailable, maxBelow);
         this._setLayerWindow(
           layers,
           this.__scrollLeft,
@@ -878,7 +878,6 @@ qx.Class.define("qx.ui.virtual.core.Pane",
         true
       );
 
-      // this.__checkPaneResize();
     },
 
 
@@ -941,7 +940,7 @@ qx.Class.define("qx.ui.virtual.core.Pane",
           this.__scrollLeft, this.__scrollTop,
           bounds.width, bounds.height,
           false
-        )
+        );
       }
 
       this.__checkPaneResize();

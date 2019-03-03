@@ -98,14 +98,14 @@ qx.Class.define("qx.ui.virtual.selection.CellRectangle",
         // overridden
         _getSelectableRange: function (item1, item2) {
 
-        	var columnCount = this._pane.getColumnConfig().getItemCount();
+            var columnCount = this._pane.getColumnConfig().getItemCount();
 
-        	var index1 = item1;
-        	var index2 = item2;
-        	var row1 = (index1 / columnCount) | 0;
-        	var column1 = index1 - (row1 * columnCount);
-        	var row2 = (index2 / columnCount) | 0;
-        	var column2 = index2 - (row2 * columnCount);
+            var index1 = item1;
+            var index2 = item2;
+            var row1 = (index1 / columnCount) | 0;
+            var column1 = index1 - (row1 * columnCount);
+            var row2 = (index2 / columnCount) | 0;
+            var column2 = index2 - (row2 * columnCount);
 
             var selectables = [];
 
@@ -115,12 +115,12 @@ qx.Class.define("qx.ui.virtual.selection.CellRectangle",
             var maxColumn = Math.max(column1, column2);
 
             for (var row = minRow; row <= maxRow; row++) {
-            	for (var column = minColumn; column <= maxColumn; column++) {
-            		var index = row * columnCount + column;
-            		if (this._isSelectable(index)) {
-            			selectables.push(index);
-            		}
-            	}
+                for (var column = minColumn; column <= maxColumn; column++) {
+                    var index = row * columnCount + column;
+                    if (this._isSelectable(index)) {
+                        selectables.push(index);
+                    }
+                }
             }
             return selectables;
 

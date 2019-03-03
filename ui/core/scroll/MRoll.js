@@ -57,7 +57,6 @@ qx.Mixin.define("qx.ui.core.scroll.MRoll",
       this._cancelRoll = e.getPointerId();
     },
 
-
     /**
      * Roll event handler
      *

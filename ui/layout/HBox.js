@@ -284,7 +284,7 @@ qx.Class.define("qx.ui.layout.HBox",
       {
         this.assert(name === "flex" || name === "width", "The property '"+name+"' is not supported by the HBox layout!");
 
-        if (name =="width")
+        if (name === "width")
         {
           this.assertMatch(value, qx.ui.layout.Util.PERCENT_VALUE);
         }

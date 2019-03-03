@@ -443,7 +443,7 @@ qx.Class.define("qx.ui.form.AbstractField",
 
     // overridden
     _applyFont : function(value, old)
-	{
+    {
       // @ITG:Wisej: Added default implementation to set the font for the widget to let it inherit by child elements.
       if (value == null) {
         this.resetFont();
@@ -1067,8 +1067,8 @@ qx.Class.define("qx.ui.form.AbstractField",
     }
 
     // @ITG:Wisej: Nulling __font prevents the listener form being detached and may cause an error if a font loading is in progress.
-  	// this._placeholder = this.__font = null;
-  	this._placeholder = null;
+    // this._placeholder = this.__font = null;
+    this._placeholder = null;
 
     if (qx.core.Environment.get("qx.dynlocale")) {
       qx.locale.Manager.getInstance().removeListener("changeLocale", this._onChangeLocale, this);

@@ -375,10 +375,10 @@ qx.Class.define("qx.ui.core.scroll.AbstractScrollArea",
           control.exclude();
 
           if (!qx.core.Environment.get("os.scrollBarOverlayed")) {
-          	// only add for non overlayed scroll bars
-          	this._add(control);
-          	this._updateScrollAreaLayout({ row: 0, column: 0 }, { corner: control });
-		  }
+            // only add for non overlayed scroll bars
+            this._add(control);
+            this._updateScrollAreaLayout({ row: 0, column: 0 }, { corner: control });
+          }
           break;
       }
 

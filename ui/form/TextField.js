@@ -72,7 +72,7 @@ qx.Class.define("qx.ui.form.TextField",
      }
     },
 
-  	// @ITG:Wisej: Not needed.
+    // @ITG:Wisej: Not needed.
     //// overridden
     //_createContentElement : function() {
     //  var el = this.base(arguments);
@@ -98,7 +98,7 @@ qx.Class.define("qx.ui.form.TextField",
   },
 
   destruct : function() {
-	// @ITG:Wisej: Not needed.
-  	// this.getContentElement().removeListener("keypress", this._onKeyPress, this);
+    // @ITG:Wisej: Not needed.
+    // this.getContentElement().removeListener("keypress", this._onKeyPress, this);
   }
 });

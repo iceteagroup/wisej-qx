@@ -194,14 +194,14 @@ qx.Class.define("qx.ui.root.Abstract",
           this.__globalCursorStyleSheet = sheet = Stylesheet.createElement();
         }
 
-      	// @ITG:Wisej: Cache and reuse the cursor rule.
-      	// Stylesheet.removeAllRules(sheet);
+        // @ITG:Wisej: Cache and reuse the cursor rule.
+        // Stylesheet.removeAllRules(sheet);
         if (this.__globalCursorRule)
         {
           if (value)
             this.__globalCursorRule.style.setProperty("cursor", value, "important");
           else
-          	this.__globalCursorRule.style.setProperty("cursor", "");
+            this.__globalCursorRule.style.setProperty("cursor", "");
           return;
         }
 

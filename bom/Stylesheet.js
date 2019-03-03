@@ -59,9 +59,9 @@ qx.Bootstrap.define("qx.bom.Stylesheet",
 
       // @ITG:Wisej: Added callbacks.
       if (onload)
-      	el.onload = onload;
+        el.onload = onload;
       if (onerror)
-      	el.onerror = onerror;
+        el.onerror = onerror;
 
       var head = doc.getElementsByTagName("head")[0];
       head.appendChild(el);

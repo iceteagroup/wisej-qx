@@ -29,7 +29,7 @@ qx.Class.define("qx.Application",
             this.base(arguments);
 
             if (qx && qx.close)
-                qx.close.call(this);
+                return qx.close.call(this);
         },
 
         finalize: function () {

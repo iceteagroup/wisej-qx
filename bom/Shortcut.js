@@ -35,6 +35,8 @@ qx.Class.define("qx.bom.Shortcut",
   */
 
   // @ITG:Wisej: Added capture parameter to the constructor to let the shortcut get the event in the capturing phase.
+  // @ITG:Wisej: Added stopEvent parameter to the constructor to let event continue being processed when triggered.
+  // @ITG:Wisej: Added element parameter to the constructor to let the app specify which element to attach to.
 
   /**
    * Create a new instance of Command
@@ -45,20 +47,30 @@ qx.Class.define("qx.bom.Shortcut",
    *    The key must be separated by a <code>+</code> or <code>-</code> character.
    *    Examples: Alt+F1, Control+C, Control+Alt+Delete
    *
-   * @param capture {Boolean} Whether to attach the event to the
+   * @param capture {Boolean?False} Whether to attach the event to the
    *         capturing phase or the bubbling phase of the event. The default is
    *         to attach the event handler to the bubbling phase.
+   *         
+   * @param stopEvent {Boolean?True} Whether to stop the event 
+   *         when the shortcut it triggered. The default is
+   *         to stop the event.
+   *         
+   * @param element {HTMLElement?} The element to attach to.
    */
-  construct : function(shortcut, capture)
+  construct : function(shortcut, capture, stopEvent, element)
   {
-    this.base(arguments);
+    this.base(arguments, true /* weak */);
 
     this.__modifier = {};
     this.__key = null;
     this.__capture = capture === true;
+    this.__element = element || document.documentElement;
 
-    if (shortcut != null) {
+    if (shortcut !== undefined) {
       this.setShortcut(shortcut);
+    }
+    if (stopEvent !== undefined) {
+      this.setStopEvent(stopEvent);
     }
 
     this.initEnabled();
@@ -117,6 +129,16 @@ qx.Class.define("qx.bom.Shortcut",
     {
       check : "Boolean",
       init : false
+	},
+
+    // @ITG:Wisej: Added option to let the event keep being processed.
+    /**
+     * Whether the event should be stopped when the shortcut is triggered.
+     */
+    stopEvent:
+    {
+     check: "Boolean",
+     init: true
     }
   },
 
@@ -134,7 +156,7 @@ qx.Class.define("qx.bom.Shortcut",
     __modifier : "",
     __key: "",
     __capture: false,
-
+    __element: null,
 
     /*
     ---------------------------------------------------------------------------
@@ -164,7 +186,10 @@ qx.Class.define("qx.bom.Shortcut",
         if (!this.isAutoRepeat()) {
           this.execute(event.getTarget());
         }
-        event.stop();
+
+        if (this.getStopEvent()) {
+          event.stop();
+        }
       }
     },
 
@@ -181,8 +206,11 @@ qx.Class.define("qx.bom.Shortcut",
         if (this.isAutoRepeat()) {
           this.execute(event.getTarget());
         }
-        event.stop();
-      }
+
+        if (this.getStopEvent()) {
+          event.stop();
+        }
+	  }
     },
 
 
@@ -198,11 +226,11 @@ qx.Class.define("qx.bom.Shortcut",
     _applyEnabled : function(value, old)
     {
       if (value) {
-      	qx.event.Registration.addListener(document.documentElement, "keydown", this.__onKeyDown, this, this.__capture);
-      	qx.event.Registration.addListener(document.documentElement, "keypress", this.__onKeyPress, this, this.__capture);
+        qx.event.Registration.addListener(this.__element, "keydown", this.__onKeyDown, this, this.__capture);
+		  qx.event.Registration.addListener(this.__element, "keypress", this.__onKeyPress, this, this.__capture);
       } else {
-      	qx.event.Registration.removeListener(document.documentElement, "keydown", this.__onKeyDown, this, this.__capture);
-      	qx.event.Registration.removeListener(document.documentElement, "keypress", this.__onKeyPress, this, this.__capture);
+		  qx.event.Registration.removeListener(this.__element, "keydown", this.__onKeyDown, this, this.__capture);
+		  qx.event.Registration.removeListener(this.__element, "keypress", this.__onKeyPress, this, this.__capture);
       }
     },
 
@@ -269,7 +297,7 @@ qx.Class.define("qx.bom.Shortcut",
               {
                 var msg = "You can only specify one non modifier key!";
                 this.error(msg);
-              	// @ITG:Wisej: Fixed the throw, it's different from everywhere else and handling code has to check for a string instance.
+                // @ITG:Wisej: Fixed the throw, it's different from everywhere else and handling code has to check for a string instance.
                 throw new Error(msg);
               }
 
@@ -443,7 +471,7 @@ qx.Class.define("qx.bom.Shortcut",
 
   destruct : function()
   {
-    // this will remove the event listener
+    // this will remove the event listeners
     this.setEnabled(false);
 
     this.__modifier = this.__key = null;
