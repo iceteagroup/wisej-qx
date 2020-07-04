@@ -61,7 +61,7 @@ qx.Bootstrap.define("qx.event.handler.PointerCore", {
       pointermove : "gesturemove"
     },
 
-    LEFT_BUTTON : (qx.core.Environment.get("engine.name") == "mshtml" &&
+    LEFT_BUTTON : (qx.core.Environment.get("engine.name") === "mshtml" &&
       qx.core.Environment.get("browser.documentmode") <= 8) ? 1 : 0,
 
     SIM_MOUSE_DISTANCE : 25,
@@ -97,7 +97,7 @@ qx.Bootstrap.define("qx.event.handler.PointerCore", {
 
     var engineName = qx.core.Environment.get("engine.name");
     var docMode = parseInt(qx.core.Environment.get("browser.documentmode"), 10);
-    if (engineName == "mshtml" && docMode == 10) {
+    if (engineName === "mshtml" && docMode === 10) {
       // listen to native prefixed events and custom unprefixed (see bug #8921)
       this.__eventNames = [
         "MSPointerDown", "MSPointerMove", "MSPointerUp", "MSPointerCancel", "MSPointerOver", "MSPointerOut",
@@ -227,7 +227,7 @@ qx.Bootstrap.define("qx.event.handler.PointerCore", {
         return;
       }
 
-      if (domEvent.type == "touchstart" && this.__primaryIdentifier === null) {
+      if (domEvent.type === "touchstart" && this.__primaryIdentifier === null) {
         this.__primaryIdentifier = changedTouches[0].identifier;
       }
 
@@ -249,13 +249,13 @@ qx.Bootstrap.define("qx.event.handler.PointerCore", {
           pointerId: touch.identifier + 2
         };
 
-        if (domEvent.type == "touchstart") {
+        if (domEvent.type === "touchstart") {
           // Fire pointerenter before pointerdown
           var overEvt = new qx.event.type.dom.Pointer("pointerover", domEvent, touchProps);
           this._fireEvent(overEvt, "pointerover", touchProps.target);
         }
 
-        if (touch.identifier == this.__primaryIdentifier) {
+        if (touch.identifier === this.__primaryIdentifier) {
           touchProps.isPrimary = true;
           // always simulate left click on touch interactions for primary pointer
           touchProps.button = 0;
@@ -271,13 +271,13 @@ qx.Bootstrap.define("qx.event.handler.PointerCore", {
 
         this._fireEvent(evt, type, touchProps.target);
 
-        if (domEvent.type == "touchend" || domEvent.type == "touchcancel") {
+        if (domEvent.type === "touchend" || domEvent.type === "touchcancel") {
           // Fire pointerout after pointerup
           var outEvt = new qx.event.type.dom.Pointer("pointerout", domEvent, touchProps);
           // fire on the original target to make sure over / out event are on the same target
           this._fireEvent(outEvt, "pointerout", domEvent.target);
 
-          if (this.__primaryIdentifier == touch.identifier) {
+          if (this.__primaryIdentifier === touch.identifier) {
             this.__primaryIdentifier = null;
           }
         }
@@ -303,10 +303,10 @@ qx.Bootstrap.define("qx.event.handler.PointerCore", {
         return;
       }
 
-      if (domEvent.type == "mousedown") {
+      if (domEvent.type === "mousedown") {
         this.__buttonStates[domEvent.which] = 1;
-      } else if (domEvent.type == "mouseup") {
-        if (qx.core.Environment.get("os.name") == "osx" && qx.core.Environment.get("engine.name") == "gecko") {
+      } else if (domEvent.type === "mouseup") {
+        if (qx.core.Environment.get("os.name") === "osx" && qx.core.Environment.get("engine.name") === "gecko") {
           if (this.__buttonStates[domEvent.which] != 1 && domEvent.ctrlKey) {
             this.__buttonStates[1] = 0;
           }
@@ -323,23 +323,23 @@ qx.Bootstrap.define("qx.event.handler.PointerCore", {
       var mouseProps = {pointerType : "mouse", pointerId: 1};
 
       // if the button state changes but not from or to zero
-      if (this.__lastButtonState != buttonsPressed && buttonsPressed !== 0 && this.__lastButtonState !== 0) {
+      if (this.__lastButtonState !== buttonsPressed && buttonsPressed !== 0 && this.__lastButtonState !== 0) {
         var moveEvt = new qx.event.type.dom.Pointer("pointermove", domEvent, mouseProps);
         this._fireEvent(moveEvt, "pointermove", target);
       }
       this.__lastButtonState = buttonsPressed;
 
       // pointerdown should only trigger form the first pressed button.
-      if (domEvent.type == "mousedown" && buttonsPressed > 1) {
+      if (domEvent.type === "mousedown" && buttonsPressed > 1) {
         return;
       }
 
       // pointerup should only trigger if user releases all buttons.
-      if (domEvent.type == "mouseup" && buttonsPressed > 0) {
+      if (domEvent.type === "mouseup" && buttonsPressed > 0) {
         return;
       }
 
-      if (domEvent.type == "contextmenu") {
+      if (domEvent.type === "contextmenu") {
         this.__buttonStates[domEvent.which] = 0;
         return;
       }
@@ -355,17 +355,17 @@ qx.Bootstrap.define("qx.event.handler.PointerCore", {
      * @param changedTouches {Array} the current changed touches.
      */
     _determineActiveTouches: function(type, changedTouches) {
-      if (type == "touchstart") {
+      if (type === "touchstart") {
         for (var i = 0; i < changedTouches.length; i++) {
           this.__activeTouches.push(changedTouches[i]);
         }
-      } else if (type == "touchend" || type == "touchcancel") {
+      } else if (type === "touchend" || type === "touchcancel") {
         var updatedActiveTouches = [];
 
         for (var i = 0; i < this.__activeTouches.length; i++) {
           var add = true;
           for (var j = 0; j < changedTouches.length; j++) {
-            if (this.__activeTouches[i].identifier == changedTouches[j].identifier) {
+            if (this.__activeTouches[i].identifier === changedTouches[j].identifier) {
               add = false;
               break;
             }
@@ -428,7 +428,7 @@ qx.Bootstrap.define("qx.event.handler.PointerCore", {
       var gestureEvent;
       if ((domEvent.pointerType !== "mouse" ||
            domEvent.button <= qx.event.handler.PointerCore.LEFT_BUTTON) &&
-        (type == "pointerdown" || type == "pointerup" || type == "pointermove"))
+        (type === "pointerdown" || type === "pointerup" || type === "pointermove"))
       {
         gestureEvent = new qx.event.type.dom.Pointer(
           qx.event.handler.PointerCore.POINTER_TO_GESTURE_MAPPING[type],

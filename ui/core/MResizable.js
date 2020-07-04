@@ -172,8 +172,11 @@ qx.Mixin.define("qx.ui.core.MResizable",
       if (!frame)
       {
         frame = this.__resizeFrame = new qx.ui.core.Widget();
-        frame.setAppearance("resize-frame");
         frame.exclude();
+        frame.setAppearance("resize-frame");
+
+        // @ITG:Wisej: Allow the resize frame to be dragged on touch devices.
+        frame.getContentElement().setStyles({ "touch-action": "none", "-ms-touch-action": "none" });
 
         qx.core.Init.getApplication().getRoot().add(frame);
       }
@@ -419,7 +422,10 @@ qx.Mixin.define("qx.ui.core.MResizable",
     __onResizePointerDown : function(e)
     {
       // Check for active resize
-      if (!this.__resizeActive || !this.getEnabled() || e.getPointerType() == "touch") {
+      if (e.getPointerType() === "touch" && this.getEnabled()) {
+       this.__computeResizeMode(e);
+      }
+      if (!this.__resizeActive || !this.getEnabled()) {
         return;
       }
 
@@ -478,7 +484,7 @@ qx.Mixin.define("qx.ui.core.MResizable",
     __onResizePointerUp : function(e)
     {
       // Check for active resize
-      if (!this.hasState("resize") || !this.getEnabled() || e.getPointerType() == "touch") {
+      if (!this.hasState("resize") || !this.getEnabled()) {
         return;
       }
 
@@ -572,7 +578,7 @@ qx.Mixin.define("qx.ui.core.MResizable",
      */
     __onResizePointerMove : function(e)
     {
-      if (!this.getEnabled() || e.getPointerType() == "touch") {
+      if (!this.getEnabled()) {
         return;
       }
 
@@ -625,32 +631,48 @@ qx.Mixin.define("qx.ui.core.MResizable",
         this.__computeResizeMode(e);
 
         var resizeActive = this.__resizeActive;
-        var root = this.getApplicationRoot();
+        // var root = this.getApplicationRoot();
 
         if (resizeActive)
         {
           // @ITG:Wisej: Save the current cursor,  otherwise when a widget
           // includes MResizable it will lose the cursor if it was set.
-          if (!this.__cursorChanged) {
-             this.__cursorChanged = true;
-             this.__savedCursor = this.getCursor();
-           }
-
-          var cursor = this.__resizeCursors[resizeActive];
-          this.setCursor(cursor);
-          root.setGlobalCursor(cursor);
+          this.__changeCursor();
         }
         else if (this.getCursor())
         {
           // @ITG:Wisej Preserve the original cursor
           this.__resetCursor();
-
-          root.resetGlobalCursor();
         }
       }
     },
 
-    // @ITG:Wisej: Restore the previously saved cursor;
+    // @ITG:Wisej: Sets the resize cursor.
+    /**
+     * Shows the resize cursor.
+     */
+    __changeCursor: function () {
+
+      // @ITG:Wisej: Save the current cursor,  otherwise when a widget
+      // includes MResizable it will lose the cursor if it was set.
+      if (!this.__cursorChanged) {
+        this.__cursorChanged = true;
+        this.__savedCursor = this.getCursor();
+      }
+
+      var resizeActive = this.__resizeActive;
+      if (resizeActive) {
+        var cursor = this.__resizeCursors[resizeActive];
+        this.setCursor(cursor);
+
+        if (this.getUseResizeFrame())
+          this._getResizeFrame().setCursor(cursor);
+
+        this.getApplicationRoot().setGlobalCursor(cursor);
+      }
+    },
+
+    // @ITG:Wisej: Restore the previously saved cursor.
     /**
      * Restores the original cursor.
      */
@@ -664,6 +686,11 @@ qx.Mixin.define("qx.ui.core.MResizable",
       else
         this.resetCursor();
 
+      if (this.getUseResizeFrame())
+        this._getResizeFrame().resetCursor();
+
+      this.getApplicationRoot().resetGlobalCursor();
+
       delete this.__savedCursor;
       delete this.__cursorChanged;
     },
@@ -675,9 +702,6 @@ qx.Mixin.define("qx.ui.core.MResizable",
      */
     __onResizePointerOut : function(e)
     {
-      if (e.getPointerType() == "touch") {
-        return;
-      }
       // When the pointer left the window and resizing is not yet
       // active we must be sure to (especially) reset the global
       // cursor.
@@ -686,7 +710,7 @@ qx.Mixin.define("qx.ui.core.MResizable",
         // @ITG:Wisej Preserve the original cursor
         //this.resetCursor();
         this.__resetCursor();
-      	this.getApplicationRoot().resetGlobalCursor();
+        this.getApplicationRoot().resetGlobalCursor();
       }
     }
   },

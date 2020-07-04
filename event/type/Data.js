@@ -103,7 +103,26 @@ qx.Class.define("qx.event.type.Data",
      */
     getOldData : function() {
       return this.__old;
+    },
+
+    // @ITG:Wisej: Allows updating the data objects.
+
+    /**
+     * * Sets the event's data.
+     * @param data {var} The new data object.
+     */
+    setData: function (data) {
+      this.__data = data;
+    },
+
+    /**
+     * * Sets the event's old data.
+     * @param data {var} The old data object.
+     */
+    setOldData: function (data) {
+      this.__old = data;
     }
+
   },
 
 

@@ -627,7 +627,7 @@ qx.Class.define("qx.event.Manager",
         qx.core.Assert.assertFunction(listener, msg + "Invalid callback function");
 
         if (self !== undefined) {
-          qx.core.Assert.assertObject(self, "Invalid context for callback.")
+          qx.core.Assert.assertObject(self, "Invalid context for callback.");
         }
 
         if (capture !== undefined) {
@@ -654,13 +654,14 @@ qx.Class.define("qx.event.Manager",
       {
         entry = entryList[i];
 
-        if (entry.handler === listener && entry.context === self)
+        // @ITG:Wisej: Allow removing a listener when it was registered without a context and unregistered using the target as the context.
+        if (entry.handler === listener && (entry.context === self || !entry.context && self === target))
         {
           // @ITG:Wisej: Replaced with much faster call to qx.lang.Array.popAt().
           // qx.lang.Array.removeAt(entryList, i);
           qx.lang.Array.popAt(entryList, i);
 
-          if (entryList.length == 0) {
+          if (entryList.length === 0) {
             this.__unregisterAtHandler(target, type, capture);
           }
 
@@ -840,8 +841,8 @@ qx.Class.define("qx.event.Manager",
       {
         var msg = "Could not dispatch event '" + event + "' on target '" + target.classname +"': ";
 
-        qx.core.Assert.assertNotUndefined(target, msg + "Invalid event target.")
-        qx.core.Assert.assertNotNull(target, msg + "Invalid event target.")
+        qx.core.Assert.assertNotUndefined(target, msg + "Invalid event target.");
+        qx.core.Assert.assertNotNull(target, msg + "Invalid event target.");
         qx.core.Assert.assertInstance(event, qx.event.type.Event, msg + "Invalid event object.");
       }
 

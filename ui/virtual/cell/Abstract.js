@@ -52,7 +52,7 @@ qx.Class.define("qx.ui.virtual.cell.Abstract",
      * @return {String} Space separated list of CSS classes
      */
     getCssClasses : function(value, states) {
-      return "qx-cell";
+      return qx.theme.manager.Decoration.CSS_CLASSNAME_PREFIX + "cell";
     },
 
 

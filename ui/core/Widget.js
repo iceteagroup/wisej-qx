@@ -808,7 +808,8 @@ qx.Class.define("qx.ui.core.Widget",
     {
       check : "Boolean",
       init : false,
-      apply : "_applyDraggable"
+      apply : "_applyDraggable",
+      event: "changeDraggable"
     },
 
 
@@ -817,7 +818,8 @@ qx.Class.define("qx.ui.core.Widget",
     {
       check : "Boolean",
       init : false,
-      apply : "_applyDroppable"
+      apply : "_applyDroppable",
+      event: "changeDroppable"
     },
 
 
@@ -1059,31 +1061,22 @@ qx.Class.define("qx.ui.core.Widget",
       var $$parent = this.$$parent;
       var $$mirrored = $$parent ? this.$$parent.$$mirrored : false;
 
-      // force a location update if the parent is mirrored.
-      if ($$mirrored) {
-        changes = changes || {};
-        changes.position = true;
-      }
+      // mirror the location of this child control when the parent is $$mirrored.
+      if ($$mirrored && width) {
 
-      if (changes && changes.position) {
+        // don't mirror the location of windows managed by the window manager.
+        if (!($$parent instanceof qx.ui.window.Desktop)
+            || $$parent.getWindows().indexOf(this) == -1) {
 
-        // mirror the location of this child control when the parent is $$mirrored.
-        if ($$mirrored && width) {
+          var parentBounds = this.$$parent.getBounds();
+          if (parentBounds && parentBounds.width !== undefined) {
 
-          // don't mirror the location of windows managed by the window manager.
-          if (!($$parent instanceof qx.ui.window.Desktop)
-                || $$parent.getWindows().indexOf(this) == -1) {
+            left = parentBounds.width - width - left;
 
-            var parentBounds = this.$$parent.getBounds();
-            if (parentBounds && parentBounds.width !== undefined) {
-
-              left = parentBounds.width - width - left;
-
-              var decorator = qx.theme.manager.Decoration.getInstance().resolve($$parent.getDecorator());
-              if (decorator) {
-                var insets = decorator.getInsets();
-                left = left - insets.left - insets.right;
-              }
+            var decorator = qx.theme.manager.Decoration.getInstance().resolve($$parent.getDecorator());
+            if (decorator) {
+              var insets = decorator.getInsets();
+              left = left - insets.left - insets.right;
             }
           }
         }
@@ -1100,27 +1093,33 @@ qx.Class.define("qx.ui.core.Widget",
         return null;
       }
 
-      var content = this.getContentElement();
+      // @ITG:Wisej: Speed improvement.
+      // var content = this.getContentElement();
+
       var inner = changes.size || this._updateInsets;
       var pixel = "px";
 
-      var contentStyles = {};
+      // @ITG:Wisej: Speed improvement.
+      var contentStyles = null;
 
       // Move content to new position
       if (changes.position)
       {
+        contentStyles = contentStyles || {};
         contentStyles.left = left + pixel;
         contentStyles.top = top + pixel;
       }
 
       if (inner || changes.margin)
       {
+        contentStyles = contentStyles || {};
         contentStyles.width = width + pixel;
         contentStyles.height = height + pixel;
       }
 
-      if (Object.keys(contentStyles).length > 0) {
-        content.setStyles(contentStyles);
+      // @ITG:Wisej: Speed improvement.
+      if (contentStyles) {
+        this.getContentElement().setStyles(contentStyles);
       }
 
       if (inner || changes.local || changes.margin)
@@ -1145,7 +1144,9 @@ qx.Class.define("qx.ui.core.Widget",
           };
 
           this.__layoutManager.renderLayout(innerWidth, innerHeight, padding);
+
         } else if (this.hasLayoutChildren()) {
+
           throw new Error("At least one child in control " +
             this._findTopControl() +
             " requires a layout, but no one was defined!");
@@ -1423,9 +1424,10 @@ qx.Class.define("qx.ui.core.Widget",
       var contentWidth = width - insetX;
 
       // Compute height
+      var contentHeight = 0;
       var layout = this._getLayout();
       if (layout && layout.hasHeightForWidth()) {
-        var contentHeight =  layout.getHeightForWidth(contentWidth);
+        contentHeight =  layout.getHeightForWidth(contentWidth);
       } else {
         contentHeight = this._getContentHeightForWidth(contentWidth);
       }
@@ -1703,7 +1705,7 @@ qx.Class.define("qx.ui.core.Widget",
 
       // @ITG:Wisej: Setting touch-action to none disables pinch and zoom on Android and Windows-Mobile devices.
       // make sure to allow all pointer events
-      //el.setStyles({ "touch-action": "none", "-ms-touch-action": "none" });
+      el.setStyles({ "touch-action": "pinch-zoom", "-ms-touch-action": "pinch-zoom" });
 
       if (qx.core.Environment.get("qx.debug")) {
         el.setAttribute("qxClass", this.classname);
@@ -2304,7 +2306,7 @@ qx.Class.define("qx.ui.core.Widget",
       // @ITG:Wisej: Changed the logic to reset the property when the value is null.
       if (value == null)
       {
-      	this["reset" + qx.lang.String.firstUp(name)]();
+        this["reset" + qx.lang.String.firstUp(name)]();
         return;
       }
 
@@ -2323,13 +2325,15 @@ qx.Class.define("qx.ui.core.Widget",
      */
     __updateContentPadding : function(style, value) {
       var content = this.getContentElement();
-      var decorator = this.getDecorator();
-      decorator = qx.theme.manager.Decoration.getInstance().resolve(decorator);
-      if (decorator) {
-        var direction = qx.Bootstrap.firstLow(style.replace("padding", ""));
-        value += decorator.getPadding()[direction] || 0;
+      if (content) {
+        var decorator = this.getDecorator();
+        decorator = qx.theme.manager.Decoration.getInstance().resolve(decorator);
+        if (decorator) {
+          var direction = qx.Bootstrap.firstLow(style.replace("padding", ""));
+          value += decorator.getPadding()[direction] || 0;
+        }
+        content.setStyle(style, value + "px");
       }
-      content.setStyle(style, value + "px");
     },
 
 
@@ -2453,7 +2457,7 @@ qx.Class.define("qx.ui.core.Widget",
       // In Opera the cursor must be set directly.
       // http://bugzilla.qooxdoo.org/show_bug.cgi?id=1729
       this.getContentElement().setStyle(
-        "cursor", value, qx.core.Environment.get("engine.name") == "opera"
+        "cursor", value, qx.core.Environment.get("engine.name") === "opera"
       );
     },
 
@@ -2464,7 +2468,7 @@ qx.Class.define("qx.ui.core.Widget",
 
 
       if (value)
-        this.addState("rightToLeft")
+        this.addState("rightToLeft");
       else
         this.removeState("rightToLeft");
 
@@ -2498,7 +2502,6 @@ qx.Class.define("qx.ui.core.Widget",
 
     // property apply
     _applyBackgroundColor : function(value, old) {
-      var color = this.getBackgroundColor();
       var content = this.getContentElement();
 
       // @ITG:Wisej: Changed the logic to reset the property when the value is null.
@@ -3069,8 +3072,8 @@ qx.Class.define("qx.ui.core.Widget",
         //  target.setAttribute("tabIndex", -1);
         //} else if (old) {
         //  target.setAttribute("tabIndex", null);
-      	//}
-      	target.setAttribute("tabIndex", null);
+        //}
+        target.setAttribute("tabIndex", null);
       }
     },
 
@@ -3230,7 +3233,7 @@ qx.Class.define("qx.ui.core.Widget",
     _onContextMenuOpen : function(e)
     {
       // only allow long tap context menu on touch interactions
-      if (e.getType() == "longtap") {
+      if (e.getType() === "longtap") {
         if (e.getPointerType() !== "touch") {
           return;
         }
@@ -3690,7 +3693,7 @@ qx.Class.define("qx.ui.core.Widget",
       }
     },
 
-  	/**
+    /**
      * Hides the given child control by ID
      *
      * @param id {String} ID of the child control

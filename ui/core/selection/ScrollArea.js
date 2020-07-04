@@ -121,7 +121,13 @@ qx.Class.define("qx.ui.core.selection.ScrollArea",
 
       var widget = this._getWidget();
       var scrollTop = widget.getScrollY();
-      var innerHeight = widget.getInnerSize().height;
+
+      // @ITG:Wisej: Pressing PgUp/Down in a ComboBox when the drop down has never been made visible causes a js error.
+      // var innerHeight = widget.getInnerSize().height;
+      var innerHeight = widget.getSizeHint().height;
+      var insets = widget.getInsets();
+      innerHeight -= insets.top + insets.bottom;
+
       var top, bottom, found;
 
       if (up)
@@ -141,7 +147,7 @@ qx.Class.define("qx.ui.core.selection.ScrollArea",
             if (top < min)
             {
               // Use previous one
-              found = i+1;
+              found = i;
               break;
             }
           }
@@ -186,8 +192,8 @@ qx.Class.define("qx.ui.core.selection.ScrollArea",
             // This item is out of the visible block
             if (bottom > max)
             {
-              // Use previous one
-              found = i-1;
+              // Use next one
+              found = i;
               break;
             }
           }

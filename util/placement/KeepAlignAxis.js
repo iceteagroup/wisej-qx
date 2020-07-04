@@ -81,7 +81,7 @@ qx.Bootstrap.define("qx.util.placement.KeepAlignAxis",
         return start;
       }
 
-      if (position == "edge-start" || position == "edge-end")
+      if (position === "edge-start" || position === "edge-end")
       {
         range1End = target.start - offsets.end;
         range2Start = target.end + offsets.start;

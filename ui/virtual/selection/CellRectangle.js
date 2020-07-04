@@ -217,11 +217,30 @@ qx.Class.define("qx.ui.virtual.selection.CellRectangle",
 
         // overridden
         _getPage: function (lead, up) {
-            if (up) {
-                return this._getFirstSelectable();
-            } else {
-                return this._getLastSelectable();
+
+            // @ITG:Wisej: Added paging support.
+            //if (up) {
+            //  return this._getFirstSelectable();
+            //} else {
+            //  return this._getLastSelectable();
+            //}
+
+            var item = lead;
+            var next = null;
+            var direction = up ? "above" : "under";
+            var rowConfig = this._pane.getRowConfig();
+            var paneHeight = this._pane.getBounds().height;
+            paneHeight -= rowConfig.getItemSize(item);
+            while (paneHeight > 0) {
+
+              next = this._getRelatedSelectable(item, direction);
+              if (next === null)
+                break;
+
+              item = next;
+              paneHeight -= rowConfig.getItemSize(item);
             }
+            return item;
         },
 
 

@@ -293,7 +293,7 @@ qx.Class.define("qx.ui.progressive.renderer.table.Row",
       // For each cell...
       for (var i = 0; i < data.length; i++)
       {
-        var stylesheet = "qx-progressive-" + this.__hash + "-col-" + i;
+        var stylesheet = qx.theme.manager.Decoration.CSS_CLASSNAME_PREFIX + "progressive-" + this.__hash + "-col-" + i;
 
         // Determine what renderer to use for this column
         renderer = this.__renderers[i] || this.__defaultCellRenderer;
@@ -332,7 +332,7 @@ qx.Class.define("qx.ui.progressive.renderer.table.Row",
       // Set properties for the row div
       div.style.position = "relative";
       div.style.height = height + "px";
-      div.className = "qx-progressive-" + this.__hash + "-row";
+      div.className = qx.theme.manager.Decoration.CSS_CLASSNAME_PREFIX + "progressive-" + this.__hash + "-row";
       div.innerHTML = html.join("");
 
       // Add this row to the table

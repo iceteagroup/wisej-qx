@@ -157,6 +157,9 @@ qx.Class.define("qx.ui.form.AbstractSelectBox",
           control.setKeepActive(true);
           control.add(this.getChildControl("list"));
 
+          // @ITG:Wisej: Don't force the creation of the popup.
+          control.setMinWidth(this.getWidth());
+
           // @ITG:Wisej: Inherit the font from the owner, otherwise the drop down will always have its own font.
           control.setFont(this.getFont());
           this.addListener("changeFont", function (e) { control.setFont(this.getFont());}, this);
@@ -335,8 +338,11 @@ qx.Class.define("qx.ui.form.AbstractSelectBox",
      *
      * @param e {qx.event.type.Data} Data event
      */
-    _onResize : function(e){
-      this.getChildControl("popup").setMinWidth(e.getData().width);
+    _onResize: function (e) {
+      // @ITG:Wisej: Don't force the creation of the popup.
+      var popup = this.getChildControl("popup", true);
+      if (popup)
+        popup.setMinWidth(e.getData().width);
     },
 
 

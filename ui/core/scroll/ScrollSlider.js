@@ -35,11 +35,26 @@ qx.Class.define("qx.ui.core.scroll.ScrollSlider",
 
     // Remove roll/keypress events
     this.removeListener("keypress", this._onKeyPress);
-    this.removeListener("roll", this._onRoll);
+
+    // @ITG:Wisej: Keep the roll event to block touch swipes on the scrollbar or we get two opposite scrolling actions.
+    // this.removeListener("roll", this._onRoll);
   },
 
 
   members : {
+
+      /**
+       * Listener of roll event
+       *
+       * @param e {qx.event.type.Roll} Incoming event object
+       */
+      _onRoll: function (e) {
+
+          // @ITG:Wisej: block touch swipes on the scrollbar or we get two opposite scrolling actions.
+          if (e.getPointerType() === "touch") {
+              e.stop();
+          }
+      },
 
     // overridden
     _createChildControlImpl : function(id, hash)

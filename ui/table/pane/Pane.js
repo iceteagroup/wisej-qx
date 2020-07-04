@@ -449,7 +449,7 @@ qx.Class.define("qx.ui.table.pane.Pane",
         cellInfo.rowData = tableModel.getRowData(row);
 
         rowRenderer.updateDataRowElement(cellInfo, rowNodes[y]);
-      };
+      }
     },
 
 
@@ -519,7 +519,7 @@ qx.Class.define("qx.ui.table.pane.Pane",
         var cellInfo = { table : table };
         cellInfo.styleHeight = rowHeight;
 
-      	// @ITG:Wisej: Added reference to the current scroller, column model and data model to simplify the life of cell renderers.
+        // @ITG:Wisej: Added reference to the current scroller, column model and data model to simplify the life of cell renderers.
         cellInfo.tableModel = tableModel;
         cellInfo.columnModel = columnModel;
         cellInfo.scroller = this.getPaneScroller();
@@ -723,12 +723,13 @@ qx.Class.define("qx.ui.table.pane.Pane",
         htmlArr =
           [
             "<div style='",
-            "width: 100%;",
+			"width: 100%;",
             (table.getForceLineHeight()
              ? "line-height: " + rowHeight + "px;"
              : ""),
-            "overflow: hidden;",
-            "'>",
+			"overflow: hidden;' ",
+			"class='" , qx.theme.manager.Decoration.CSS_CLASSNAME_PREFIX, "row-container'",
+            ">",
             this._getRowsHtml(firstRow, rowCount),
             "</div>"
           ];
@@ -751,7 +752,7 @@ qx.Class.define("qx.ui.table.pane.Pane",
       this.__lastColCount = colCount;
       this.__lastRowCount = rowCount;
       this.fireEvent("paneUpdated");
-    }
+    },
 
   },
 

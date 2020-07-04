@@ -41,7 +41,7 @@ qx.Mixin.define("qx.ui.core.MBlocker",
       // init : null,
       init: "modalMask",
       nullable: true,
-      apply : "_applyBlockerColor",
+      apply: "_applyBlockerColor",
       themeable: true
     },
 
@@ -53,7 +53,7 @@ qx.Mixin.define("qx.ui.core.MBlocker",
     {
       check : "Number",
       init : 1,
-      apply : "_applyBlockerOpacity",
+     apply: "_applyBlockerOpacity",
       themeable: true
     }
   },
@@ -83,6 +83,7 @@ qx.Mixin.define("qx.ui.core.MBlocker",
     _applyBlockerOpacity : function(value, old) {
       this.getBlocker().setOpacity(value);
     },
+
 
     /**
      * Block all events from this widget by placing a transparent overlay widget,
@@ -118,10 +119,12 @@ qx.Mixin.define("qx.ui.core.MBlocker",
     /**
      * Unblock the widget blocked by {@link #block}, but it doesn't take care of
      * the amount of {@link #block} calls. The blocker is directly removed.
+     * 
+     * @param restoreActive {Boolean?} indicates whether to restore the active widget.
      */
-    forceUnblock : function() {
+    forceUnblock : function(restoreActive) {
       if (this.__blocker) {
-        this.__blocker.forceUnblock();
+        this.__blocker.forceUnblock(restoreActive);
       }
     },
 
@@ -131,9 +134,11 @@ qx.Mixin.define("qx.ui.core.MBlocker",
      *
      * @param zIndex {Integer} All child widgets with a zIndex below this value
      *     will be blocked
+     * @param keepActive {Boolean?} Optional argument to indicate that the blocker should not
+     *     change the widget with the keyboard input.
      */
-    blockContent : function(zIndex) {
-      this.getBlocker().blockContent(zIndex);
+    blockContent : function(zIndex, keepActive) {
+      this.getBlocker().blockContent(zIndex, keepActive);
     },
 
 

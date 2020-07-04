@@ -483,11 +483,20 @@ qx.Class.define("qx.event.handler.Keyboard",
 
       "gecko" : function(domEvent)
       {
-        var charCode = domEvent.charCode;
-        var type = domEvent.type;
+        if(qx.core.Environment.get("engine.version") < 66) {
+          var charCode = domEvent.charCode;
+          var type = domEvent.type;
 
-        this._idealKeyHandler(domEvent.keyCode, charCode, type, domEvent);
-      },
+          this._idealKeyHandler(domEvent.keyCode, charCode, type, domEvent);
+          this._idealKeyHandler(domEvent.keyCode, charCode, type, domEvent);
+        } else {
+          if (this._charCode2KeyCode[domEvent.keyCode]) {
+            this._idealKeyHandler(this._charCode2KeyCode[domEvent.keyCode], 0, domEvent.type, domEvent);
+          } else {
+            this._idealKeyHandler(0, domEvent.keyCode, domEvent.type, domEvent);
+          }
+        }
+	  },
 
       "webkit" : function(domEvent)
       {
@@ -548,11 +557,20 @@ qx.Class.define("qx.event.handler.Keyboard",
       var keyIdentifier;
 
       // Use: keyCode
-      if (keyCode || (!keyCode && !charCode))
+      if (keyCode && !charCode)
       {
         keyIdentifier = qx.event.util.Keyboard.keyCodeToIdentifier(keyCode);
 
         this._fireSequenceEvent(domEvent, eventType, keyIdentifier);
+      }
+
+      // Use: key
+      else if (domEvent.key && !charCode)
+      {
+        keyIdentifier = qx.event.util.Keyboard.charCodeToIdentifier(domEvent.key.charCodeAt(0));
+
+        this._fireSequenceEvent(domEvent, "keypress", keyIdentifier);
+        this._fireInputEvent(domEvent, charCode);
       }
 
       // Use: charCode
@@ -657,8 +675,7 @@ qx.Class.define("qx.event.handler.Keyboard",
     // register at the event handler
     qx.event.Registration.addHandler(statics);
 
-    if ((qx.core.Environment.get("engine.name") === "mshtml") ||
-      qx.core.Environment.get("engine.name") === "webkit")
+    if (qx.core.Environment.get("engine.name") !== "opera")
     {
       members._charCode2KeyCode =
       {

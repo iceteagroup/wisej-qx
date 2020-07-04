@@ -50,7 +50,7 @@ qx.Class.define("qx.core.Object",
   *****************************************************************************
   */
 
-  // @ITG:Wisej: Added option to create "weak" refereneces of qooxdoo objects. Will update with qooxdoo 6.
+  // @ITG:Wisej: Added option to create "weak" references of qooxdoo objects. Will update with qooxdoo 6.
 
   /**
    * Create a new instance
@@ -244,7 +244,12 @@ qx.Class.define("qx.core.Object",
       return data === undefined ? null : data;
     },
 
-
+    /**
+     * Clears all user defined data from the object.
+     */
+    resetUserData: function () {
+      this.__userData = null;
+    },
 
     /*
     ---------------------------------------------------------------------------

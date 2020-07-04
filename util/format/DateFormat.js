@@ -161,7 +161,7 @@ qx.Class.define("qx.util.format.DateFormat",
 
       var format = qx.locale.Date.getDateFormat("short") + "";
 
-      // Memoizing the instance, so caller doesn't have to dispose it.
+      // Memorizing the instance, so caller doesn't have to dispose it.
       if (DateFormat._dateInstance == null || DateFormat._dateInstance.__format != format) {
         DateFormat._dateInstance = new DateFormat(format);
       }
@@ -186,7 +186,7 @@ qx.Class.define("qx.util.format.DateFormat",
 
       var format = qx.locale.Date.getDateFormat("long") + " " + qx.locale.Date.getDateTimeFormat("HHmmss", "HH:mm:ss");
 
-      // Memoizing the instance, so caller doesn't have to dispose it.
+      // Memorizing the instance, so caller doesn't have to dispose it.
       if (DateFormat._dateTimeInstance == null || DateFormat._dateTimeInstance.__format != format) {
         DateFormat._dateTimeInstance = new DateFormat(format);
       }
@@ -331,7 +331,7 @@ qx.Class.define("qx.util.format.DateFormat",
      * Returns the week year of a date. (that is the year of the week where this date happens to be)
      * For a week in the middle of the summer, the year is easily obtained, but for a week
      * when New Year's Eve takes place, the year of that week is ambiguous.
-     * The thursday day of that week is used to determine the year.
+     * The Thursday day of that week is used to determine the year.
      *
      * @param date {Date} the date to get the week in year of.
      * @return {Integer} the week year.

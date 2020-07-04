@@ -261,7 +261,7 @@ qx.Class.define("qx.ui.layout.VBox",
         this.__flexs = flexs;
       }
 
-      this.__enableFlex = enableFlex
+      this.__enableFlex = enableFlex;
       this.__children = children;
 
       // Clear invalidation marker
@@ -316,27 +316,35 @@ qx.Class.define("qx.ui.layout.VBox",
 
 
       // Compute gaps
-      var spacing = this.getSpacing();
+      var spacing = this.getSpacing(), gaps;
       var separator = this.getSeparator();
       if (separator) {
-        var gaps = util.computeVerticalSeparatorGaps(children, spacing, separator);
+        gaps = util.computeVerticalSeparatorGaps(children, spacing, separator);
       } else {
-        var gaps = util.computeVerticalGaps(children, spacing, true);
+        gaps = util.computeVerticalGaps(children, spacing, true);
       }
 
 
       // First run to cache children data and compute allocated height
       var i, child, height, percent;
-      var heights = [];
+      var heights = [], hint;
       var allocatedHeight = gaps;
 
       for (i=0; i<length; i+=1)
       {
         percent = this.__heights[i];
+        hint = children[i].getSizeHint();
 
         height = percent != null ?
           Math.floor((availHeight - gaps) * percent) :
-          children[i].getSizeHint().height;
+          hint.height;
+
+        // Limit computed value
+        if (height < hint.minHeight) {
+          height = hint.minHeight;
+        } else if (height > hint.maxHeight) {
+          height = hint.maxHeight;
+        }
 
         heights.push(height);
         allocatedHeight += height;
@@ -475,7 +483,7 @@ qx.Class.define("qx.ui.layout.VBox",
       // Initialize
       var minHeight=0, height=0, percentMinHeight=0;
       var minWidth=0, width=0;
-      var child, hint, margin;
+      var child, hint, margin, gaps;
 
       // Iterate over children
       for (var i=0, l=children.length; i<l; i+=1)
@@ -517,9 +525,9 @@ qx.Class.define("qx.ui.layout.VBox",
       var spacing = this.getSpacing();
       var separator = this.getSeparator();
       if (separator) {
-        var gaps = util.computeVerticalSeparatorGaps(children, spacing, separator);
+        gaps = util.computeVerticalSeparatorGaps(children, spacing, separator);
       } else {
-        var gaps = util.computeVerticalGaps(children, spacing, true);
+        gaps = util.computeVerticalGaps(children, spacing, true);
       }
 
       // Return hint

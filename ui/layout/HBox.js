@@ -260,7 +260,7 @@ qx.Class.define("qx.ui.layout.HBox",
         this.__flexs = flexs;
       }
 
-      this.__enableFlex = enableFlex
+      this.__enableFlex = enableFlex;
       this.__children = children;
 
       // Clear invalidation marker
@@ -315,27 +315,35 @@ qx.Class.define("qx.ui.layout.HBox",
 
 
       // Compute gaps
-      var spacing = this.getSpacing();
+      var spacing = this.getSpacing(), gaps;
       var separator = this.getSeparator();
       if (separator) {
-        var gaps = util.computeHorizontalSeparatorGaps(children, spacing, separator);
+        gaps = util.computeHorizontalSeparatorGaps(children, spacing, separator);
       } else {
-        var gaps = util.computeHorizontalGaps(children, spacing, true);
+        gaps = util.computeHorizontalGaps(children, spacing, true);
       }
 
 
       // First run to cache children data and compute allocated width
       var i, child, width, percent;
-      var widths = [];
+      var widths = [], hint;
       var allocatedWidth = gaps;
 
       for (i=0; i<length; i+=1)
       {
         percent = this.__widths[i];
+        hint = children[i].getSizeHint();
 
         width = percent != null ?
           Math.floor((availWidth - gaps) * percent) :
-          children[i].getSizeHint().width;
+          hint.width;
+
+        // Limit computed value
+        if (width < hint.minWidth) {
+          width = hint.minWidth;
+        } else if (width > hint.maxWidth) {
+          width = hint.maxWidth;
+        }
 
         widths.push(width);
         allocatedWidth += width;
@@ -475,7 +483,7 @@ qx.Class.define("qx.ui.layout.HBox",
       // Initialize
       var minWidth=0, width=0, percentMinWidth=0;
       var minHeight=0, height=0;
-      var child, hint, margin;
+      var child, hint, margin, gaps;
 
       // Iterate over children
       for (var i=0, l=children.length; i<l; i+=1)
@@ -517,9 +525,9 @@ qx.Class.define("qx.ui.layout.HBox",
       var spacing = this.getSpacing();
       var separator = this.getSeparator();
       if (separator) {
-        var gaps = util.computeHorizontalSeparatorGaps(children, spacing, separator);
+        gaps = util.computeHorizontalSeparatorGaps(children, spacing, separator);
       } else {
-        var gaps = util.computeHorizontalGaps(children, spacing, true);
+        gaps = util.computeHorizontalGaps(children, spacing, true);
       }
 
       // Return hint

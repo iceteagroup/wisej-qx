@@ -86,7 +86,6 @@ qx.Class.define("qx.ui.table.pane.Scroller",
     // embed pane into a scrollable container
     this._paneClipper = this._createPaneClipper();
     this._paneClipper.add(this.__tablePane);
-    this._paneClipper.addListener("roll", this._onRoll, this);
     this._paneClipper.addListener("pointermove", this._onPointermovePane, this);
     this._paneClipper.addListener("pointerdown", this._onPointerdownPane, this);
     this._paneClipper.addListener("tap", this._onTapPane, this);
@@ -116,8 +115,8 @@ qx.Class.define("qx.ui.table.pane.Scroller",
     // init focus indicator
     this.__focusIndicator = this.getChildControl("focus-indicator");
 
-  	// need to run the apply method at least once [BUG #4057]
-  	// @ITG:Wisej: Should preserve the focus indicator visibility set in table.
+    // need to run the apply method at least once [BUG #4057]
+    // @ITG:Wisej: Should preserve the focus indicator visibility set in table.
     this.setShowCellFocusIndicator(table.getShowCellFocusIndicator());
     // this.initShowCellFocusIndicator();
 
@@ -128,6 +127,9 @@ qx.Class.define("qx.ui.table.pane.Scroller",
 
     // @ITG:Wisej: RightToLeft support.
     this.addListener("changeRtl", this._onRtlChange, this);
+
+    // @ITG:Wisej: Handle "roll" events fired on child scrollbars.
+    this.addListener("roll", this._onRoll, this);
   },
 
 
@@ -495,6 +497,8 @@ qx.Class.define("qx.ui.table.pane.Scroller",
           control.setUserBounds(0, 0, 0, 0);
           control.setZIndex(1000);
           control.addListener("pointerup", this._onPointerupFocusIndicator, this);
+          // @ITG:Wisej: Register the pointerdown handle only once on the focus indicator.
+          control.addListener("pointerdown", this._onPointerdownFocusIndicator, this);
           this._paneClipper.add(control);
           control.show();             // must be active for editor to operate
           control.setDecorator(null); // it can be initially invisible, though.
@@ -504,13 +508,15 @@ qx.Class.define("qx.ui.table.pane.Scroller",
           control = new qx.ui.core.Widget();
           control.setUserBounds(0, 0, 0, 0);
           control.setZIndex(1000);
-          this._paneClipper.add(control);
+          // @ITG:Wisej: Show the resize line above all scrollers.
+          this.getTable()._add(control);
           break;
 
         case "scrollbar-x":
           control = this._createScrollBar("horizontal").set({
             alignY: "bottom",
-            maximum: 0
+            maximum: 0,
+            visibility:"excluded"
           });
           control.addListener("scroll", this._onScrollX, this);
 
@@ -524,7 +530,8 @@ qx.Class.define("qx.ui.table.pane.Scroller",
 
         case "scrollbar-y":
           control = this._createScrollBar("vertical").set({
-            maximum: 0
+            maximum: 0,
+            visibility: "excluded"
           });
           control.addListener("scroll", this._onScrollY, this);
 
@@ -553,7 +560,7 @@ qx.Class.define("qx.ui.table.pane.Scroller",
       // @ITG:Wisej: RightToLeft support. Add a spacer to line up the left column with the content.
       if (this.isRtl()) {
 
-      	if (!this.__verticalScrollBarFiller) {
+        if (!this.__verticalScrollBarFiller) {
 
           this.__verticalScrollBarFiller = new qx.ui.core.Spacer();
           this.__top.add(this.__verticalScrollBarFiller);
@@ -564,7 +571,7 @@ qx.Class.define("qx.ui.table.pane.Scroller",
             }, this);
           }
         }
-
+        this.__verScrollBar.syncAppearance();
         this.__verticalScrollBarFiller.setWidth(value ? this.__verScrollBar.getSizeHint().width : 0);
       }
       else if (this.__verticalScrollBarFiller) {
@@ -644,6 +651,10 @@ qx.Class.define("qx.ui.table.pane.Scroller",
      */
     setScrollX : function(scrollX) {
       this.__horScrollBar.scrollTo(scrollX);
+
+      // @ITG:Wisej: Fix the column headers going out of sync when setting the scroll position by code.
+      this._headerClipper.scrollToX(scrollX);
+
     },
 
 
@@ -930,7 +941,7 @@ qx.Class.define("qx.ui.table.pane.Scroller",
     {
       var table = this.getTable();
 
-      if (e.getPointerType() == "mouse" || !table.getEnabled()) {
+      if (e.getPointerType() === "mouse" || !table.getEnabled()) {
         return;
       }
 
@@ -985,7 +996,7 @@ qx.Class.define("qx.ui.table.pane.Scroller",
      */
     __isAtEdge : function(scrollBar, delta) {
       var position = scrollBar.getPosition();
-      return (delta < 0 && position <= 0) || (delta > 0 && position >= scrollBar.getMaximum());
+      return (delta <= 0 && position <= 0) || (delta >= 0 && position >= scrollBar.getMaximum());
     },
 
 
@@ -997,18 +1008,23 @@ qx.Class.define("qx.ui.table.pane.Scroller",
     __handleResizeColumn : function(pageX)
     {
       var table = this.getTable();
+
       // We are currently resizing -> Update the position
       var headerCell = this.__header.getHeaderWidgetAtColumn(this.__resizeColumn);
-      var minColumnWidth = headerCell.getSizeHint().minWidth;
+      if (headerCell == null)
+        return;
 
+      var minColumnWidth = headerCell.getSizeHint().minWidth;
       var newWidth = Math.max(minColumnWidth, this.__lastResizeWidth + pageX - this.__lastResizePointerPageX);
+
+      // @ITG:Wisej: Added support for column max width.
+      var maxColumnWidth = headerCell.getSizeHint().maxWidth;
+      newWidth = Math.min(maxColumnWidth, newWidth);
 
       if (this.getLiveResize()) {
         var columnModel = table.getTableColumnModel();
         columnModel.setColumnWidth(this.__resizeColumn, newWidth, true);
       } else {
-        this.__header.setColumnWidth(this.__resizeColumn, newWidth, true);
-
         var paneModel = this.getTablePaneModel();
         this._showResizeLine(paneModel.getColumnLeft(this.__resizeColumn) + newWidth);
       }
@@ -1113,8 +1129,8 @@ qx.Class.define("qx.ui.table.pane.Scroller",
       }
 
       var cursor = useResizeCursor ? "col-resize" : null;
-      this.getApplicationRoot().setGlobalCursor(cursor);
       this.setCursor(cursor);
+      this.getApplicationRoot().setGlobalCursor(cursor);
       this.__header.setPointerOverColumn(pointerOverColumn);
     },
 
@@ -1272,6 +1288,23 @@ qx.Class.define("qx.ui.table.pane.Scroller",
       }
     },
 
+    // @ITG:Wisej: Register the pointerdown handle only once on the focus indicator.
+    /**
+     * Event handle for the focus indicator's pointer down event.
+     * 
+     * @param e {qx.event.type.Pointer} The pointer event
+     */
+      _onPointerdownFocusIndicator: function (e) {
+
+        if (this.isEditing()) {
+          this.__lastPointerDownCell = {
+            row: this.__focusedRow,
+            col: this.__focusedCol
+        };
+
+         e.stopPropagation();
+      }
+    },
 
     /**
      * Event handler for the focus indicator's pointerup event
@@ -1342,8 +1375,8 @@ qx.Class.define("qx.ui.table.pane.Scroller",
       this.__resizeColumn = null;
       this._headerClipper.releaseCapture();
 
-      this.getApplicationRoot().setGlobalCursor(null);
       this.setCursor(null);
+      this.getApplicationRoot().setGlobalCursor(null);
     },
 
 
@@ -1411,7 +1444,7 @@ qx.Class.define("qx.ui.table.pane.Scroller",
 
       if (this.__resizeColumn != null)
       {
-      	this._stopResizeHeader();
+       this._stopResizeHeader();
 
         // @ITG:Wisej: Causes the next valid header tap to get lost when the column is resized.
         // this.__ignoreTap = true;
@@ -1679,9 +1712,12 @@ qx.Class.define("qx.ui.table.pane.Scroller",
       var resizeLine = this._showChildControl("resize-line");
 
       var width = resizeLine.getWidth();
-      var paneBounds = this._paneClipper.getBounds();
+
+      // @ITG:Wisej: Show the resize line above all scrollers.
+      var paneBounds = this.getBounds();
+      var bounds = this.getTable().getBounds();
       resizeLine.setUserBounds(
-        x - Math.round(width/2), 0, width, paneBounds.height
+        x + paneBounds.left - Math.round(width / 2) - this.getScrollX(), 0, width, bounds.height
       );
     },
 
@@ -1961,15 +1997,16 @@ qx.Class.define("qx.ui.table.pane.Scroller",
         }
         else
         {
-          // prevent tap event from bubbling up to the table
-          this.__focusIndicator.addListener("pointerdown", function(e)
-          {
-            this.__lastPointerDownCell = {
-              row : this.__focusedRow,
-              col : this.__focusedCol
-            };
-            e.stopPropagation();
-          }, this);
+          // @ITG:Wisej: Don't attach the handle every time the cell enters edit mode.
+          //// prevent tap event from bubbling up to the table
+          //this.__focusIndicator.addListener("pointerdown", function(e)
+          //{
+          //  this.__lastPointerDownCell = {
+          //    row : this.__focusedRow,
+          //    col : this.__focusedCol
+          //  };
+          //  e.stopPropagation();
+          //}, this);
 
           this.__focusIndicator.add(this._cellEditor);
           this.__focusIndicator.addState("editing");
@@ -1978,7 +2015,8 @@ qx.Class.define("qx.ui.table.pane.Scroller",
           // Make the focus indicator visible during editing
           this.__focusIndicator.setDecorator("table-scroller-focus-indicator");
 
-          this._cellEditor.focus();
+          if (this._cellEditor.isFocusable())
+            this._cellEditor.focus();
 
           // @ITG:Wisej: Not needed, it redirects keyboard inputs to the outer widget when the editor is a composite widget such as a ComboBox or DateField.
           // this._cellEditor.activate();

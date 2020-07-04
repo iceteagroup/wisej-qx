@@ -37,7 +37,7 @@ qx.Class.define("qx.locale.Number",
      * @return {String} decimal separator.
      */
     getDecimalSeparator : function(locale) {
-      return qx.locale.Manager.getInstance().localize("cldr_number_decimal_separator", [], locale)
+      return qx.locale.Manager.getInstance().localize("cldr_number_decimal_separator", [], locale);
     },
 
 
@@ -48,7 +48,7 @@ qx.Class.define("qx.locale.Number",
      * @return {String} group separator.
      */
     getGroupSeparator : function(locale) {
-      return qx.locale.Manager.getInstance().localize("cldr_number_group_separator", [], locale)
+      return qx.locale.Manager.getInstance().localize("cldr_number_group_separator", [], locale);
     },
 
 
@@ -59,7 +59,18 @@ qx.Class.define("qx.locale.Number",
      * @return {String} percent format string.
      */
     getPercentFormat : function(locale) {
-      return qx.locale.Manager.getInstance().localize("cldr_number_percent_format", [], locale)
+      return qx.locale.Manager.getInstance().localize("cldr_number_percent_format", [], locale);
+    },
+
+	// @ITG:Wisej: Added currency symbol.
+    /**
+     * Get currency symbol.
+     *
+     * @param locale {String} optional locale to be used
+     * @return {String} currency symbol.
+     */
+    getCurrencySymbol : function(locale) {
+      return qx.locale.Manager.getInstance().localize("cldr_number_currency_symbol", [], locale);
     }
   }
 });

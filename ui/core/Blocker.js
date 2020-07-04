@@ -98,8 +98,7 @@ qx.Class.define("qx.ui.core.Blocker",
       // init : null,
       init: "modalMask",
       nullable: true,
-      apply : "_applyColor",
-      themeable: true
+      apply : "_applyColor"
     },
 
 
@@ -110,8 +109,7 @@ qx.Class.define("qx.ui.core.Blocker",
     {
       check : "Number",
       init : 1,
-      apply : "_applyOpacity",
-      themeable: true
+      apply : "_applyOpacity"
     },
 
 
@@ -136,25 +134,37 @@ qx.Class.define("qx.ui.core.Blocker",
       init : false
     },
 
-    // @ITG:Wisej: Added support for an ajax loader image on a any blocker.
+    // @ITG:Wisej: Added support for an ajax loader background image on the blocker.
 
     /**
      * loaderImage of the blocker.
      *
      * This is usually an ajax loaded animated gif.
      */
-    loaderImage:
+    backgroundImage :
     {
         check: "String",
         init: null,
-        apply: "_applyLoaderImage",
-        themeable: true,
+        apply: "_applyBackgroundImage",
         nullable: true
+	},
+
+    // @ITG:Wisej: Added support for custom html in the blocker element.
+
+    /**
+     * loaderImage of the blocker.
+     *
+     * This is usually an ajax loaded animated gif.
+     */
+    html :
+    {
+      check: "String",
+      init: null,
+      apply: "_applyHtml",
+      nullable: true
     }
 
   },
-
-
 
 
 
@@ -255,10 +265,10 @@ qx.Class.define("qx.ui.core.Blocker",
       this.__setBlockersStyle("backgroundColor", color);
     },
 
-    // @ITG:Wisej: Added support for an ajax loader image on a any blocker.
+    // @ITG:Wisej: Added support for an ajax loader background image on the blocker.
 
     // property apply
-    _applyLoaderImage: function (value, old) {
+    _applyBackgroundImage: function (value, old) {
 
       if (value) {
         var source = qx.util.AliasManager.getInstance().resolve(value);
@@ -275,6 +285,23 @@ qx.Class.define("qx.ui.core.Blocker",
 
     },
 
+
+    // @ITG:Wisej: Added support for an ajax loader background image on the blocker.
+
+    // property apply
+    _applyHtml: function (value, old) {
+
+      if (this.__blocker) {
+
+        var dom = this.__blocker.getDomElement();
+        if (!dom)
+          dom = this.__blocker._createDomElement();
+
+        dom.innerHTML = value;
+      }
+    },
+
+
     // property apply
     _applyOpacity : function(value, old)
     {
@@ -290,6 +317,7 @@ qx.Class.define("qx.ui.core.Blocker",
     {
       "true" : function() {
         this._applyColor(this.getColor());
+        this._applyOpacity(this.getOpacity());
       },
       "false" : null
     }),
@@ -339,6 +367,12 @@ qx.Class.define("qx.ui.core.Blocker",
      */
     _restoreActiveWidget : function()
     {
+
+      // @ITG:Wisej: Restore only if the blocker is still the active widget.
+      var focusHandler = qx.ui.core.FocusHandler.getInstance();
+      if (focusHandler.getActiveWidget() != this)
+        return;
+
       var widget;
 
       var focusElementsLength = this.__focusElements.length;
@@ -389,9 +423,10 @@ qx.Class.define("qx.ui.core.Blocker",
         this.__setBlockersStyle("zIndex", this._widget != null ? this._widget.getZIndex() : 15);
 
         // @ITG:Wisej: Need to reapply the properties, otherwise they are lost on the newly created blocker.
+        this._applyHtml(this.getHtml());
         this._applyColor(this.getColor());
         this._applyOpacity(this.getOpacity());
-        this._applyLoaderImage(this.getLoaderImage());
+        this._applyBackgroundImage(this.getBackgroundImage());
 
         if (!widget) {
           if (this._isRoot) {
@@ -423,10 +458,14 @@ qx.Class.define("qx.ui.core.Blocker",
      *
      * @param zIndex {Number} All child widgets with a zIndex below this value will be blocked
      * @param blockContent {Boolean} append the blocker to the widget's content if true
+     * @param keepActive {Boolean?} Optional argument to indicate that the blocker should not
+     *     change the widget with the keyboard input.
      */
-    _block : function(zIndex, blockContent) {
+      _block: function (zIndex, blockContent, keepActive) {
       if (!this._isRoot && !this._widget.getLayoutParent()) {
-        this.__appearListener = this._widget.addListenerOnce("appear", this._block.bind(this, zIndex));
+        if (!this.__appearListener) {
+          this.__appearListener = this._widget.addListenerOnce("appear", this._block.bind(this, zIndex));
+        }
         return;
       }
 
@@ -455,14 +494,13 @@ qx.Class.define("qx.ui.core.Blocker",
         }
 
         blocker.include();
-        if (!blockContent) {
+        if (keepActive !== true)
           blocker.activate();
-        }
 
         blocker.addListener("deactivate", this.__activateBlockerElement, this);
-        blocker.addListener("keypress", this.__stopTabEvent, this);
-        blocker.addListener("keydown", this.__stopTabEvent, this);
-        blocker.addListener("keyup", this.__stopTabEvent, this);
+        blocker.addListener("keypress", this.__stopKeyEvents, this);
+        blocker.addListener("keydown", this.__stopKeyEvents, this);
+        blocker.addListener("keyup", this.__stopKeyEvents, this);
 
         this.fireEvent("blocked", qx.event.type.Event);
       }
@@ -488,6 +526,7 @@ qx.Class.define("qx.ui.core.Blocker",
     {
       if (this.__appearListener) {
         this._widget.removeListenerById(this.__appearListener);
+        this.__appearListener = null;
       }
 
       if (!this.isBlocked()){
@@ -505,30 +544,38 @@ qx.Class.define("qx.ui.core.Blocker",
     /**
      * Unblock the widget blocked by {@link #block}, but it doesn't take care of
      * the amount of {@link #block} calls. The blocker is directly removed.
+     * 
+     * @param restoreActive {Boolean?} indicates whether to restore the active widget.
      */
-    forceUnblock : function()
+    forceUnblock : function(restoreActive)
     {
+      if (this.__appearListener) {
+        this._widget.removeListenerById(this.__appearListener);
+        this.__appearListener = null;
+      }
+
       if (!this.isBlocked()){
         return;
       }
 
       this.__blockerCount = 0;
-      this.__unblock();
+      this.__unblock(restoreActive);
     },
 
 
     /**
      * Unblock the widget blocked by {@link #block}.
      */
-    __unblock : function()
+    __unblock : function(restoreActive)
     {
-      this._restoreActiveWidget();
+      if (restoreActive !== false)
+        this._restoreActiveWidget();
 
       var blocker = this.getBlockerElement();
       blocker.removeListener("deactivate", this.__activateBlockerElement, this);
-      blocker.removeListener("keypress", this.__stopTabEvent, this);
-      blocker.removeListener("keydown", this.__stopTabEvent, this);
-      blocker.removeListener("keyup", this.__stopTabEvent, this);
+      blocker.removeListener("keypress", this.__stopKeyEvents, this);
+      blocker.removeListener("keydown", this.__stopKeyEvents, this);
+      blocker.removeListener("keyup", this.__stopKeyEvents, this);
       blocker.exclude();
 
       this.fireEvent("unblocked", qx.event.type.Event);
@@ -540,21 +587,24 @@ qx.Class.define("qx.ui.core.Blocker",
      *
      * @param zIndex {Integer} All child widgets with a zIndex below this value
      *     will be blocked
+     * @param keepActive {Boolean?} Optional argument to indicate that the blocker should not
+     *     change the widget with the keyboard input.
      */
-    blockContent : function(zIndex) {
-      this._block(zIndex, true);
+    blockContent : function(zIndex, keepActive) {
+      this._block(zIndex, true, keepActive);
     },
 
 
+    // @ITG:Wisej: The blocker needs to stop all keyboard events or we may get into a weird situation
+    // where the idealKeyHandler dispatches keyboard events to the blocker while a textField gets the key inputs.
+
     /**
-     * Stops the passed "Tab" event.
+     * Stops all keyboard events.
      *
      * @param e {qx.event.type.KeySequence} event to stop.
      */
-    __stopTabEvent : function(e) {
-      if (e.getKeyIdentifier() === "Tab") {
-        e.stop();
-      }
+    __stopKeyEvents : function(e) {
+      e.stop();
     },
 
 

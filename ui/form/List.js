@@ -322,11 +322,12 @@ qx.Class.define("qx.ui.form.List",
         return;
       }
 
-      // Only useful in single or one selection mode
+      // @ITG:Wisej: Change behavior in multi selection by setting
+      // the lead item instead of selecting the item.
+      var multi = false;
       var mode = this.getSelectionMode();
-      if (!(mode === "single" || mode === "one")) {
-        return;
-      }
+      if (mode !== "single" && mode !== "one")
+        multi = true;
 
       // Reset string after a second of non pressed key
       if (((new Date).valueOf() - this.__lastKeyPress) > 1000) {
@@ -338,16 +339,29 @@ qx.Class.define("qx.ui.form.List",
 
       // @ITG:Wisej: Use the currently selected item to start the search.
       var startIndex = -1;
-      var selection = this.getSelection();
-      if (selection && selection.length > 0)
-        startIndex = this.indexOf(selection[0]);
+      if (multi) {
+        startIndex = this.indexOf(this._getManager().getLeadItem());
+      }
+      else {
+        var selection = this.getSelection();
+        if (selection && selection.length > 0)
+          startIndex = this.indexOf(selection[0]);
+      }
 
       // Find matching item
       var matchedItem = this.findItemByLabelFuzzy(this.__pressedString, startIndex);
 
       // if an item was found, select it
       if (matchedItem) {
-        this.setSelection([matchedItem]);
+
+        // @ITG:Wisej: Change behavior in multi selection by setting
+        if (multi) {
+          this._getManager()._setLeadItem(matchedItem);
+          this._getManager()._scrollItemIntoView(matchedItem);
+        }
+        else {
+          this.setSelection([matchedItem]);
+        }
 
         // @ITG:Wisej: Stop default processing of the key input char when an item has been found or we may get the char appended to the input text.
         e.stop();

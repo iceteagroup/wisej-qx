@@ -109,14 +109,25 @@ qx.Class.define("qx.theme.manager.Appearance",
      */
     setProperty: function (widget, unstyler, styler, name, value) {
 
-        try {
-            value === undefined
-                ? widget[unstyler[name]]()
-                : widget[styler[name]](value);
+      try {
+        // @ITG:Wisej: Check and warn missing properties.
+        var setter = 
+          value === undefined 
+                ? widget[unstyler[name]]
+                : widget[styler[name]];
+
+        if (setter === undefined) {
+          this.warn("Missing property " + widget.getAppearance() + "." + name + ".");
         }
-        catch (e) {
+        else {
+          value === undefined
+                ? setter.call(widget)
+                : setter.call(widget, value);
+        }
+      }
+      catch (e) {
             qx.log.Logger.error(widget, "Error setting the property '" + widget.name + "." + name + "'.", e);
-        }
+      }
     },
 
     /**
@@ -239,17 +250,25 @@ qx.Class.define("qx.theme.manager.Appearance",
 
       // Resolve ID
       var aliasMap = this.__aliasMap;
-      var resolved = aliasMap[id];
+      if(!aliasMap[theme.name]) {
+        aliasMap[theme.name] = {};
+      }
+      var resolved = aliasMap[theme.name][id];
       if (!resolved) {
-        resolved = aliasMap[id] = this.__resolveId(id, theme, defaultId);
+        resolved = aliasMap[theme.name][id] = this.__resolveId(id, theme);
       }
 
       // Query theme for ID
       var entry = theme.appearances[resolved];
-      if (!entry)
-      {
+      if (!entry) {
         this.warn("Missing appearance: ", id);
-        return null;
+
+        if (defaultId && defaultId != id) {
+          resolved = aliasMap[theme.name][id] = this.__resolveId(id, theme, defaultId);
+          entry = theme.appearances[resolved];
+		}
+        if (!entry)
+          return null;
       }
 
       // Entries with includes, but without style are automatically merged
@@ -312,7 +331,7 @@ qx.Class.define("qx.theme.manager.Appearance",
 
         // Gather included data
         var incl;
-        if (entry.include) {
+        if (entry.include && entry.include != id) {
           incl = this.styleFrom(entry.include, states, theme, defaultId);
         }
 

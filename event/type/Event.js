@@ -36,8 +36,10 @@ qx.Class.define("qx.event.type.Event",
 {
   extend : qx.core.Object,
 
-
-
+  // @ITG:Wisej: Event objects don't need to go into the registry, make them weak references.
+  construct: function () {
+    this.base(arguments, true /* weakReference */);
+  },
 
   /*
   *****************************************************************************

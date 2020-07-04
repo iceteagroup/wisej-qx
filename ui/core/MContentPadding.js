@@ -159,7 +159,7 @@ qx.Mixin.define("qx.ui.core.MContentPadding",
       else
       {
         // forward the themed sates if case the apply was invoked by a theme
-        if (variant == "setThemed" || variant == "resetThemed") {
+        if (variant === "setThemed" || variant === "resetThemed") {
           var setter = this.__contentPaddingThemedSetter[name];
           target[setter](value);
         } else {

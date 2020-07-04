@@ -553,7 +553,7 @@ qx.Class.define("qx.ui.layout.Grid",
       return {
         vAlign : vAlign,
         hAlign : hAlign
-      }
+      };
     },
 
 

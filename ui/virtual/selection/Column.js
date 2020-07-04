@@ -98,6 +98,26 @@ qx.Class.define("qx.ui.virtual.selection.Column",
       return null;
     },
 
+    // overridden
+    _getPage: function (lead, up) {
+
+      var item = lead;
+      var next = null;
+      var direction = up ? "left" : "right";
+      var colConfig = this._pane.getColumnConfig();
+      var paneWidth = this._pane.getBounds().width;
+      paneWidth -= colConfig.getItemSize(item);
+      while (paneWidth > 0) {
+
+        next = this._getRelatedSelectable(item, direction);
+        if (next === null)
+          break;
+
+          item = next;
+          paneWidth -= colConfig.getItemSize(item);
+        }
+        return item;
+    },
 
     // overridden
     _scrollItemIntoView : function(item) {

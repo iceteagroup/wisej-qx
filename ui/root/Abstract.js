@@ -206,7 +206,7 @@ qx.Class.define("qx.ui.root.Abstract",
         }
 
         if (value) {
-          Stylesheet.addRule(sheet, "*", qx.bom.element.Cursor.compile(value).replace(";", "") + " !important");
+          Stylesheet.addRule(sheet, "div", qx.bom.element.Cursor.compile(value).replace(";", "") + " !important");
 
           // @ITG:Wisej: Cache and reuse the cursor rule.
           this.__globalCursorRule = sheet.cssRules[0];

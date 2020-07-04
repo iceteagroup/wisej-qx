@@ -102,12 +102,13 @@ qx.Class.define("qx.ui.virtual.selection.Abstract",
      */
     attachPointerEvents : function()
     {
-      var paneElement = this._pane.getContentElement();
-      paneElement.addListener("pointerdown", this.handlePointerDown, this);
-      paneElement.addListener("tap", this.handleTap, this);
-      paneElement.addListener("pointerover", this.handlePointerOver, this);
-      paneElement.addListener("pointermove", this.handlePointerMove, this);
-      paneElement.addListener("losecapture", this.handleLoseCapture, this);
+      // @ITG:Wisej: Attach to the pane otherwise it ignores the Enabled property of the target.
+      // var paneElement = this._pane.getContentElement();
+      this._pane.addListener("pointerdown", this.handlePointerDown, this);
+      this._pane.addListener("tap", this.handleTap, this);
+      this._pane.addListener("pointerover", this.handlePointerOver, this);
+      this._pane.addListener("pointermove", this.handlePointerMove, this);
+      this._pane.addListener("losecapture", this.handleLoseCapture, this);
     },
 
 
@@ -116,12 +117,13 @@ qx.Class.define("qx.ui.virtual.selection.Abstract",
      */
     detatchPointerEvents : function()
     {
-      var paneElement = this._pane.getContentElement();
-      paneElement.removeListener("pointerdown", this.handlePointerDown, this);
-      paneElement.removeListener("tap", this.handleTap, this);
-      paneElement.removeListener("pointerover", this.handlePointerOver, this);
-      paneElement.removeListener("pointermove", this.handlePointerMove, this);
-      paneElement.removeListener("losecapture", this.handleLoseCapture, this);
+      // @ITG:Wisej: Attach to the pane otherwise it ignores the Enabled property of the target.
+      // var paneElement = this._pane.getContentElement();
+      this._pane.removeListener("pointerdown", this.handlePointerDown, this);
+      this._pane.removeListener("tap", this.handleTap, this);
+      this._pane.removeListener("pointerover", this.handlePointerOver, this);
+      this._pane.removeListener("pointermove", this.handlePointerMove, this);
+      this._pane.removeListener("losecapture", this.handleLoseCapture, this);
     },
 
 

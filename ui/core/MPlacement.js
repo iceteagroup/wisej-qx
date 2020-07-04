@@ -506,7 +506,7 @@ qx.Mixin.define("qx.ui.core.MPlacement",
         top : this.getOffsetTop(),
         right : this.getOffsetRight(),
         bottom : this.getOffsetBottom()
-      }
+      };
     },
 
 
@@ -592,10 +592,11 @@ qx.Mixin.define("qx.ui.core.MPlacement",
 
         if (result.top >= coords.bottom)
           this.addState("placementBelow");
-        else if (result.left >= coords.right)
-          this.addState("placementRight");
         else if (result.bottom <= coords.top)
           this.addState("placementAbove");
+
+        if (result.left >= coords.right)
+          this.addState("placementRight");
         else if (result.right <= coords.left)
           this.addState("placementLeft");
 

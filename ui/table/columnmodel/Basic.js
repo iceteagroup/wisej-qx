@@ -30,7 +30,7 @@ qx.Class.define("qx.ui.table.columnmodel.Basic",
 
   construct : function()
   {
-    this.base(arguments);
+    this.base(arguments, true /* weakReference*/);
 
     this.__overallColumnArr = [];
     this.__visibleColumnArr = [];
@@ -673,7 +673,7 @@ qx.Class.define("qx.ui.table.columnmodel.Basic",
      * @param newPositions {Integer[]} Array mapping the index of a column in table model to its wanted overall
      *                            position on screen (both zero based). If the table models holds
      *                            col0, col1, col2 and col3 and you give [1,3,2,0], the new column order
-     *                            will be col3, col0, col2, col1
+     *                            will be col1, col3, col2, col0.
      */
     setColumnsOrder : function(newPositions)
     {
@@ -742,8 +742,10 @@ qx.Class.define("qx.ui.table.columnmodel.Basic",
       this.__columnDataArr[i].editorFactory.dispose();
     }
 
-    this.__overallColumnArr = this.__visibleColumnArr =
-      this.__columnDataArr = this.__colToXPosMap = null;
+    this.__colToXPosMap = null;
+
+    // @ITG:Wisej: Safeguard for the accidental use of a disposed column model.
+    this.__overallColumnArr = this.__visibleColumnArr = this.__columnDataArr = [];
 
     this._disposeObjects(
       "__headerRenderer",

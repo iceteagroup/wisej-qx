@@ -163,7 +163,10 @@ qx.Class.define("qx.ui.table.pane.Header",
         }
 
         if (col != null) {
-          this.getHeaderWidgetAtColumn(col).addState("hovered");
+          var widget = this.getHeaderWidgetAtColumn(col);
+
+          if (widget != null)
+            widget.addState("hovered");
         }
 
         this.__lastPointerOverColumn = col;

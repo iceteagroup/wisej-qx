@@ -119,8 +119,8 @@ qx.Class.define("qx.util.placement.Placement",
       // @ITG:Wisej: RightToLeft support.
       if (rtl)
       {
-        edge = (edge == "left") ? "right" : (edge == "right" ? "left" : edge);
-        align = (align == "left") ? "right" : (align == "right" ? "left" : align);
+        edge = (edge === "left") ? "right" : (edge === "right" ? "left" : edge);
+        align = (align === "left") ? "right" : (align === "right" ? "left" : align);
       }
 
       if (qx.core.Environment.get("qx.debug"))
@@ -262,15 +262,15 @@ qx.Class.define("qx.util.placement.Placement",
       var edge = this.getEdge();
       var align = this.getAlign();
 
-      if (edge == "left") {
+      if (edge === "left") {
         return "edge-start";
-      } else if (edge == "right") {
+      } else if (edge === "right") {
         return "edge-end";
-      } else if (align == "left") {
+      } else if (align === "left") {
         return "align-start";
-      } else if (align == "center") {
+      } else if (align === "center") {
         return "align-center";
-      } else if (align == "right") {
+      } else if (align === "right") {
         return "align-end";
       }
     },
@@ -286,15 +286,15 @@ qx.Class.define("qx.util.placement.Placement",
       var edge = this.getEdge();
       var align = this.getAlign();
 
-      if (edge == "top") {
+      if (edge === "top") {
         return "edge-start";
-      } else if (edge == "bottom") {
+      } else if (edge === "bottom") {
         return "edge-end";
-      } else if (align == "top") {
+      } else if (align === "top") {
         return "align-start";
-      } else if (align == "middle") {
+      } else if (align === "middle") {
         return "align-center";
-      } else if (align == "bottom") {
+      } else if (align === "bottom") {
         return "align-end";
       }
     }

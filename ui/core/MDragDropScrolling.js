@@ -264,8 +264,12 @@ qx.Mixin.define("qx.ui.core.MDragDropScrolling",
       if (!scrollbar) {
         return;
       }
-      var bounds = scrollbar.getBounds(),
-          scrollbarSize = axis === "x" ? bounds.width : bounds.height,
+      var bounds = scrollbar.getBounds();
+      // @ITG:Wisej: Prevent js error when dragging over a scroller without a scrollbar.
+      if (!bounds)
+        return;
+
+      var scrollbarSize = axis === "x" ? bounds.width : bounds.height,
           amount = this._calculateScrollAmount(scrollbarSize, exceedanceAmount);
 
       if (this._isScrollbarExceedingMaxPos(scrollbar, axis, amount)) {

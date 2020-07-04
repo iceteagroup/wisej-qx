@@ -355,6 +355,9 @@ qx.Class.define("qx.ui.tree.VirtualTree",
     syncWidget: function (jobs) {
 
         var pane = this.getPane();
+        if (!pane.getInnerSize())
+            return;
+
         var sizeHint = null;
         var maxWidth = 0;
         var maxHeight = this.getItemHeight() || 0;

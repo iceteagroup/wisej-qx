@@ -97,7 +97,7 @@ qx.Bootstrap.define("qx.event.handler.GestureCore", {
         qxWeb(this.__defaultTarget).on(gestureType, this.checkAndFireGesture, this);
       }.bind(this));
 
-      if (qx.core.Environment.get("engine.name") == "mshtml" &&
+      if (qx.core.Environment.get("engine.name") === "mshtml" &&
         qx.core.Environment.get("browser.documentmode") < 9)
       {
         qxWeb(this.__defaultTarget).on("dblclick", this._onDblClick, this);
@@ -117,7 +117,7 @@ qx.Bootstrap.define("qx.event.handler.GestureCore", {
         qxWeb(this.__defaultTarget).off(pointerType, this.checkAndFireGesture, this);
       }.bind(this));
 
-      if (qx.core.Environment.get("engine.name") == "mshtml" &&
+      if (qx.core.Environment.get("engine.name") === "mshtml" &&
         qx.core.Environment.get("browser.documentmode") < 9)
       {
         qxWeb(this.__defaultTarget).off("dblclick", this._onDblClick, this);
@@ -316,6 +316,10 @@ qx.Bootstrap.define("qx.event.handler.GestureCore", {
         //  delete this.__gesture[domEvent.pointerId];
         //  return;
         //}
+        if (target !== gesture.target && document.body.contains(gesture.target)) {
+            delete this.__gesture[domEvent.pointerId];
+            return;
+        }
 
         this._fireEvent(domEvent, "tap", domEvent.target || target);
 

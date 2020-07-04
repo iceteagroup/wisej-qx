@@ -210,7 +210,7 @@ qx.Class.define("qx.bom.Shortcut",
         if (this.getStopEvent()) {
           event.stop();
         }
-	  }
+      }
     },
 
 
@@ -227,7 +227,7 @@ qx.Class.define("qx.bom.Shortcut",
     {
       if (value) {
         qx.event.Registration.addListener(this.__element, "keydown", this.__onKeyDown, this, this.__capture);
-		  qx.event.Registration.addListener(this.__element, "keypress", this.__onKeyPress, this, this.__capture);
+		qx.event.Registration.addListener(this.__element, "keypress", this.__onKeyPress, this, this.__capture);
       } else {
 		  qx.event.Registration.removeListener(this.__element, "keydown", this.__onKeyDown, this, this.__capture);
 		  qx.event.Registration.removeListener(this.__element, "keypress", this.__onKeyPress, this, this.__capture);

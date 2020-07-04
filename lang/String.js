@@ -385,7 +385,7 @@ qx.Bootstrap.define("qx.lang.String",
       var hash = 0, char = '';
       if (!str || str.length == 0) return hash;
       for (var i = 0, length = str.length; i < length; i++) {
-      	char = str.charCodeAt(i);
+        char = str.charCodeAt(i);
         hash = ((hash << 5) - hash) + char;
         hash = hash & hash; // Convert to 32bit integer
       }

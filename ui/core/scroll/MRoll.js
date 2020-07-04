@@ -117,17 +117,24 @@ qx.Mixin.define("qx.ui.core.scroll.MRoll",
         }
       }
 
-      if (endX && endY) {
-        e.stopMomentum();
+      // @ITG:Wisej: Stop the momentum only if we have the scrollbars, or it may stop an ongoing roll on the parent.
+      if ((endX && scrollbarX) || (endY && scrollbarY)) {
+          e.stopMomentum();
       }
 
-      // pass the event to the parent if both scrollbars are at the end
-      if ((!endY && deltaX === 0) ||
-          (!endX && deltaY === 0) ||
-          ((!endX || !endY ) && deltaX !== 0 && deltaY !== 0)) {
-        // Stop bubbling and native event only if a scrollbar is visible
+      // @ITG:Wisej: Don't pass the event up when the widget can scroll, or we get a weird double scroll.
+      //// pass the event to the parent if both scrollbars are at the end
+      if (scrollbarX && deltaX !== 0) {
         e.stop();
       }
+      else if (scrollbarY && deltaY !== 0) {
+        e.stop();
+      }
+      //    (!endX && deltaY === 0) ||
+      //    ((!endX || !endY ) && deltaX !== 0 && deltaY !== 0)) {
+      //  // Stop bubbling and native event only if a scrollbar is visible
+      //  e.stop();
+      //}
     }
   }
 });

@@ -97,12 +97,12 @@ qx.Bootstrap.define("qx.bom.Selection",
       "selection" : function(node)
       {
         var selectedValue = this.get(node);
-        // get the selected part and split it by linebreaks
+        // get the selected part and split it by line breaks
         var split = qx.util.StringSplit.split(selectedValue, /\r\n/);
 
-        // return the length substracted by the count of linebreaks
-        // legacy IE counts linebreaks as two chars
-        // -> harmonize this to one char per linebreak
+        // return the length subtracted by the count of line breaks
+        // legacy IE counts line breaks as two chars
+        // -> harmonize this to one char per line break
         return selectedValue.length - (split.length - 1);
       },
 
@@ -125,12 +125,12 @@ qx.Bootstrap.define("qx.bom.Selection",
             selectedLength = selectedValue.length;
           }
 
-          // get the selected part and split it by linebreaks
+          // get the selected part and split it by line breaks
           split = qx.util.StringSplit.split(selectedValue, /\r\n/);
 
-          // substract the count of linebreaks
-          // Opera counts each linebreak as two chars
-          // -> harmonize this to one char per linebreak
+          // subtract the count of line breaks
+          // Opera counts each line break as two chars
+          // -> harmonize this to one char per line break
           return selectedLength - (split.length - 1);
         }
 
@@ -222,35 +222,38 @@ qx.Bootstrap.define("qx.bom.Selection",
         }
       },
 
-      "default" : function(node)
-      {
-        if (qx.core.Environment.get("engine.name") === "gecko" ||
-            qx.core.Environment.get("engine.name") === "webkit")
+        "default": function (node)
         {
-          if (this.__isInputOrTextarea(node)) {
-            return node.selectionStart;
-          }
-          else
-          {
-            var documentElement = qx.dom.Node.getDocument(node);
-            var documentSelection = this.getSelectionObject(documentElement);
+            try {
+                if (qx.core.Environment.get("engine.name") === "gecko" ||
+                    qx.core.Environment.get("engine.name") === "webkit") {
+                    if (this.__isInputOrTextarea(node)) {
+                        return node.selectionStart;
+                    }
+                    else {
+                        var documentElement = qx.dom.Node.getDocument(node);
+                        var documentSelection = this.getSelectionObject(documentElement);
 
-            // gecko and webkit do differ how the user selected the text
-            // "left-to-right" or "right-to-left"
-            if (documentSelection.anchorOffset < documentSelection.focusOffset) {
-              return documentSelection.anchorOffset;
-            } else {
-              return documentSelection.focusOffset;
+                        // gecko and webkit do differ how the user selected the text
+                        // "left-to-right" or "right-to-left"
+                        if (documentSelection.anchorOffset < documentSelection.focusOffset) {
+                            return documentSelection.anchorOffset;
+                        } else {
+                            return documentSelection.focusOffset;
+                        }
+                    }
+                }
+
+                if (this.__isInputOrTextarea(node)) {
+                    return node.selectionStart;
+                } else {
+                    return qx.bom.Selection.getSelectionObject(qx.dom.Node.getDocument(node)).anchorOffset;
+                }
             }
-          }
+            catch (e) {
+                return 0;
+            }
         }
-
-        if (this.__isInputOrTextarea(node)) {
-          return node.selectionStart;
-        } else {
-          return qx.bom.Selection.getSelectionObject(qx.dom.Node.getDocument(node)).anchorOffset;
-        }
-      }
     }),
 
 
@@ -334,32 +337,34 @@ qx.Bootstrap.define("qx.bom.Selection",
 
       "default" : function(node)
       {
-        if (qx.core.Environment.get("engine.name") === "gecko" ||
-            qx.core.Environment.get("engine.name") === "webkit")
-        {
-          if (this.__isInputOrTextarea(node)) {
-            return node.selectionEnd;
-          }
-          else
-          {
-            var documentElement = qx.dom.Node.getDocument(node);
-            var documentSelection = this.getSelectionObject(documentElement);
+          try {
+              if (qx.core.Environment.get("engine.name") === "gecko" ||
+                  qx.core.Environment.get("engine.name") === "webkit") {
+                  if (this.__isInputOrTextarea(node)) {
+                      return node.selectionEnd;
+                  }
+                  else {
+                      var documentElement = qx.dom.Node.getDocument(node);
+                      var documentSelection = this.getSelectionObject(documentElement);
 
-            // gecko and webkit do differ how the user selected the text
-            // "left-to-right" or "right-to-left"
-            if (documentSelection.focusOffset > documentSelection.anchorOffset) {
-              return documentSelection.focusOffset;
-            } else {
-              return documentSelection.anchorOffset;
-            }
-          }
-        }
+                      // gecko and webkit do differ how the user selected the text
+                      // "left-to-right" or "right-to-left"
+                      if (documentSelection.focusOffset > documentSelection.anchorOffset) {
+                          return documentSelection.focusOffset;
+                      } else {
+                          return documentSelection.anchorOffset;
+                      }
+                  }
+              }
 
-        if (this.__isInputOrTextarea(node)) {
-          return node.selectionEnd;
-        } else {
-          return qx.bom.Selection.getSelectionObject(qx.dom.Node.getDocument(node)).focusOffset;
-        }
+              if (this.__isInputOrTextarea(node)) {
+                  return node.selectionEnd;
+              } else {
+                  return qx.bom.Selection.getSelectionObject(qx.dom.Node.getDocument(node)).focusOffset;
+              }
+          } catch (e) {
+              return 0;
+          }
       }
     }),
 
@@ -368,7 +373,7 @@ qx.Bootstrap.define("qx.bom.Selection",
      * Utility method to check for an input or textarea element
      *
      * @param node {Node} node to check
-     * @return {Boolean} Whether the given nodt is an input or textarea element
+     * @return {Boolean} Whether the given node is an input or textarea element
      */
     __isInputOrTextarea : function(node) {
       return qx.dom.Node.isElement(node) &&
@@ -487,8 +492,9 @@ qx.Bootstrap.define("qx.bom.Selection",
 
             // check boundaries
             if (start >= 0 && start <= node.value.length && end >= 0 && end <= node.value.length) {
-              node.focus();
-              node.select();
+              // @ITG:Wisej: Don't force the focus when selecting a text range.
+              //node.focus();
+              //node.select();
               node.setSelectionRange(start, end);
 
               return true;
@@ -616,9 +622,11 @@ qx.Bootstrap.define("qx.bom.Selection",
         if (qx.dom.Node.isElement(node) && (nodeName == "input" || nodeName == "textarea"))
         {
           node.setSelectionRange(0, 0);
-          if (qx.bom.Element && qx.bom.Element.blur) {
-            qx.bom.Element.blur(node);
-          }
+
+		  // @ITG:Wisej: No need to blur when clearing the selection.
+          //if (qx.bom.Element && qx.bom.Element.blur) {
+          //  qx.bom.Element.blur(node);
+          //}
         }
         // if the given node is the body/document node -> collapse the selection
         else if (qx.dom.Node.isDocument(node) || nodeName == "body")

@@ -149,7 +149,11 @@ qx.Mixin.define("qx.ui.virtual.selection.MModel",
         },
 
         styleSelectable : function(row, type, wasAdded)
-        {
+		{
+          // @ITG:Wisej: Allow a virtual provider to style its items.
+          if (self._provider.styleSelectable)
+            self._provider.styleSelectable(row, type, wasAdded);
+
           if (type != "selected") {
             return;
           }
@@ -335,7 +339,7 @@ qx.Mixin.define("qx.ui.virtual.selection.MModel",
     __synchronizeSelection : function()
     {
       if (this.__isSelectionEquals()) {
-        return
+        return;
       }
 
       var managerSelection = this._manager.getSelection();
@@ -393,7 +397,7 @@ qx.Mixin.define("qx.ui.virtual.selection.MModel",
       for (var i = 0; i < selection.getLength(); i++)
       {
         var item = selection.getItem(i);
-        var selectables = this._getSelectables()
+        var selectables = this._getSelectables();
         var index = -1;
 
         if (selectables != null) {

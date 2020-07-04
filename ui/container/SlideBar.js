@@ -192,7 +192,6 @@ qx.Class.define("qx.ui.container.SlideBar",
 
         case "content":
           control = new qx.ui.container.Composite();
-
           this.getChildControl("scrollpane").add(control);
           break;
 
@@ -334,7 +333,7 @@ qx.Class.define("qx.ui.container.SlideBar",
     _onRoll : function(e)
     {
       // only wheel and touch
-      if (e.getPointerType() == "mouse") {
+      if (e.getPointerType() === "mouse") {
         return;
       }
 
@@ -342,6 +341,10 @@ qx.Class.define("qx.ui.container.SlideBar",
       var pane = this.getChildControl("scrollpane");
       if (this.getOrientation() === "horizontal") {
         delta = e.getDelta().x;
+
+        // @ITG:Wisej: Enable wheel horizontal scrolling.
+        if (e.getPointerType() === "wheel")
+          delta = e.getDelta().y;
 
         var position = pane.getScrollX();
         var max = pane.getScrollMaxX();

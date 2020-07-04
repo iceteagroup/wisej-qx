@@ -358,18 +358,28 @@ qx.Class.define("qx.ui.virtual.core.Pane",
     ---------------------------------------------------------------------------
     */
 
+    // @ITG:Wisej: Added support to scroll a row according to the align value.
 
-    /**
+      __scrollRowIntoViewCallbackId: null,
+
+   /**
      * Scrolls a row into the visible area of the pane.
      *
      * @param row {Integer} The row's index.
+     * @param align {String?null} Alignment of the element. Allowed values:
+     *   <code>top</code> or <code>bottom</code>. Could also be null.
+     *   Without a given alignment the method tries to scroll the widget
+     *   with the minimum effort needed.
      */
-    scrollRowIntoView : function(row)
+    scrollRowIntoView : function(row, align)
     {
       var bounds = this.getBounds();
       if (!bounds)
       {
-        this.addListenerOnce("appear", function()
+        if (this.__scrollRowIntoViewCallbackId)
+          this.removeListenerById(this.__scrollRowIntoViewCallbackId);
+
+        this.__scrollRowIntoViewCallbackId = this.addListenerOnce("appear", function()
         {
           // It's important that the registered events are first dispatched.
           qx.event.Timer.once(function() {
@@ -383,10 +393,15 @@ qx.Class.define("qx.ui.virtual.core.Pane",
       var itemBottom = itemTop + this.__rowConfig.getItemSize(row);
       var scrollTop = this.getScrollY();
 
-      if (itemTop < scrollTop) {
+      if (!align || align !== "top") {
+        if (itemTop < scrollTop) {
+          this.setScrollY(itemTop);
+        } else if (itemBottom > scrollTop + bounds.height) {
+          this.setScrollY(itemBottom - bounds.height);
+        }
+      }
+      else {
         this.setScrollY(itemTop);
-      } else if (itemBottom > scrollTop + bounds.height) {
-        this.setScrollY(itemBottom - bounds.height);
       }
     },
 

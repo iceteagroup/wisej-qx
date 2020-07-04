@@ -296,7 +296,7 @@ qx.Class.define("qx.event.handler.Application",
       var callback = qx.core.Environment.select("qx.globalErrorHandling", {
         "true": qx.event.GlobalError.observeMethod(this.__onNativeLoadHandler),
         "false": this.__onNativeLoadHandler
-      })
+      });
       callback.apply(this, arguments);
     },
 
@@ -317,7 +317,7 @@ qx.Class.define("qx.event.handler.Application",
       var callback = qx.core.Environment.select("qx.globalErrorHandling", {
         "true": qx.event.GlobalError.observeMethod(this.__onNativeUnloadHandler),
         "false": this.__onNativeUnloadHandler
-      })
+      });
       callback.apply(this, arguments);
     },
 
@@ -337,7 +337,7 @@ qx.Class.define("qx.event.handler.Application",
           // IE doesn't execute the "finally" block if no "catch" block is present
           throw e;
         }
-      	finally {
+        finally {
 
           // @ITG:Wisej: No need to run through all the dispose calls.
           // Execute registry shutdown

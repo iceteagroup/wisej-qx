@@ -105,7 +105,7 @@ qx.Class.define("qx.ui.form.AbstractField",
       // add rules for native placeholder color
       qx.ui.form.AbstractField.__addPlaceholderRules();
       // add a class to the input to restict the placeholder color
-      this.getContentElement().addClass("qx-placeholder-color");
+      this.getContentElement().addClass(qx.theme.manager.Decoration.CSS_CLASSNAME_PREFIX + "placeholder-color");
     }
 
     // translation support
@@ -384,14 +384,14 @@ qx.Class.define("qx.ui.form.AbstractField",
 
       // Disable HTML5 spell checking
       el.setAttribute("spellcheck", "false");
-      el.addClass("qx-abstract-field");
+      el.addClass(qx.theme.manager.Decoration.CSS_CLASSNAME_PREFIX + "abstract-field");
 
       // IE8 in standard mode needs some extra love here to receive events.
-      if ((qx.core.Environment.get("engine.name") == "mshtml") &&
-        (qx.core.Environment.get("browser.documentmode") == 8)) {
+      if ((qx.core.Environment.get("engine.name") === "mshtml") &&
+        (qx.core.Environment.get("browser.documentmode") === 8)) {
         el.setStyles({
           // @ITG:Wisej: Replaced link to bank.gif with the existing PLACEHOLDER_IMAGE.
-        	backgroundImage: "url(\"" + qx.ui.basic.Image.PLACEHOLDER_IMAGE + "\")"
+          backgroundImage: "url(\"" + qx.ui.basic.Image.PLACEHOLDER_IMAGE + "\")"
         });
       }
 

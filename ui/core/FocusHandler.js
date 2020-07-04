@@ -203,7 +203,7 @@ qx.Class.define("qx.ui.core.FocusHandler",
       this.__activeChild = target;
 
       var root = this.__findFocusRoot(target);
-      if (root != this.__currentRoot) {
+      if (root !== this.__currentRoot) {
         this.__currentRoot = root;
       }
     },
@@ -217,7 +217,7 @@ qx.Class.define("qx.ui.core.FocusHandler",
     _onDeactivate : function(e)
     {
       var target = e.getTarget();
-      if (this.__activeChild == target) {
+      if (this.__activeChild === target) {
         this.__activeChild = null;
       }
     },
@@ -231,7 +231,7 @@ qx.Class.define("qx.ui.core.FocusHandler",
     _onFocusIn : function(e)
     {
       var target = e.getTarget();
-      if (target != this.__focusedChild)
+      if (target !== this.__focusedChild)
       {
         this.__focusedChild = target;
         target.visualizeFocus();
@@ -247,7 +247,7 @@ qx.Class.define("qx.ui.core.FocusHandler",
     _onFocusOut : function(e)
     {
       var target = e.getTarget();
-      if (target == this.__focusedChild)
+      if (target === this.__focusedChild)
       {
         this.__focusedChild = null;
         target.visualizeBlur();
@@ -262,7 +262,7 @@ qx.Class.define("qx.ui.core.FocusHandler",
      */
     __onKeyPress : function(e)
     {
-      if (e.getKeyIdentifier() != "Tab") {
+      if (e.getKeyIdentifier() !== "Tab") {
         return;
       }
 

@@ -406,7 +406,7 @@ qx.Class.define("qx.ui.virtual.cell.Cell",
     getCssClasses : function(value, states)
     {
       var cssClass = this.__stylesheet.getCssClass(this.__statesKey) || "";
-      return "qx-cell " + cssClass;
+      return qx.theme.manager.Decoration.CSS_CLASSNAME_PREFIX + "cell " + cssClass;
     },
 
 

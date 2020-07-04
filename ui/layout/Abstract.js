@@ -30,6 +30,9 @@ qx.Class.define("qx.ui.layout.Abstract",
   type : "abstract",
   extend : qx.core.Object,
 
+  construct: function () {
+    this.base(arguments, true /* weakReference */);
+  },
 
   /*
   *****************************************************************************

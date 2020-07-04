@@ -255,12 +255,14 @@ qx.Class.define("qx.ui.core.scroll.ScrollPane",
     {
       var top = 0;
 
-      do
-      {
-        top += item.getBounds().top;
-        item = item.getLayoutParent();
+      // @ITG:Wisej: Prevent errors when the item doesn't have bounds yet.
+      if (item.getBounds()) {
+        do {
+          top += item.getBounds().top;
+          item = item.getLayoutParent();
+        }
+        while (item && item !== this && item.getBounds());
       }
-      while (item && item !== this);
 
       return top;
     },
@@ -273,8 +275,13 @@ qx.Class.define("qx.ui.core.scroll.ScrollPane",
      * @param item {qx.ui.core.Widget} Item to query
      * @return {Integer} Top offset
      */
-    getItemBottom : function(item) {
-      return this.getItemTop(item) + item.getBounds().height;
+    getItemBottom: function (item) {
+
+      // @ITG:Wisej: Prevent errors when the item doesn't have bounds yet.
+      if (item.getBounds() == null)
+        return 0;
+
+     return this.getItemTop(item) + item.getBounds().height;
     },
 
 

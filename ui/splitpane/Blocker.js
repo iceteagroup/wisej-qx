@@ -82,12 +82,12 @@ qx.Class.define("qx.ui.splitpane.Blocker",
     _applyOrientation : function(value, old) {
       if (value == "horizontal") {
         this.setStyle("height", "100%");
-        this.setStyle("cursor", "col-resize");
+        this.setStyle("cursor", "ew-resize");
         this.setStyle("top", null);
       } else {
         this.setStyle("width", "100%");
         this.setStyle("left", null);
-        this.setStyle("cursor", "row-resize");
+        this.setStyle("cursor", "ns-resize");
       }
     },
 

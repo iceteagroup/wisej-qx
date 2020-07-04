@@ -42,7 +42,7 @@ qx.Class.define("qx.ui.table.pane.Model",
    */
   construct : function(tableColumnModel)
   {
-    this.base(arguments);
+    this.base(arguments, true /* weakReference*/);
 
     this.setTableColumnModel(tableColumnModel);
   },

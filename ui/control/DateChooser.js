@@ -116,7 +116,7 @@ qx.Class.define("qx.ui.control.DateChooser",
     this.addListener("pointerdown", this._onPointerUpDown, this);
     this.addListener("pointerup", this._onPointerUpDown, this);
 
-  	// @ITG:Wisej: Hide the new month-year-selector when deactivated or hidden.
+    // @ITG:Wisej: Hide the new month-year-selector when deactivated or hidden.
     this.addListener("disappear", this.__showMonthYearSelector.bind(this, false), this);
     this.addListener("deactivated", this.__showMonthYearSelector.bind(this, false), this);
   },
@@ -235,6 +235,13 @@ qx.Class.define("qx.ui.control.DateChooser",
       nullable: true,
       apply: "_applyMinMaxValue"
     },
+
+    // @ITG:Wisej: Added "weekStart" property to set the first day of the week. When set to -1 it uses the locale.
+    weekStart:
+    {
+      check: "Integer",
+      init:- 1
+    }
   },
 
 
@@ -470,11 +477,11 @@ qx.Class.define("qx.ui.control.DateChooser",
     // applies the new date constraints to the specified value.
     __limitValue: function(value)
     {
-    	switch (this._checkLimits(value)) {
-            case 1: return this.getMaxValue();
-            case -1: return this.getMinValue();
-            default: return value;
-        }
+      switch (this._checkLimits(value)) {
+        case 1: return this.getMaxValue();
+        case -1: return this.getMinValue();
+        default: return value;
+      }
     },
 
     /**
@@ -518,6 +525,13 @@ qx.Class.define("qx.ui.control.DateChooser",
         for (var i=0; i<6*7; i++)
         {
           var dayLabel = this.__dayLabelArr[i];
+
+          // @ITG:Wisej: Added the "MinValue" and "MaxValue: properties to limit the calendar navigation.
+          // hide the day label if it's outside of the date range.
+          if (this._checkLimits(new Date(dayLabel.dateTime)) != 0)
+            dayLabel.hide();
+          else
+            dayLabel.show();
 
           if (dayLabel.hasState("otherMonth"))
           {
@@ -766,8 +780,8 @@ qx.Class.define("qx.ui.control.DateChooser",
 
         this._updateDatePane();
 
-      	// @ITG:Wisej: Added "changeShownDate" event, fired after the DateChooser widget has been updated. Otherwise we get two events: changeShownMonth and changeShownYear and
-		// both are fired before the DateChooser has been updated.
+        // @ITG:Wisej: Added "changeShownDate" event, fired after the DateChooser widget has been updated. Otherwise we get two events: changeShownMonth and changeShownYear and
+        // both are fired before the DateChooser has been updated.
         this.fireEvent("changeShownDate");
       }
     },
@@ -806,7 +820,7 @@ qx.Class.define("qx.ui.control.DateChooser",
       var shownMonth = this.getShownMonth();
       var shownYear = this.getShownYear();
 
-      var startOfWeek = qx.locale.Date.getWeekStart();
+      var startOfWeek = this.getWeekStart() > -1 ? this.getWeekStart() : qx.locale.Date.getWeekStart();
 
       // Create a help date that points to the first of the current month
       var helpDate = new Date(this.getShownYear(), this.getShownMonth(), 1);

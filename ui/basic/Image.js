@@ -556,6 +556,11 @@ qx.Class.define("qx.ui.basic.Image",
         "boxSizing": "border-box"
       });
 
+      // @ITG:Wisej: Disable ghost img dragging, it happens in Firefox, Edge and IE.
+      if (tagName === "img") {
+        element.setAttribute("onmousedown", "return false");
+      }
+
       if (qx.core.Environment.get("css.alphaimageloaderneeded")) {
         var wrapper = this.__wrapper = new qx.html.Element("div");
         wrapper.setAttribute("$$widget", this.toHashCode());

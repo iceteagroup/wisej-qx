@@ -88,12 +88,9 @@ qx.Class.define("qx.ui.core.queue.Dispose",
     {
       // @ITG:Wisej: Speed improvement.
       // Dispose all registered objects
-      var obj = null;
       var queue = this.__queue;
-      var lookup = this.__lookup;
       for (var i = 0; i < queue.length; i++) {
-        obj = queue[i];
-        obj.dispose();
+        queue[i].dispose();
       }
 
       // Clear the inner lists.

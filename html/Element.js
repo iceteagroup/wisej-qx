@@ -816,7 +816,7 @@ qx.Class.define("qx.html.Element",
         if (data) {
           var styles = {};
           for (var key in jobs) {
-            styles[key] = data[key]
+            styles[key] = data[key];
           }
 
           // @ITG:Wisej: RightToLeft support.
@@ -1993,6 +1993,9 @@ qx.Class.define("qx.html.Element",
       // select a range causes a javascript exception.
       if (el && el.offsetWidth > 0) {
         qx.bom.Selection.set(el, start, end);
+
+        // @ITG:Wisej: Remove the scheduled selection or it will override the direct selection.
+        delete qx.html.Element.__selection[this.toHashCode()];
         return;
       }
 
@@ -2482,7 +2485,7 @@ qx.Class.define("qx.html.Element",
         if (rtl != null) {
 
           if (rtl === true)
-            textAlign = (textAlign == "left") ? "right" : (textAlign == "right") ? "left" : textAlign
+            textAlign = (textAlign === "left") ? "right" : (textAlign === "right") ? "left" : textAlign;
 
           qx.bom.element.Style.set(this.getDomElement(), "text-align", textAlign);
         }

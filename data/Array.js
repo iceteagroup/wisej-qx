@@ -44,7 +44,7 @@ qx.Class.define("qx.data.Array",
    */
   construct : function(param)
   {
-    this.base(arguments, true /* weak */);
+    this.base(arguments, true /* weakReference */);
 
     // if no argument is given
     if (param == undefined) {

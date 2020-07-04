@@ -50,7 +50,7 @@ qx.Mixin.define("qx.ui.core.MMovable",
     },
 
     // @ITG:Wisej: Added support for keeping the movable widget wholly in the view area.
-    keepOnScreen :
+    keepInBounds :
     {
       check : "Boolean",
       init : false
@@ -195,7 +195,7 @@ qx.Mixin.define("qx.ui.core.MMovable",
       }
 
       // @ITG:Wisej: Added support for keeping the movable widget wholly in the view area.
-      if (this.isKeepOnScreen()) {
+      if (this.isKeepInBounds()) {
         var parentLeft = parseInt(viewportLeft - this.__parentLeft, 10) + adjustLeft;
         var parentTop = parseInt(viewportTop - this.__parentTop, 10) + adjustTop;
 
@@ -357,7 +357,7 @@ qx.Mixin.define("qx.ui.core.MMovable",
       // text in a textbox.
       // if (this.hasListener("roll", this._onMoveRoll, this)) {
       if (this.hasListener("roll")) {
-    	this.removeListener("roll", this._onMoveRoll, this);
+        this.removeListener("roll", this._onMoveRoll, this);
       }
 
       // Only react when dragging is active
@@ -418,6 +418,7 @@ qx.Mixin.define("qx.ui.core.MMovable",
 
       // @ITG:Wisej: Notify that this widget is done being dragged.
       this.fireEvent("endmove");
+
     },
 
 

@@ -264,6 +264,13 @@ qx.Class.define("qx.ui.table.Table",
     "verticalScrollBarChanged" : "qx.event.type.Data",
 
     /**
+     * Dispatched when updating scrollbars discovers that a horizontal scrollbar
+     * is needed when it previously was not, or vice versa.  The data is a
+     * boolean indicating whether a horizontal scrollbar is now being used.
+     */
+    "horizontalScrollBarChanged" : "qx.event.type.Data",
+
+    /**
      * Dispatched when a data cell has been tapped.
      */
     "cellTap" : "qx.ui.table.pane.CellEvent",
@@ -729,6 +736,7 @@ qx.Class.define("qx.ui.table.Table",
     __emptyTableModel : null,
 
     __hadVerticalScrollBar : null,
+    __hadHorizontalScrollBar : null,
 
     __timer : null,
 
@@ -1451,7 +1459,7 @@ qx.Class.define("qx.ui.table.Table",
       }
       else
       {
-      	consumed = true;
+        consumed = true;
 
         // No editing mode
         if (evt.isCtrlPressed())
@@ -1743,7 +1751,7 @@ qx.Class.define("qx.ui.table.Table",
           relatedTarget instanceof qx.ui.table.pane.Pane ||
           relatedTarget instanceof qx.ui.table.pane.FocusIndicator
          ) {
-           return ;
+           return;
          }
       }
 
@@ -1819,7 +1827,7 @@ qx.Class.define("qx.ui.table.Table",
 
       var columnModel = this.getTableColumnModel();
       // @ITG:Wisej: Check whether we have a valid column index.
-      if (col < 0 || col >= columnModel.getOverallColumnCount())
+      if (col === null || col < 0 || col >= columnModel.getOverallColumnCount())
         return;
 
       var x = columnModel.getVisibleX(col);
@@ -1870,11 +1878,11 @@ qx.Class.define("qx.ui.table.Table",
       {
         var x = this.getTableColumnModel().getVisibleX(this.__focusedCol);
 
-      	// @ITG:Wisej: The column may be hidden.
+        // @ITG:Wisej: The column may be hidden.
         if (x == null)
-        	return false;
+          return false;
 
-      	// ITG:Wisej: The meta column may return -1 leading to a null scroller.
+        // ITG:Wisej: The meta column may return -1 leading to a null scroller.
         var metaColumn = this._getMetaColumnAtColumnX(x);
         var started = metaColumn != -1 ? this.getPaneScroller(metaColumn).startEditing() : false;
         return started;
@@ -2101,25 +2109,27 @@ qx.Class.define("qx.ui.table.Table",
       {
         var isLast = (i == (scrollerArr.length - 1));
 
-        // Only show the last vertical scrollbar
-        scrollerArr[i].setHorizontalScrollBarVisible(horNeeded);
-
         // If this is the last meta-column...
         if (isLast)
         {
-          // ... then get the current (old) use of vertical scroll bar
-          if (this.__hadVerticalScrollBar == null) {
+          // ... then get the current (old) use of scroll bars
+          if (this.__hadVerticalScrollBar == null || this.__hadHorizontalScrollBar == null) {
             this.__hadVerticalScrollBar = scrollerArr[i].getVerticalScrollBarVisible();
+            this.__hadHorizontalScrollBar = scrollerArr[i].getHorizontalScrollBarVisible();
             this.__timer = qx.event.Timer.once(function()
             {
-              // reset the last visible state of the vertical scroll bar
+              // reset the last visible state of the scroll bars
               // in a timeout to prevent infinite loops.
               this.__hadVerticalScrollBar = null;
+              this.__hadHorizontalScrollBar = null;
               this.__timer = null;
             }, this, 0);
           }
         }
 
+        scrollerArr[i].setHorizontalScrollBarVisible(horNeeded);
+
+        // Only show the last vertical scrollbar
         scrollerArr[i].setVerticalScrollBarVisible(isLast && verNeeded);
 
         // If this is the last meta-column and the use of a vertical scroll bar
@@ -2129,6 +2139,15 @@ qx.Class.define("qx.ui.table.Table",
           // ... then dispatch an event to any awaiting listeners
           this.fireDataEvent("verticalScrollBarChanged", verNeeded);
         }
+
+        // If this is the last meta-column and the use of a horizontal scroll bar
+        // has changed...
+        if (isLast && horNeeded != this.__hadHorizontalScrollBar)
+        {
+          // ... then dispatch an event to any awaiting listeners
+          this.fireDataEvent("horizontalScrollBarChanged", horNeeded);
+        }
+
       }
     },
 
@@ -2228,7 +2247,7 @@ qx.Class.define("qx.ui.table.Table",
     },
 
 
-  	// overridden
+    // overridden
     addListener : function(type, listener, self, capture)
     {
       if (this.self(arguments).__redirectEvents[type])

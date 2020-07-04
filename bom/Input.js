@@ -220,7 +220,7 @@ qx.Bootstrap.define("qx.bom.Input",
 
           if (option.selected)
           {
-            // Get the specifc value for the option
+            // Get the specific value for the option
             value = clazz.getValue(option);
 
             // We don't need an array for one selects
@@ -243,7 +243,7 @@ qx.Bootstrap.define("qx.bom.Input",
 
 
     /**
-     * Sets the text wrap behaviour of a text area element.
+     * Sets the text wrap behavior of a text area element.
      * This property uses the attribute "wrap" respectively
      * the style property "whiteSpace"
      *

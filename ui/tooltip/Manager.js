@@ -192,6 +192,13 @@ qx.Class.define("qx.ui.tooltip.Manager",
       // If new tooltip is not null, set it up and start the timer
       if (value)
       {
+
+        // @ITG:Wisej: Disable the pop timer or the new tooltip may never show.
+        if (this.__popTimeoutId) {
+            clearTimeout(this.__popTimeoutId);
+            this.__popTimeoutId = 0;
+        }
+
         this.__showTimer.startWith(value.getShowTimeout());
 
         // Register hide handler

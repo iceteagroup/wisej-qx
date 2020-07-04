@@ -115,7 +115,7 @@ qx.Class.define("qx.ui.virtual.cell.CellStylesheet",
      * @return {String} The next unique CSS class name
      */
     __getNextClassname : function() {
-      return "qx-cell-" + this.toHashCode() + "-" + (this.__classCounter++);
+      return qx.theme.manager.Decoration.CSS_CLASSNAME_PREFIX + "cell-" + this.toHashCode() + "-" + (this.__classCounter++);
     },
     __classCounter : 0
 

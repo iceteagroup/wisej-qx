@@ -92,7 +92,7 @@ qx.Class.define("qx.ui.window.Window",
     // Focusout listener
     this.addListener("focusout", this._onWindowFocusOut, this);
 
-  	// @ITG:Wisej: RightToLeft support.
+    // @ITG:Wisej: RightToLeft support.
     this.addListener("changeRtl", this._onRtlChange, this);
 
     // Automatically add to application root.
@@ -490,6 +490,9 @@ qx.Class.define("qx.ui.window.Window",
           control = new qx.ui.container.Composite(layout);
           this._add(control);
 
+          // @ITG:Wisej: Allow the captionbar to be dragged on touch devices.
+          control.getContentElement().setStyles({ "touch-action": "none", "-ms-touch-action": "none" });
+
           // captionbar events
           control.addListener("dbltap", this._onCaptionPointerDblTap, this);
 
@@ -720,7 +723,7 @@ qx.Class.define("qx.ui.window.Window",
       // First check if the parent uses a canvas layout
       // Otherwise maximize() is not possible
       var parent = this.getLayoutParent();
-      if (parent != null && parent.supportsMaximize())
+      if (parent != null && parent.supportsMaximize && parent.supportsMaximize())
       {
         if (this.fireNonBubblingEvent("beforeMaximize", qx.event.type.Event, [false, true]))
         {
@@ -995,7 +998,7 @@ qx.Class.define("qx.ui.window.Window",
 
       // get the current focused widget and check if it is a child
       var current = e.getRelatedTarget();
-      if (current != null && !qx.ui.core.Widget.contains(this, current))
+      if (current != null && current !== this && !qx.ui.core.Widget.contains(this, current))
       {
         this.setActive(false);
       }
@@ -1022,7 +1025,7 @@ qx.Class.define("qx.ui.window.Window",
      */
     _onCaptionPointerDblTap : function(e)
     {
-      if (this.getAllowMaximize()) {
+      if (this.getAllowMaximize() && (e.getTarget() === this.getChildControl("captionbar") || e.getTarget() === this.getChildControl("title"))) {
         this.isMaximized() ? this.restore() : this.maximize();
       }
     },

@@ -486,6 +486,16 @@ qx.Class.define("qx.ui.core.selection.Abstract",
       return this.__leadItem;
     },
 
+    // @ITG:Wisej: Allow the List widget to set the lead item with the incremental keyboard selection and multi selection mode.
+    /**
+     * Sets the current lead item.
+     *
+     * @param value {Object} Any valid item or <code>null</code>
+     */
+    setLeadItem : function (value) {
+      this._setLeadItem(value);
+      this._scrollItemIntoView(value);
+    },
 
     /**
      * Sets the anchor item. This is the item which is the starting
@@ -1024,6 +1034,7 @@ qx.Class.define("qx.ui.core.selection.Abstract",
       }
 
       // Cleanup operation
+      this._userInteraction = false;
       this._cleanup();
     },
 
@@ -1364,7 +1375,7 @@ qx.Class.define("qx.ui.core.selection.Abstract",
 
       // Support both control keys on Mac
       var isCtrlPressed = event.isCtrlPressed() ||
-        (qx.core.Environment.get("os.name") == "osx" && event.isMetaPressed());
+        (qx.core.Environment.get("os.name") === "osx" && event.isMetaPressed());
       var isShiftPressed = event.isShiftPressed();
 
       var consumed = false;
@@ -1401,7 +1412,7 @@ qx.Class.define("qx.ui.core.selection.Abstract",
       else if (this.__navigationKeys[key])
       {
         consumed = true;
-        if (mode === "single" || mode == "one") {
+        if (mode === "single" || mode === "one") {
           current = this._getSelectedItem();
         } else {
           current = this.getLeadItem();
@@ -1663,7 +1674,9 @@ qx.Class.define("qx.ui.core.selection.Abstract",
         var current = this.__selection;
         var hash = this._selectableToHashCode(item);
 
-        if (!current[hash] || (current.length >= 2))
+        // if (!current[hash] || (current.length >= 2))
+		// @ITG:Wisej: Selecting a item 0 always causes the selectionChanged event to fire.
+        if (current[hash] === undefined || (Object.keys(current).length >= 2))
         {
           this._clearSelection();
           this._addToSelection(item);

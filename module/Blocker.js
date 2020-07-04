@@ -49,7 +49,7 @@ qxWeb.define("qx.module.Blocker", {
 
       if (!item.__blocker) {
         item.__blocker = {
-          div : qxWeb.create("<div class='qx-blocker' />")
+          div: qxWeb.create("<div class='" + qx.theme.manager.Decoration.CSS_CLASSNAME_PREFIX + "blocker' />")
         };
       }
 

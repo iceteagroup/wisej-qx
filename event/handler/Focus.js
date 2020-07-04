@@ -63,12 +63,11 @@ qx.Class.define("qx.event.handler.Focus",
     this._root = this._document.documentElement;
     this._body = this._document.body;
 
-    // @ITG:Wisej: Not needed anymore.
-    //if ((qx.core.Environment.get("os.name") == "ios" && parseFloat(qx.core.Environment.get("os.version")) > 6) &&
-	//	(!qx.application.Inline || !qx.core.Init.getApplication() instanceof qx.application.Inline) )
-    //{
-    //  this.__needsScrollFix = true;
-    //}
+    if ((qx.core.Environment.get("os.name") === "ios" && parseFloat(qx.core.Environment.get("os.version")) > 6) &&
+        (!qx.application.Inline || !qx.core.Init.getApplication() instanceof qx.application.Inline))
+    {
+      this.__needsScrollFix = true;
+    }
 
     // Initialize
     this._initObserver();
@@ -675,42 +674,51 @@ qx.Class.define("qx.event.handler.Focus",
 
         "default" : function(domEvent)
         {
-          var target = qx.bom.Event.getTarget(domEvent);
+          // @ITG:Wisej: If there is a related target, prevent the extra focusout without a related target.
+          // If the focus goes to nowhere (the document is blurred)
+          var relatedTarget = qx.bom.Event.getRelatedTarget(domEvent);
+          if (relatedTarget == null)
+          {
+            var target = qx.bom.Event.getTarget(domEvent);
 
-          if (target === this.getFocus()) {
-            this.resetFocus();
-          }
+            if (target === this.getFocus()) {
+              this.resetFocus();
+            }
 
-          if (target === this.getActive()) {
-            this.resetActive();
+            if (target === this.getActive()) {
+              this.resetActive();
+            }
           }
         }
       }),
 
       "opera" : function(domEvent)
       {
-        var target = qx.bom.Event.getTarget(domEvent);
-        if (target == this._document)
-        {
-          this.__doWindowBlur();
+        // @ITG:Wisej: If there is a related target, prevent the extra focusout without a related target.
+        // If the focus goes to nowhere (the document is blurred)
+        var relatedTarget = qx.bom.Event.getRelatedTarget(domEvent);
+        if (relatedTarget == null) {
+          var target = qx.bom.Event.getTarget(domEvent);
+          if (target == this._document) {
+            this.__doWindowBlur();
 
-          // Store old focus/active elements
-          // Opera do not fire focus events for them
-          // when refocussing the window (in my opinion an error)
-          this.__previousFocus = this.getFocus();
-          this.__previousActive = this.getActive();
+            // Store old focus/active elements
+            // Opera do not fire focus events for them
+            // when refocussing the window (in my opinion an error)
+            this.__previousFocus = this.getFocus();
+            this.__previousActive = this.getActive();
 
-          this.resetFocus();
-          this.resetActive();
-        }
-        else
-        {
-          if (target === this.getFocus()) {
-            this.resetFocus();
+              this.resetFocus();
+              this.resetActive();
           }
+          else {
+            if (target === this.getFocus()) {
+              this.resetFocus();
+            }
 
-          if (target === this.getActive()) {
-            this.resetActive();
+            if (target === this.getActive()) {
+              this.resetActive();
+            }
           }
         }
       },
@@ -840,16 +848,16 @@ qx.Class.define("qx.event.handler.Focus",
             // is not what we like when changing the focus element.
             // So we clear it
             try {
-              // @ITG:Wisej: Avoid throwing errors when not necessary.
-              if (document.selection)
+              if (document.selection) {
                 document.selection.empty();
+              }
             } catch (ex) {
               // ignore 'Unknown runtime error'
             }
 
             // The unselectable attribute stops focusing as well.
             // Do this manually.
-          	try {
+            try {
               focusTarget.focus();
             } catch (ex) {
               // ignore "Can't move focus of this control" error
@@ -956,7 +964,7 @@ qx.Class.define("qx.event.handler.Focus",
         }
 
         if (target) {
-          this.tryActivate(target);
+          this.tryActivate(this.__fixFocus(target));
         }
 
       },
@@ -985,32 +993,9 @@ qx.Class.define("qx.event.handler.Focus",
      */
     __fixFocus : qx.event.GlobalError.observeMethod(qx.core.Environment.select("engine.name",
     {
-      "mshtml" : function(target)
-      {
-        var focusedElement = this.getFocus();
-        if (focusedElement && target != focusedElement &&
-            (focusedElement.nodeName.toLowerCase() === "input" ||
-            focusedElement.nodeName.toLowerCase() === "textarea")) {
-          target = focusedElement;
-        }
-
-        return target;
-      },
-
-      "webkit" : function(target)
-      {
-        var focusedElement = this.getFocus();
-        if (focusedElement && target != focusedElement &&
-            (focusedElement.nodeName.toLowerCase() === "input" ||
-            focusedElement.nodeName.toLowerCase() === "textarea")) {
-          target = focusedElement;
-        }
-
-        return target;
-      },
-
+      // @ITG:Wisej: Fix issue where on mouseup we may get the keyboard input somewhere else.
       "default" : function(target) {
-        return target;
+        return this.getFocus() || target;
       }
     })),
 
@@ -1065,7 +1050,7 @@ qx.Class.define("qx.event.handler.Focus",
       // @ITG:Wisej: Fixed tabIndex range according to HTML5 specs: https://www.w3.org/TR/2011/WD-html5-20110525/editing.html#sequential-focus-navigation-and-the-tabindex-attribute
       // if (index >= 0 && focusable[el.tagName]) {
       if (focusable[el.tagName]) {
-      	return true;
+        return true;
       }
 
       return false;
@@ -1165,7 +1150,7 @@ qx.Class.define("qx.event.handler.Focus",
         this.__fireEvent(value, old, "activate", true);
       }
 
-      // correct scroll position for IE
+      // correct scroll position for IOS.
       if (this.__needsScrollFix) {
         window.scrollTo(0, 0);
       }

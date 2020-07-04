@@ -106,7 +106,9 @@ qx.Class.define("qx.ui.form.ListItem",
      * Event handler for the pointer over event.
      */
     _onPointerOver : function() {
-      this.addState("hovered");
+      // @ITG:Wisej: Check if the parent is enabled or we get the hovered state on disabled listboxes.
+      if (this.getLayoutParent() && this.getLayoutParent().isEnabled())
+        this.addState("hovered");
     },
 
 

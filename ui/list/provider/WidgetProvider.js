@@ -84,11 +84,14 @@ qx.Class.define("qx.ui.list.provider.WidgetProvider",
         widget.setUserData("cell.type", "item");
         this._bindItem(widget, this._list._lookup(row));
 
-        if(this._list._manager.isItemSelected(row)) {
-          this._styleSelectabled(widget);
-        } else {
-          this._styleUnselectabled(widget);
-        }
+        // @ITG:Wisej: Style lead and selected states, rather than just selected.
+        this.__updateStates(widget, this._getItemStates(row));
+
+        //if(this._list._manager.isItemSelected(row)) {
+        //  this._styleSelectabled(widget);
+        //} else {
+        //  this._styleUnselectabled(widget);
+        //}
       }
       else
       {
@@ -163,20 +166,30 @@ qx.Class.define("qx.ui.list.provider.WidgetProvider",
       return renderer;
     },
 
+    // @ITG:Wisej: Allow a virtual provider to style its items.
+    // interface implementation
+    styleSelectable : function(row, type, wasAdded)
+    {
+      var states = this._getItemStates(row);
+      var widget = this.__getWidgetFrom(row);
+	  wasAdded ? states[type] = 1 : delete states[type];
+      this.__updateStates(widget, states);
+    },
+
 
     // interface implementation
     styleSelectabled : function(row)
     {
-      var widget = this.__getWidgetFrom(row);
-      this._styleSelectabled(widget);
+      //var widget = this.__getWidgetFrom(row);
+      //this._styleSelectabled(widget);
     },
 
 
     // interface implementation
     styleUnselectabled : function(row)
     {
-      var widget = this.__getWidgetFrom(row);
-      this._styleUnselectabled(widget);
+      //var widget = this.__getWidgetFrom(row);
+      //this._styleUnselectabled(widget);
     },
 
 
@@ -203,6 +216,20 @@ qx.Class.define("qx.ui.list.provider.WidgetProvider",
     ---------------------------------------------------------------------------
     */
 
+     /**
+      * Determines the states of the specified row.
+      * @param row {Integer} Index of the row to get the states for.
+      */
+    _getItemStates: function (row) {
+
+      var states = {};
+      if (this._list._manager.getLeadItem() == row)
+        states.lead = 1;
+      if (this._list._manager.isItemSelected(row))
+        states.selected = 1;
+
+      return states;
+    },
 
     /**
      * Styles a selected item.
@@ -220,7 +247,7 @@ qx.Class.define("qx.ui.list.provider.WidgetProvider",
      * @param widget {qx.ui.core.Widget} widget to style.
      */
     _styleUnselectabled : function(widget) {
-      this.__updateStates(widget, {});
+      this.__updateStates(widget, { });
     },
 
 

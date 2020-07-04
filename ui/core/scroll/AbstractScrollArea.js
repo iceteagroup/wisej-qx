@@ -224,6 +224,34 @@ qx.Class.define("qx.ui.core.scroll.AbstractScrollArea",
 
     // @ITG:Wisej: Custom scrollArea layout.
 
+    // overridden.
+    _onChangeTheme: function () {
+
+      // the theme may have changed the os.scrollBarOverlayed setting.
+      var overlayed = qx.core.Environment.get("os.scrollBarOverlayed");
+      if (overlayed !== (this._getLayout() instanceof qx.ui.layout.Canvas)) {
+
+        this._getLayout().dispose();
+
+        if (overlayed) {
+
+          // use a plain canvas to overlay the scroll bars
+          this._setLayout(new qx.ui.layout.Canvas());
+
+        } else {
+
+          // Create 'fixed' grid layout
+          var grid = new qx.ui.layout.Grid();
+          grid.setColumnFlex(0, 1);
+          grid.setRowFlex(0, 1);
+          this._setLayout(grid);
+        }
+      }
+
+      this.base(arguments);
+      this._updateScrollAreaLayout();
+    },
+
     /**
      * Updates the internal layout of the scroll components: pane, corner, scrollX, and scrollY.
      * This function can be overridden to change the layout of scrollable widgets in case
@@ -254,6 +282,7 @@ qx.Class.define("qx.ui.core.scroll.AbstractScrollArea",
         if (overlayed) {
             if (pane)
                 pane.setLayoutProperties({ edge: 0 });
+
             if (rtl) {
                 if (scrollY)
                     scrollY.setLayoutProperties({ left: 0, bottom: 0, top: 0 });
