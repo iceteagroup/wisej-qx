@@ -19,8 +19,6 @@
 ************************************************************************ */
 
 /**
- * EXPERIMENTAL!
- *
  * A cell event instance contains all data for pointer events related to cells in
  * a pane.
  **/

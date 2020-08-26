@@ -22,7 +22,6 @@
 /**
  * Abstract base class for image cell renderer.
  *
- * EXPERIMENTAL!
  */
 qx.Class.define("qx.ui.virtual.cell.AbstractImage",
 {

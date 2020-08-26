@@ -19,8 +19,6 @@
 
 
 /**
- * EXPERIMENTAL!
- *
  * The Row layer renders row background colors.
  */
 qx.Class.define("qx.ui.virtual.layer.Column",

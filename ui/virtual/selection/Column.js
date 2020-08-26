@@ -19,8 +19,6 @@
 
 
 /**
- * EXPERIMENTAL!
- *
  * Column selection manager
  */
 qx.Class.define("qx.ui.virtual.selection.Column",

@@ -22,8 +22,6 @@
 // instead of the item index. When using cell coordinates a simple resize of the pane messes up the selection!
 
 /**
- * EXPERIMENTAL!
- *
  * Cell selection manager
  *
  */

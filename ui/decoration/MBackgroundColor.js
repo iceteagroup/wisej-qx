@@ -47,6 +47,13 @@ qx.Mixin.define("qx.ui.decoration.MBackgroundColor",
       nullable: true,
       apply: "_applyBackgroundColor"
     },
+
+  	// @ITG:Wisej: Added the filter.
+    filter: {
+      check: "String",
+      nullable: true,
+      apply: "_applyBackgroundColor"
+    }
   },
 
 
@@ -79,10 +86,15 @@ qx.Mixin.define("qx.ui.decoration.MBackgroundColor",
         styles["background-color"] = bgcolor;
       }
 
+      // @ITG:Wisej: Added he filter.
+      var filter = this.getFilter();
+      if (filter) {
+        styles["filter"] = filter;
+      }
 
-     // @ITG:Wisej: Added backgroundClip to support alpha transparency on borders.
-     // Alpha transparency allows us to set generic border overlays that dynamically adapt to the background color.
-     styles["background-clip"] = this.getClip();
+      // @ITG:Wisej: Added backgroundClip to support alpha transparency on borders.
+      // Alpha transparency allows us to set generic border overlays that dynamically adapt to the background color.
+      styles["background-clip"] = this.getClip();
 
     },
 

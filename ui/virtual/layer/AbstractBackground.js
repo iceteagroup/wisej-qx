@@ -19,8 +19,6 @@
 
 
 /**
- * EXPERIMENTAL!
- *
  * Abstract base class for the {@link Row} and {@link Column} layers.
  */
 qx.Class.define("qx.ui.virtual.layer.AbstractBackground",

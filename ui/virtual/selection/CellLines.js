@@ -20,8 +20,6 @@
 
 
 /**
- * EXPERIMENTAL!
- *
  * Cell selection manager
  */
 qx.Class.define("qx.ui.virtual.selection.CellLines",

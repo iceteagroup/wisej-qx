@@ -19,8 +19,6 @@
 ************************************************************************ */
 
 /**
- * EXPERIMENTAL!
- *
  * The Scroller wraps a {@link Pane} and provides scroll bars to interactively
  * scroll the pane's content.
  *
@@ -73,7 +71,7 @@ qx.Class.define("qx.ui.virtual.core.Scroller",
     {
       refine : true,
       init : null
-    }
+    },
   },
 
 

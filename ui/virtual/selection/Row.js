@@ -20,8 +20,6 @@
 
 
 /**
- * EXPERIMENTAL!
- *
  * Row selection manager
  */
 qx.Class.define("qx.ui.virtual.selection.Row",

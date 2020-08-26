@@ -81,7 +81,7 @@ qx.Class.define("qx.theme.manager.Font",
     {
       // @ITG:Wisej: When the value is font property map, need to generate a key.
       var key = value;
-      if (typeof key != "string")
+      if (typeof key !== "string")
         key = qx.lang.String.toHashCode(JSON.stringify(value));
 
       var cache = this._dynamic;
@@ -123,16 +123,22 @@ qx.Class.define("qx.theme.manager.Font",
           var theme = this.getTheme();
           if (theme && theme.fonts)
           {
-            for (var i = 0; i < config.family.length; i++)
-            {
-              var name = config.family[i];
-              var themeFont = theme.fonts[name];
+              for (var i = 0; i < config.family.length; i++) {
+                  var name = config.family[i];
+                  var themeFont = theme.fonts[name];
 
-              if (themeFont && themeFont.family)
-                family.push(themeFont.family);
-              else
-                family.push(name);
-            }
+                  if (themeFont && themeFont.family) {
+                      family.push(themeFont.family);
+                  }
+                  else {
+                      family.push(name);
+                  }
+
+                  if (themeFont && themeFont.sources) {
+                      config.sources = config.sources || [];
+                      config.sources = config.sources.concat(themeFont.sources);
+                  }
+              }
 
             // eliminate duplicates.
             family = qx.lang.Array.unique(family);

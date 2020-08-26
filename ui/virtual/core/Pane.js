@@ -19,8 +19,6 @@
 ************************************************************************ */
 
 /**
- * EXPERIMENTAL!
- *
  * The Pane provides a window of a larger virtual grid.
  *
  * The actual rendering is performed by one or several layers ({@link ILayer}.
@@ -542,6 +540,10 @@ qx.Class.define("qx.ui.virtual.core.Pane",
      */
     prefetchX : function(minLeft, maxLeft, minRight, maxRight)
     {
+      // @ITG:Wisej: Store the prefetch limits or the scrolling update
+      // will always move the cells around as if it's without prefetching.
+      this.__prefetchX = [minLeft, maxLeft, minRight, maxRight];
+
       var layers = this.getVisibleLayers();
       if (layers.length == 0) {
         return;
@@ -589,6 +591,11 @@ qx.Class.define("qx.ui.virtual.core.Pane",
      */
     prefetchY : function(minAbove, maxAbove, minBelow, maxBelow)
     {
+
+      // @ITG:Wisej: Store the prefetch limits or the scrolling update
+      // will always move the cells around as if it's without prefetching.
+      this.__prefetchY = [minAbove, maxAbove, minBelow, maxBelow];
+
       var layers = this.getVisibleLayers();
       if (layers.length == 0) {
         return;
@@ -885,13 +892,18 @@ qx.Class.define("qx.ui.virtual.core.Pane",
 
       this.__checkPaneResize();
 
-
-      this._setLayerWindow(
-        layers,
-        this.__scrollLeft, this.__scrollTop,
-        bounds.width, bounds.height,
-        true
-      );
+      // @ITG:Wisej: Added full prefetching support.
+      if (this.__prefetchX || this.__prefetchY) {
+        this._setPrefetchLayerWindow(layers, bounds, true);
+      }
+      else {
+        this._setLayerWindow(
+          layers,
+          this.__scrollLeft, this.__scrollTop,
+          bounds.width, bounds.height,
+          true
+        );
+      }
 
     },
 
@@ -950,16 +962,55 @@ qx.Class.define("qx.ui.virtual.core.Pane",
       }
       else
       {
-        this._setLayerWindow(
-          layers,
-          this.__scrollLeft, this.__scrollTop,
-          bounds.width, bounds.height,
-          false
-        );
+        // @ITG:Wisej: Added full prefetching support.
+        if (this.__prefetchX || this.__prefetchY)
+        {
+          this._setPrefetchLayerWindow(layers, bounds, false);
+        }
+        else {
+          this._setLayerWindow(
+            layers,
+            this.__scrollLeft, this.__scrollTop,
+            bounds.width, bounds.height,
+            false
+          );
+        }
       }
 
       this.__checkPaneResize();
-    }
+      },
+
+    // @ITG:Wisej: Added full prefetching support.
+    _setPrefetchLayerWindow: function (layers, bounds, doFullUpdate)
+    {
+        var prefetchX = this.__prefetchX || [];
+        var prefetchY = this.__prefetchY || [];
+        var minLeft = prefetchX[0] || 0;
+        var maxLeft = prefetchX[1] || 0;
+        var minRight = prefetchX[2] || 0;
+        var maxRight = prefetchX[3] || 0;
+        var minAbove = prefetchY[0] || 0;
+        var maxAbove = prefetchY[1] || 0;
+        var minBelow = prefetchY[2] || 0;
+        var maxBelow = prefetchY[3] || 0;
+
+        var paneRight = this.__scrollLeft + bounds.width;
+        var rightAvailable = this.__paneWidth - paneRight;
+        var paneBottom = this.__scrollTop + bounds.height;
+        var belowAvailable = this.__paneHeight - paneBottom;
+        var left = Math.min(this.__scrollLeft, maxLeft);
+        var right = Math.min(rightAvailable, maxRight);
+        var above = Math.min(this.__scrollTop, maxAbove);
+        var below = Math.min(belowAvailable, maxBelow);
+        this._setLayerWindow(
+            layers,
+            this.__scrollLeft - left,
+            this.__scrollTop - above,
+            bounds.width + left + right,
+            bounds.height + above + below,
+            doFullUpdate
+        );
+	}
   },
 
 
