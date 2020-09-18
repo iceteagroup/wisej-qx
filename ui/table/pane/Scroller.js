@@ -1188,7 +1188,7 @@ qx.Class.define("qx.ui.table.pane.Scroller",
       {
         // The pointer is over a resize region -> Start resizing
         this._startResizeHeader(resizeCol, pageX);
-        e.stop();
+          e.stopPropagation();
       }
       else
       {
@@ -1197,7 +1197,7 @@ qx.Class.define("qx.ui.table.pane.Scroller",
         if (moveCol != null)
         {
           this._startMoveHeader(moveCol, pageX);
-          e.stop();
+            e.stopPropagation();
         }
       }
     },
