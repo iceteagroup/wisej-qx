@@ -338,8 +338,16 @@ qx.Mixin.define("qx.ui.core.MPlacement",
         }
       }
 
-      if (this.getDomMove()) {
-        this.setDomPosition(left, top);
+        if (this.getDomMove()) {
+
+          // @ITG:Wisej:Check if the element is create and fallback to non-dom positioning.
+          // Othewise we may get an error from Widget.setDomPosition().
+          var domEl = this.getContentElement().getDomElement();
+          if (domEl)
+            this.setDomPosition(left, top);
+          else
+            this.setLayoutProperties({ left: left, top: top });
+
       } else {
         this.setLayoutProperties({left: left, top: top});
       }
