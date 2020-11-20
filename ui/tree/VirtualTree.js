@@ -946,7 +946,9 @@ qx.Class.define("qx.ui.tree.VirtualTree",
         this.__lookupTable.removeAll();
         this.__lookupTable.append(lookupTable);
         this.__updateRowCount();
-        this._updateSelection();
+
+        // @ITG:Wisej: This loses the selected nodes when collapsing the parent node.
+        // this._updateSelection();
       }
     },
 

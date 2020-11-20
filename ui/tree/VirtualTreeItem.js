@@ -103,7 +103,7 @@ qx.Class.define("qx.ui.tree.VirtualTreeItem",
 
         // children property has been set already, immediately add
         // listener for indent updating
-        // @ITG:Wisej: Fixed to listed to changes also when the initial number of children is 0.
+        // @ITG:Wisej: Fixed to listen to changes also when the initial number of children is 0.
         // if (qx.ui.tree.core.Util.hasChildren(value, childProperty, !showLeafs)) {
         if (childProperty) {
           var children = value.get(childProperty);
