@@ -1078,6 +1078,9 @@ qx.Class.define("qx.ui.core.Widget",
               var insets = decorator.getInsets();
               left = left - insets.left - insets.right;
             }
+
+            changes = changes || {};
+            changes.position = true;
           }
         }
       }
@@ -4025,11 +4028,6 @@ qx.Class.define("qx.ui.core.Widget",
       if (parent) {
         parent._remove(this);
       }
-
-      // @ITG:Wisej: Hide the dom element right away to avoid potential lags on the screen when destroying a widget with many children.
-      var dom = this.getContentElement().getDomElement();
-      if (dom)
-        dom.style.visibility = "hidden";
 
       qx.ui.core.queue.Dispose.add(this);
     },
