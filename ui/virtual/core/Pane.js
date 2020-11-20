@@ -381,7 +381,7 @@ qx.Class.define("qx.ui.virtual.core.Pane",
         {
           // It's important that the registered events are first dispatched.
           qx.event.Timer.once(function() {
-            this.scrollRowIntoView(row);
+            this.scrollRowIntoView(row, align);
           }, this, 0);
         }, this);
         return;
