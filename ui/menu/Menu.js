@@ -491,9 +491,21 @@ qx.Class.define("qx.ui.menu.Menu",
 
       if (value) {
         value.addState("selected");
+
+        // @ITG:Wisej: Fixed scrolling selected menu item into view when selected by keyboard.
+        if (window.event instanceof KeyboardEvent) {
+          var me = this;
+          this.scrollChildIntoViewY(value, null, true);
+          clearTimeout(this.__selectionTimer);
+          this.__selectionTimer = setTimeout(function () {
+            me.__selectionTimer = 0;
+          }, 50);
+        }
       }
     },
 
+    // suppress "pointerover" when selecting a menu item.
+    __selectionTimer: false,
 
     // property apply
     _applyOpenedButton : function(value, old)
@@ -712,6 +724,10 @@ qx.Class.define("qx.ui.menu.Menu",
      */
     _onPointerOver : function(e)
     {
+      if (this.__selectionTimer) {
+        return;
+      }
+
       // Cache manager
       var mgr = qx.ui.menu.Manager.getInstance();
 
