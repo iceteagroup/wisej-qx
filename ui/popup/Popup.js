@@ -45,6 +45,9 @@ qx.Class.define("qx.ui.popup.Popup",
 
     // Initialize visibility
     this.initVisibility();
+
+    // Move using DOM
+    this.setDomMove(true);
   },
 
 
@@ -82,7 +85,7 @@ qx.Class.define("qx.ui.popup.Popup",
     {
       check : "Boolean",
       init : true
-    },
+    }
   },
 
 
