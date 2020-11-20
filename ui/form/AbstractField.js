@@ -1040,7 +1040,6 @@ qx.Class.define("qx.ui.form.AbstractField",
       "display : block;" +
       "background : transparent;" +
       "outline: none;" +
-      "appearance: none;" +
       "position: absolute;" +
       "autoComplete: off;" +
       "resize: none;" +
