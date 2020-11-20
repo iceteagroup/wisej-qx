@@ -31,12 +31,14 @@ qx.Bootstrap.define("qx.io.part.Package",
    * @param urls {String[]} A list of script URLs
    * @param id {var} Unique package hash key
    * @param loaded {Boolean?false} Whether the package is already loaded
+   * @param integrities {String[]?} An optional list of hash codes to verify the integrities of the sources.
    */
-  construct : function(urls, id, loaded)
+  construct : function(urls, id, loaded, integrities)
   {
     this.__readyState = loaded ? "complete" : "initialized";
     this.__urls = urls;
     this.__id = id;
+    this.__integrities = integrities;
   },
 
 
@@ -49,6 +51,7 @@ qx.Bootstrap.define("qx.io.part.Package",
     __loadWithClosure : null,
     __timeoutId : null,
     __notifyPackageResult : null,
+    __integrities : null,
 
 
     /**
@@ -158,6 +161,7 @@ qx.Bootstrap.define("qx.io.part.Package",
 
       this.__loadScriptList(
         this.__urls,
+        this.__integrities,
         function() {},
         function() {
           this.__readyState = "error";
@@ -193,6 +197,7 @@ qx.Bootstrap.define("qx.io.part.Package",
 
       this.__loadScriptList(
         this.__urls,
+        this.__integrities,
         function() {
           this.__readyState = "complete";
           this.execute();
@@ -211,11 +216,12 @@ qx.Bootstrap.define("qx.io.part.Package",
      * Loads a list of scripts in the correct order.
      *
      * @param urlList {String[]} List of script urls
+     * @param integrities {String[]} List of script integrity hash codes
      * @param callback {Function} Function to execute on completion
      * @param errBack {Function} Function to execute on error
      * @param self {Object?window} Context to execute the given function in
      */
-    __loadScriptList : function(urlList, callback, errBack, self)
+    __loadScriptList : function(urlList, integrities, callback, errBack, self)
     {
       if (urlList.length == 0)
       {
@@ -225,7 +231,7 @@ qx.Bootstrap.define("qx.io.part.Package",
 
       var urlsLoaded = 0;
       var self = this;
-      var loadScripts = function(urls)
+      var loadScripts = function(urls, hashes)
       {
         if (urlsLoaded >= urlList.length)
         {
@@ -234,7 +240,7 @@ qx.Bootstrap.define("qx.io.part.Package",
         }
 
         var loader = new qx.bom.request.Script();
-        loader.open("GET", urls.shift());
+        loader.open("GET", urls.shift(), hashes.shift());
 
         loader.onload = function()
         {
@@ -273,7 +279,8 @@ qx.Bootstrap.define("qx.io.part.Package",
         });
       };
 
-      loadScripts(urlList.concat());
+      integrities = integrities || [];
+      loadScripts(urlList.concat(), integrities.concat());
     },
 
 

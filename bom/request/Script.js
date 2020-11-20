@@ -170,8 +170,11 @@ qx.Bootstrap.define("qx.bom.request.Script",
      *   does not support methods other than GET.
      * @param url {String}
      *   The URL to which to send the request.
+     * @param integrity {String?}
+     *   Contains inline metadata that a user agent can use to verify that a 
+     *   fetched resource has been delivered free of unexpected manipulation..
      */
-    open: function(method, url) {
+    open: function(method, url, integrity) {
       if (this.__disposed) {
         return;
       }
@@ -181,6 +184,7 @@ qx.Bootstrap.define("qx.bom.request.Script",
 
       this.__abort = null;
       this.__url = url;
+      this.__integrity = integrity;
 
       if (this.__environmentGet("qx.debug.io")) {
         qx.Bootstrap.debug(qx.bom.request.Script, "Open native request with " +
@@ -560,6 +564,11 @@ qx.Bootstrap.define("qx.bom.request.Script",
     __url: "",
 
     /**
+     * @type {String} Integrity hash.
+     */
+    __integrity: "",
+
+    /**
      * @type {Function} Bound _onNativeLoad handler.
      */
     __onNativeLoadBound: null,
@@ -664,6 +673,11 @@ qx.Bootstrap.define("qx.bom.request.Script",
       script.src = this.__url;
       script.onerror = this.__onNativeErrorBound;
       script.onload = this.__onNativeLoadBound;
+
+      if (this.__integrity) {
+        script.integrity = this.__integrity;
+        script.crossOrigin = "anonymous";
+      }
 
       // BUGFIX: IE < 9
       // Legacy IEs do not fire the "load" event for script elements.
