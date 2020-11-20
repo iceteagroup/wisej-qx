@@ -501,16 +501,18 @@ qx.Bootstrap.define("qx.io.ImageLoader",
       // @ITG:Wisej: Fix preload flickering error with FireFox, IE and Edge by
       // processing the image using the 2D canvas sync drawImage call.
       if (qx.core.Environment.get("browser.name") != "chrome") {
-        try {
-          var ctx = this.__image2dContext;
-          if (ctx == null) {
-            ctx = this.__image2dContext = document.createElement("canvas").getContext("2d");
+        if (arguments[0].type !== "error") {
+          try {
+            var ctx = this.__image2dContext;
+            if (ctx == null) {
+              ctx = this.__image2dContext = document.createElement("canvas").getContext("2d");
+            }
+            if (ctx)
+              ctx.drawImage(arguments[1], 0, 0);
           }
-          if (ctx)
-            ctx.drawImage(arguments[1], 0, 0);
-        }
-        catch (error) {
-          qx.log.Logger.error("Error pre-rendering the image: " + arguments[2], error);
+          catch (error) {
+            qx.log.Logger.error("Error pre-rendering the image: " + arguments[2], error);
+          }
         }
       }
 
