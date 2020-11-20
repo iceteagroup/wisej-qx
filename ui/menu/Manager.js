@@ -538,7 +538,12 @@ qx.Class.define("qx.ui.menu.Manager",
       "Up" : 1,
       "Down" : 1,
       "Left" : 1,
-      "Right" : 1
+      "Right" : 1,
+      // @ITG:Wisej: Extended menu keyboard navigation.
+      "PageUp": 1,
+      "PageDown": 1,
+      "Home": 1,
+      "End": 1
     },
 
 
@@ -606,6 +611,23 @@ qx.Class.define("qx.ui.menu.Manager",
           case "Escape":
             this.hideAll();
             break;
+
+          // @ITG:Wisej: Extended menu keyboard navigation.
+          case "PageUp":
+            this._onKeyPressPageUp(menu);
+            break;
+
+          case "PageDown":
+            this._onKeyPressPageDown(menu);
+            break;
+
+          case "Home":
+            this._onKeyPressHome(menu);
+            break;
+
+          case "End":
+            this._onKeyPressEnd(menu);
+            break;
         }
 
         e.stopPropagation();
@@ -666,7 +688,7 @@ qx.Class.define("qx.ui.menu.Manager",
     {
       // Query for next child
       var selectedButton = menu.getSelectedButton();
-      var start = selectedButton ? menu.indexOf(selectedButton)+1 : 0;
+      var start = selectedButton ? menu.indexOf(selectedButton) + 1 : 0;
       var nextItem = this._getChild(menu, start, 1, true);
 
       // Reconfigure property
@@ -677,6 +699,79 @@ qx.Class.define("qx.ui.menu.Manager",
       }
     },
 
+    /**
+     * Event handler for <code>PageUp</code> key
+     *
+     * @param menu {qx.ui.menu.Menu} The active menu
+     */
+    _onKeyPressPageUp : function(menu)
+    {
+      // Query for next child
+      var selectedButton = menu.getSelectedButton();
+      var start = selectedButton ? menu.indexOf(selectedButton) - 10 : 0;
+      var nextItem = this._getChild(menu, Math.max(0, start), -1, true);
+
+      // Reconfigure property
+      if (nextItem) {
+        menu.setSelectedButton(nextItem);
+      } else {
+        menu.resetSelectedButton();
+      }
+    },
+
+    /**
+     * Event handler for <code>PageDown</code> key
+     *
+     * @param menu {qx.ui.menu.Menu} The active menu
+     */
+    _onKeyPressPageDown : function(menu)
+    {
+      // Query for next child
+      var selectedButton = menu.getSelectedButton();
+      var start = selectedButton ? menu.indexOf(selectedButton) + 10 : 0;
+      var nextItem = this._getChild(menu, start, 1, true);
+
+      // Reconfigure property
+      if (nextItem) {
+        menu.setSelectedButton(nextItem);
+      } else {
+        menu.resetSelectedButton();
+      }
+    },
+
+    /**
+     * Event handler for <code>Home</code> key
+     *
+     * @param menu {qx.ui.menu.Menu} The active menu
+     */
+    _onKeyPressHome : function(menu)
+    {
+      var nextItem = this._getChild(menu, 0, 1, false);
+
+      if (nextItem) {
+        menu.setSelectedButton(nextItem);
+      } else {
+        menu.resetSelectedButton();
+      }
+    },
+
+    /**
+     * Event handler for <code>End</code> key
+     *
+     * @param menu {qx.ui.menu.Menu} The active menu
+     */
+    _onKeyPressEnd : function(menu)
+    {
+      var start = menu.getChildren().length - 1;
+      var nextItem = this._getChild(menu, start, 1, false);
+
+      // Reconfigure property
+      if (nextItem) {
+        menu.setSelectedButton(nextItem);
+      } else {
+        menu.resetSelectedButton();
+      }
+    },
 
     /**
      * Event handler for <code>Left</code> key
