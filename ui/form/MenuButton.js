@@ -247,19 +247,19 @@ qx.Class.define("qx.ui.form.MenuButton",
       e.stopPropagation();
     },
 
+    // @ITG:Wisej: These overrides cause the "hovered" state to get "stuck" when the pointer is released outside of the target.
+    //// overridden
+    //_onPointerOver : function(e) {
+    //  // Add hovered state
+    //  this.addState("hovered");
+    //},
 
-    // overridden
-    _onPointerOver : function(e) {
-      // Add hovered state
-      this.addState("hovered");
-    },
 
-
-    // overridden
-    _onPointerOut : function(e) {
-      // Just remove the hover state
-      this.removeState("hovered");
-    },
+    //// overridden
+    //_onPointerOut : function(e) {
+    //  // Just remove the hover state
+    //  this.removeState("hovered");
+    //},
 
 
     // overridden

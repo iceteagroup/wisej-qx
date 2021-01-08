@@ -1076,11 +1076,12 @@ qx.Class.define("qx.ui.core.Widget",
             var decorator = qx.theme.manager.Decoration.getInstance().resolve($$parent.getDecorator());
             if (decorator) {
               var insets = decorator.getInsets();
-              left = left - insets.left - insets.right;
+              if (insets.left || insets.right) {
+                changes = changes || {};
+                changes.position = true;
+                left = left - insets.left - insets.right;
+              }
             }
-
-            changes = changes || {};
-            changes.position = true;
           }
         }
       }

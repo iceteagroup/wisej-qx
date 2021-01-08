@@ -564,8 +564,9 @@ qx.Class.define("qx.ui.form.AbstractField",
 
       this.__nullValue = false;
 
+      // @ITG:Wisej: this fix doesn't work when __oldInputValue is "".
       // value unchanged; Firefox fires "input" when pressing ESC [BUG #5309]
-      if (this.__oldInputValue && this.__oldInputValue === value) {
+      if (this.__oldInputValue != null && this.__oldInputValue === value) {
         fireEvents = false;
       }
 

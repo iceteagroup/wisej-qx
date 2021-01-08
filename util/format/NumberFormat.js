@@ -38,7 +38,7 @@ qx.Class.define("qx.util.format.NumberFormat",
    */
   construct : function(locale)
   {
-    this.base(arguments);
+    this.base(arguments, true /* weak */);
 
     if (arguments.length > 0) {
       if (arguments.length === 1) {

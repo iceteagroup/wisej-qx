@@ -285,10 +285,7 @@ qx.Class.define("qx.ui.basic.Image",
             svgHtml = svgHtml.replace(/xmlns:NS\d=\"\"/g, "").replace(/\sNS\d:/g, "");
 
         // return the modified embedded svg.
-        return "data:image/svg+xml;base64," +
-            (window.btoa
-                ? btoa(svgHtml)
-                : qx.util.Base64.encode(svgHtml));
+        return "data:image/svg+xml;base64," + qx.util.Base64.encode(svgHtml);
     },
 
 
@@ -316,7 +313,7 @@ qx.Class.define("qx.ui.basic.Image",
             if (colorPos > -1) {
                 var name = urlOrName.substring(0, colorPos);
                 var color = urlOrName.substring(colorPos + "?color=".length);
-                imageColor.source= qx.util.AliasManager.getInstance().resolve(name);
+                imageColor.source = qx.util.AliasManager.getInstance().resolve(name);
                 imageColor.color = qx.theme.manager.Color.getInstance().resolve(color);
             }
             else if (color) {
@@ -1053,14 +1050,17 @@ qx.Class.define("qx.ui.basic.Image",
 
         // if the source is an embedded svg and the source didn't specify a color, update the fill color.
         if (!this.__sourceColor) {
-            var el = this.getContentElement();
             var source = this.getSource();
             if (source) {
                 source = qx.util.AliasManager.getInstance().resolve(source);
                 if (source != null) {
-                    var svg = qx.io.ImageLoader.getSvg(source);
-                    if (svg)
-                        el.setSource(this.__changeSvgFillColor(el, svg));
+                    qx.io.ImageLoader.load(source, function (url, entry) {
+                        var svg = entry.svg;
+                        if (svg) {
+                            var el = this.getContentElement();
+                            el.setSource(this.__changeSvgFillColor(el, svg));
+                        }
+                    }, this);
                 }
             }
         }

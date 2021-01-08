@@ -1187,8 +1187,7 @@ qx.Theme.define("qx.theme.simple.Appearance",
         }
 
         return {
-          icon: icon,
-          gap: 6
+          icon: icon
         }
       }
     },

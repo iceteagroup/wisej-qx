@@ -538,6 +538,10 @@ qx.Class.define("qx.html.Element",
 
         this._copyData(false);
 
+        // @ITG:Wisej: If the html element is created too soon, like the iframe, it cannot be made invisible at creation.
+        if (!this.__visible)
+          this.__element.style.display = "none";
+
         if (children && length > 0) {
           this._insertChildren();
         }

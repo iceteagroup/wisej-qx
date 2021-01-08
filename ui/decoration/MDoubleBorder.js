@@ -416,10 +416,10 @@ qx.Mixin.define("qx.ui.decoration.MDoubleBorder",
     __getDefaultInsetsForDoubleBorder : function()
     {
       return {
-        top : this.getWidthTop() + this.getInnerWidthTop(),
-        right : this.getWidthRight() + this.getInnerWidthRight(),
-        bottom : this.getWidthBottom() + this.getInnerWidthBottom(),
-        left : this.getWidthLeft() + this.getInnerWidthLeft()
+        top : (this.getWidthTop() | 0) + (this.getInnerWidthTop() | 0),
+        right : (this.getWidthRight() | 0) + (this.getInnerWidthRight() | 0),
+        bottom : (this.getWidthBottom() | 0) + (this.getInnerWidthBottom() | 0),
+        left : (this.getWidthLeft() | 0) + (this.getInnerWidthLeft() | 0)
       };
     }
   }

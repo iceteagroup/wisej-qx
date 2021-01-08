@@ -42,7 +42,7 @@ qx.Class.define("qx.util.Base64", {
     {
       var isMultiByte;
 
-      if (typeof is8bit == "undefined")
+      if (typeof is8bit === "undefined")
       {
         var charSet = document.characterSet || document.charset;
         isMultiByte = charSet.toLowerCase().indexOf('utf') != -1;

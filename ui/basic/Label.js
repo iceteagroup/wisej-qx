@@ -292,7 +292,7 @@ qx.Class.define("qx.ui.basic.Label",
 
     // overridden
     _createContentElement : function() {
-      return new qx.html.Label;
+      return new qx.html.Label();
     },
 
 

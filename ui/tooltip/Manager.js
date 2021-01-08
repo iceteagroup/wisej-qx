@@ -237,8 +237,9 @@ qx.Class.define("qx.ui.tooltip.Manager",
         this.__hideTimer.startWith(current.getHideTimeout());
 
         if (current.getPlaceMethod() == "widget") {
-          current.placeToWidget(current.getOpener());
-        } else {
+          // @ITG:Wisej: Added liveUpdate to realign the tooltip.
+          current.placeToWidget(current.getOpener(), true);
+        } else if (current.getPlaceMethod() == "pointer") {
           current.placeToPoint(this.__pointerPosition);
         }
 

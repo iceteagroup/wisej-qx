@@ -271,10 +271,10 @@ qx.Mixin.define("qx.ui.decoration.MSingleBorder",
     _getDefaultInsetsForBorder : function()
     {
       return {
-        top : this.getWidthTop(),
-        right : this.getWidthRight(),
-        bottom : this.getWidthBottom(),
-        left : this.getWidthLeft()
+        top : (this.getWidthTop() | 0),
+        right : (this.getWidthRight() | 0),
+        bottom : (this.getWidthBottom() | 0),
+        left : (this.getWidthLeft() | 0)
       };
     },
 

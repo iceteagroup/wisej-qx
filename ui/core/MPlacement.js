@@ -366,6 +366,9 @@ qx.Mixin.define("qx.ui.core.MPlacement",
      */
     placeToWidget : function(target, liveupdate)
     {
+      // @ITG:Wisej: Prevent errors in the interval when the target is null.
+      if (!target)
+        return;
 
       // Use the idle event to make sure that the widget's position gets
       // updated automatically (e.g. the widget gets scrolled).

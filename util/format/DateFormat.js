@@ -87,7 +87,7 @@ qx.Class.define("qx.util.format.DateFormat",
    */
   construct : function(format, locale)
   {
-    this.base(arguments);
+    this.base(arguments, true /* weak */);
 
     if (!locale)
     {
