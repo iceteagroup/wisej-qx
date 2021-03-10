@@ -354,7 +354,7 @@ qx.Class.define("qx.ui.form.List",
       // if an item was found, select it
       if (matchedItem) {
 
-        // @ITG:Wisej: Change behavior in multi selection by setting
+        // @ITG:Wisej: Change behavior in multi selection by setting the lead item.
         if (multi) {
           this._getManager()._setLeadItem(matchedItem);
           this._getManager()._scrollItemIntoView(matchedItem);

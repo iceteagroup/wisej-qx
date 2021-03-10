@@ -178,6 +178,14 @@ qx.Class.define("qx.ui.popup.Manager",
         if (!obj.canAutoHide(target))
           continue;
 
+        // @ITG:Wisej: Check whether the target is in a menu which is opened by a widget in a popup.
+        for (var menu = target; menu != null; menu = menu.getLayoutParent()) {
+          if (menu instanceof qx.ui.menu.Menu) {
+            target = menu.getOpener();
+            break;
+          }
+        }
+
         // @ITG:Wisej: Check whether the target is hosted in a popup, otherwise when a ComboBox or a DateField are in a 
         // popup, selecting an item or a date closes the popup.
         var skip = false;

@@ -363,6 +363,11 @@ qx.Class.define("qx.ui.form.Slider",
       var backward = isHorizontal ? "Left" : "Up";
       var forward = isHorizontal ? "Right" : "Down";
 
+      if (isHorizontal && this.isRtl()) {
+        backward = "Right";
+        forward = "Left";
+      }
+
       switch(e.getKeyIdentifier())
       {
         case forward:
@@ -736,7 +741,8 @@ qx.Class.define("qx.ui.form.Slider",
       }
 
       // Compute and limit percent
-      var percent = position / avail;
+      // @ITG:Wisej: Rtl support.
+      var percent = this.isRtl() ? (avail - position) / avail : position / avail;
       if (percent < 0) {
         percent = 0;
       } else if (percent > 1) {
@@ -786,7 +792,8 @@ qx.Class.define("qx.ui.form.Slider",
       }
 
       // Compute position from available space and percent
-      return Math.round(avail * percent);
+      // @ITG:Wisej: Rtl support.
+      return this.isRtl() ? avail - Math.round(avail * percent) : Math.round(avail * percent);
     },
 
 

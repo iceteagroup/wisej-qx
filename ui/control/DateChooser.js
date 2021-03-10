@@ -117,8 +117,8 @@ qx.Class.define("qx.ui.control.DateChooser",
     this.addListener("pointerup", this._onPointerUpDown, this);
 
     // @ITG:Wisej: Hide the new month-year-selector when deactivated or hidden.
-    this.addListener("disappear", this.__showMonthYearSelector.bind(this, false), this);
-    this.addListener("deactivated", this.__showMonthYearSelector.bind(this, false), this);
+    this.addListener("disappear", this.showMonthYearSelector.bind(this, false), this);
+    this.addListener("deactivated", this.showMonthYearSelector.bind(this, false), this);
   },
 
 
@@ -205,7 +205,8 @@ qx.Class.define("qx.ui.control.DateChooser",
       init : null,
       nullable : true,
       event : "changeValue",
-      apply : "_applyValue"
+      apply : "_applyValue",
+      transform: "__limitValue"
     },
 
     // @ITG:Wisej: Added the "Today" property to let the widget customize what is today's date.
@@ -509,9 +510,6 @@ qx.Class.define("qx.ui.control.DateChooser",
     _applyValue : function(value, old)
     {
 
-      // @ITG:Wisej: Added the "MinValue" and "MaxValue: properties to limit the calendar navigation.
-      value = this.__limitValue(value);
-
       if ((value != null) && (this.getShownMonth() != value.getMonth() || this.getShownYear() != value.getFullYear()))
       {
         // The new date is in another month -> Show that month
@@ -701,7 +699,7 @@ qx.Class.define("qx.ui.control.DateChooser",
 
         // @ITG:Wisej: Show the month/year selector on F2.
         case "F2":
-            this.__showMonthYearSelector(true);
+            this.showMonthYearSelector(true);
             return;
         }
       }
@@ -724,7 +722,7 @@ qx.Class.define("qx.ui.control.DateChooser",
         switch (evt.getKeyIdentifier()) {
 
             case "Down":
-                this.__showMonthYearSelector(true);
+                this.showMonthYearSelector(true);
                 return;
         }
       }
@@ -921,11 +919,15 @@ qx.Class.define("qx.ui.control.DateChooser",
         if (e.getType() == "pointerup") {
 
             var selector = this.getChildControl("month-year-selector");
-            this.__showMonthYearSelector(!selector.isVisible());
+            this.showMonthYearSelector(!selector.isVisible());
         }
     },
 
-    __showMonthYearSelector: function(show)
+    /**
+     * Shows or hides the month/year selector.
+     * @param show {Boolean} true to show and false to hide.
+     */
+    showMonthYearSelector: function(show)
     {
         var datePane = this.getChildControl("date-pane");
         var selector = this.getChildControl("month-year-selector");

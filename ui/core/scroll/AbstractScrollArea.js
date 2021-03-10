@@ -738,8 +738,11 @@ qx.Class.define("qx.ui.core.scroll.AbstractScrollArea",
       }
 
       // @ITG:Wisej: Skip panes with size 0,0 or we end up in an infinite loop.
-      if (paneSize.width == 0 || paneSize.height == 0)
-        return;
+      if (paneSize.width == 0 || paneSize.height == 0) {
+          this._excludeChildControl("scrollbar-x");
+          this._excludeChildControl("scrollbar-y");
+          return;
+      }
 
       var scrollbarX = this.getScrollbarX();
       var scrollbarY = this.getScrollbarY();

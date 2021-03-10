@@ -91,6 +91,14 @@ qx.Class.define("qx.ui.core.scroll.ScrollBar",
     this.addListener("track", function(e) {
       e.stopPropagation();
     }, this);
+
+    // prevent double click from bubbling up.
+    this.addListener("dbltap", function (e) {
+        e.stopPropagation();
+    }, this);
+    this.addListener("dblclick", function (e) {
+        e.stopPropagation();
+    }, this);
   },
 
 

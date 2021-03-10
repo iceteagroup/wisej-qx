@@ -212,8 +212,12 @@ qx.Class.define("qx.ui.control.MonthYearSelector", {
         // fill the list of years.
         __populateYears: function (start) {
 
-            start = Math.max(1, start);
-            var end = start + 10;
+            var minYear = this.__minDate.getFullYear();
+            var maxYear = this.__maxDate.getFullYear();
+            var currentYear = this.__owner.getShownYear();
+
+            start = Math.max(minYear, start);
+            var end = Math.min(maxYear, start + 10);
             var firstLoad = !this.getChildControl("year#0", true);
             var yearFormat = new qx.util.format.DateFormat("yyyy");
 
@@ -223,9 +227,10 @@ qx.Class.define("qx.ui.control.MonthYearSelector", {
 
                 var helpDate = new Date(y, 1);
                 var yearLabel = this.getChildControl("year#" + i);
+
                 yearLabel.setUserData("year", y);
-                yearLabel.removeState("selected");
                 yearLabel.setValue(yearFormat.format(helpDate));
+                yearLabel.removeState("selected");
 
                 this.__yearToLabelMap[y] = yearLabel;
 
@@ -422,11 +427,8 @@ qx.Class.define("qx.ui.control.MonthYearSelector", {
             var minYear = this.__minDate.getFullYear();
             var year = this.getChildControl("year#0").getUserData("year")
             if (year > minYear) {
-                this.__populateYears(Math.max(year - 10, minYear + 10));
-
-                var current = this.__yearToLabelMap[year];
-                if (current)
-                    current.addState("selected");
+                year = Math.max(minYear, year - 10);
+                this.__populateYears(year);
             }
         },
 
@@ -436,11 +438,8 @@ qx.Class.define("qx.ui.control.MonthYearSelector", {
             var year = this.getChildControl("year#0").getUserData("year")
 
             if (year < maxYear) {
-                this.__populateYears(Math.min(year + 10, maxYear - 10));
-
-                var current = this.__yearToLabelMap[year];
-                if (current)
-                    current.addState("selected");
+                year = Math.min(maxYear, year + 10);
+                this.__populateYears(year);
             }
         },
 

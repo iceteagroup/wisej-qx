@@ -339,7 +339,6 @@ qx.Class.define("qx.ui.form.DateField",
     open : function()
     {
       var popup = this.getChildControl("popup");
-
       popup.placeToWidget(this, true);
       popup.show();
     },
@@ -434,8 +433,18 @@ qx.Class.define("qx.ui.form.DateField",
 
         case "list":
           control = new qx.ui.control.DateChooser();
-          control.setFocusable(false);
-          control.setKeepFocus(true);
+
+          // @ITG:Wisej: Cannot navigate the calendar on mobile and tablet devices.
+          //control.setFocusable(false);
+          //control.setKeepFocus(true);
+          if (qx.core.Environment.get("device.type") !== "desktop") {
+            control.setFocusable(true);
+            control.setKeepFocus(false);
+          } else {
+            control.setFocusable(false);
+            control.setKeepFocus(true);
+          }
+
           control.addListener("execute", this._onChangeDate, this);
           control.addListener("keypress", this._onChooserKeyPress, this);
           break;
@@ -492,8 +501,11 @@ qx.Class.define("qx.ui.form.DateField",
      *
      * @param e {qx.event.type.Focus} The blur event.
      */
-    _onBlur : function(e) {
-      this.close();
+    _onBlur: function (e) {
+      // @ITG:Wisej: Don't close if the focus is going to the calendar.
+      if (e.getRelatedTarget() != this.getChildControl("list", true)) {
+        this.close();
+       }
     },
 
 
@@ -519,6 +531,7 @@ qx.Class.define("qx.ui.form.DateField",
       // if the popup is closed, ignore all
       // @ITG:Wisej: Don't force the creation of the popup.
       var popup = this.getChildControl("popup", true);
+
       // @ITG:Wisej: Popups are initially created "excluded".
       //if (popup.getVisibility() == "hidden") {
       //  return;

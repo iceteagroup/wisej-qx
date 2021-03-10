@@ -146,6 +146,12 @@ qx.Class.define("qx.ui.form.AbstractSelectBox",
             quickSelection: true
           });
 
+          // @ITG:Wisej: Cannot navigate the list on mobile and tablet devices.
+          if (qx.core.Environment.get("device.type") !== "desktop") {
+            control.setFocusable(true);
+            control.setKeepFocus(false);
+          }
+
           control.addListener("changeSelection", this._onListChangeSelection, this);
           control.addListener("pointerdown", this._onListPointerDown, this);
           control.getChildControl("pane").addListener("tap", this.close, this);
@@ -155,10 +161,8 @@ qx.Class.define("qx.ui.form.AbstractSelectBox",
           control = new qx.ui.popup.Popup(new qx.ui.layout.VBox());
           control.setAutoHide(false);
           control.setKeepActive(true);
-          control.add(this.getChildControl("list"));
-
-          // @ITG:Wisej: Don't force the creation of the popup.
           control.setMinWidth(this.getWidth());
+          control.add(this.getChildControl("list"));
 
           // @ITG:Wisej: Inherit the font from the owner, otherwise the drop down will always have its own font.
           control.setFont(this.getFont());
@@ -296,9 +300,10 @@ qx.Class.define("qx.ui.form.AbstractSelectBox",
      *
      * @param e {qx.event.type.Focus} The blur event.
      */
-    _onBlur : function(e)
-    {
-      this.close();
+    _onBlur : function(e) {
+      // @ITG:Wisej: Don't close if the focus is going to the calendar.
+      if (e.getRelatedTarget() != this.getChildControl("list", true))
+        this.close();
     },
 
 
@@ -307,8 +312,7 @@ qx.Class.define("qx.ui.form.AbstractSelectBox",
      *
      * @param e {qx.event.type.KeySequence} Keypress event
      */
-    _onKeyPress : function(e)
-    {
+    _onKeyPress : function(e) {
       // get the key identifier
       var identifier = e.getKeyIdentifier();
       var listPopup = this.getChildControl("popup");

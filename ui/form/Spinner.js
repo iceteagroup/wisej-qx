@@ -96,15 +96,12 @@ qx.Class.define("qx.ui.form.Spinner",
     this.addListener("keyup", this._onKeyUp, this);
     this.addListener("roll", this._onRoll, this);
 
-    // @ITG:Wisej: Stop the keypress event from bubbling otherwise this control cannot be used as a cell editor.
-    this.addListener("keypress", this._onKeyPress, this);
-
     if (qx.core.Environment.get("qx.dynlocale")) {
       qx.locale.Manager.getInstance().addListener("changeLocale", this._onChangeLocale, this);
     }
 
     // CREATE CONTROLS
-    this._createChildControl("textfield");
+    var textField = this._createChildControl("textfield");
     this._createChildControl("upbutton");
     this._createChildControl("downbutton");
 
@@ -125,6 +122,16 @@ qx.Class.define("qx.ui.form.Spinner",
     } else {
       this.initValue();
     }
+
+    // forward the focusin and focusout events to the textfield. The textfield
+    // is not focusable so the events need to be forwarded manually.
+    this.addListener("focusin", function(e) {
+      textField.fireNonBubblingEvent("focusin", qx.event.type.Focus);
+    }, this);
+
+    this.addListener("focusout", function(e) {
+      textField.fireNonBubblingEvent("focusout", qx.event.type.Focus);
+    }, this);
   },
 
 
@@ -346,9 +353,6 @@ qx.Class.define("qx.ui.form.Spinner",
       field.getFocusElement().focus();
       field.selectAllText();
     },
-
-
-
 
 
     /*
@@ -585,16 +589,24 @@ qx.Class.define("qx.ui.form.Spinner",
         case "PageUp":
           // mark that the spinner is in page mode and process further
           this.__pageUpMode = true;
+          this.getChildControl("textfield").fireNonBubblingEvent("changeValue", qx.event.type.Data);
+          this.getChildControl("upbutton").press();
+          break;
 
         case "Up":
+          this.getChildControl("textfield").fireNonBubblingEvent("changeValue", qx.event.type.Data);
           this.getChildControl("upbutton").press();
           break;
 
         case "PageDown":
           // mark that the spinner is in page mode and process further
           this.__pageDownMode = true;
+          this.getChildControl("textfield").fireNonBubblingEvent("changeValue", qx.event.type.Data);
+          this.getChildControl("downbutton").press();
+          break;
 
         case "Down":
+          this.getChildControl("textfield").fireNonBubblingEvent("changeValue", qx.event.type.Data);
           this.getChildControl("downbutton").press();
           break;
 
@@ -605,28 +617,6 @@ qx.Class.define("qx.ui.form.Spinner",
 
       e.stopPropagation();
       e.preventDefault();
-    },
-
-
-    // @ITG:Wisej: Stop the keypress event from bubbling otherwise this control cannot be used as a cell editor.
-
-    /**
-     * Callback for "keypress" event.<br/>
-     * Detecting "Up"/"Down" and "PageUp"/"PageDown" keys.<br/>
-     * Releases the button and disables the page mode, if necessary.
-     *
-     * @param e {qx.event.type.KeySequence} keyUp event
-     */
-    _onKeyPress: function (e) {
-        switch (e.getKeyIdentifier()) {
-            case "PageUp":
-            case "Up":
-            case "PageDown":
-            case "Down":
-                e.stopPropagation();
-                e.preventDefault();
-                break;
-        }
     },
 
     /**
@@ -654,7 +644,7 @@ qx.Class.define("qx.ui.form.Spinner",
           this.__pageDownMode = false;
           break;
 
-        case "Down":
+          case "Down":
           this.getChildControl("downbutton").release();
           break;
 

@@ -124,52 +124,13 @@ qx.Class.define("qx.event.handler.Focus",
     /**
      * @type {Map} See: http://msdn.microsoft.com/en-us/library/ms534654(VS.85).aspx
      */
-    FOCUSABLE_ELEMENTS : qx.core.Environment.select("engine.name",
+    FOCUSABLE_ELEMENTS : 
     {
-      "mshtml" :
-      {
-        a : 1,
-        body : 1,
-        button : 1,
-        frame : 1,
-        iframe : 1,
-        img : 1,
-        input : 1,
-        object : 1,
-        select : 1,
-        textarea : 1
-      },
-
-      "gecko" :
-      {
-        a : 1,
-        body : 1,
-        button : 1,
-        frame : 1,
-        iframe : 1,
-        img : 1,
-        input : 1,
-        object : 1,
-        select : 1,
-        textarea : 1
-      },
-
-      "opera" :
-      {
-        button : 1,
-        input : 1,
-        select : 1,
-        textarea : 1
-      },
-
-      "webkit" :
-      {
-        button : 1,
-        input : 1,
-        select : 1,
-        textarea : 1
-      }
-    })
+      button : 1,
+      input : 1,
+      select : 1,
+      textarea : 1
+     }
   },
 
   /*
@@ -858,7 +819,8 @@ qx.Class.define("qx.event.handler.Focus",
             // The unselectable attribute stops focusing as well.
             // Do this manually.
             try {
-              focusTarget.focus();
+              // @ITG:Wisej: IE sometimes doesn't bubble the focusin event.
+              this.setFocus(focusTarget);
             } catch (ex) {
               // ignore "Can't move focus of this control" error
             }

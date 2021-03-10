@@ -332,7 +332,6 @@ qx.Mixin.define("qx.ui.core.MMovable",
       if (this.getUseMoveFrame()) {
         this.__getMoveFrame().setDomPosition(coords.viewportLeft, coords.viewportTop);
       } else {
-        var insets = this.getLayoutParent().getInsets();
         // @ITG:Wisej: Deducting insets causes a jump when moving inside a parent.
         // this.setDomPosition(coords.parentLeft - (insets.left || 0),
         //  coords.parentTop - (insets.top || 0));
@@ -388,7 +387,6 @@ qx.Mixin.define("qx.ui.core.MMovable",
 
       // Apply them to the layout
       var coords = this.__computeMoveCoordinates(e);
-      var insets = this.getLayoutParent().getInsets();
       this.setLayoutProperties({
         // @ITG:Wisej: Deducting insets causes a jump when moving inside a parent.
         //left: coords.parentLeft - (insets.left || 0),
@@ -399,14 +397,15 @@ qx.Mixin.define("qx.ui.core.MMovable",
 
       // @ITG:Wisej: MMovable doesn't work for widgets with user bounds.
       if (this.hasUserBounds()) {
+        var bounds = this.getBounds();
         this.setUserBounds(
             // @ITG:Wisej: Deducting insets causes a jump when moving inside a parent.
             //coords.parentLeft - (insets.left || 0),
             //coords.parentTop - (insets.top || 0),
             coords.parentLeft,
             coords.parentTop,
-            this.getWidth(),
-            this.getHeight());
+            bounds.width,
+            bounds.height);
       }
 
       // Hide frame afterwards
