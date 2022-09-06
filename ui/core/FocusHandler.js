@@ -270,16 +270,22 @@ qx.Class.define("qx.ui.core.FocusHandler",
         return;
       }
 
+      // @ITG:Wisej: Honor a previous request to prevent the default behavior.
+      if (e.getDefaultPrevented()) {
+        return;
+      }
+
       // Stop all key-events with a TAB keycode
       e.stopPropagation();
       e.preventDefault();
 
       // Support shift key to reverse widget detection order
+      var next = null;
       var current = this.__focusedChild;
       if (!e.isShiftPressed()) {
-        var next = current ? this.__getWidgetAfter(current) : this.__getFirstWidget();
+        next = current ? this.__getWidgetAfter(current) : this.__getFirstWidget();
       } else {
-        var next = current ? this.__getWidgetBefore(current) : this.__getLastWidget();
+        next = current ? this.__getWidgetBefore(current) : this.__getLastWidget();
       }
 
       // If there was a widget found, focus it

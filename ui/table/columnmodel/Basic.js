@@ -482,7 +482,10 @@ qx.Class.define("qx.ui.table.columnmodel.Basic",
         this.assertInteger(col, "Invalid argument 'col'.");
       }
 
-      return this._getColToXPosMap()[col].visX;
+      // @ITG:Wisej: Prevent "cannot read property 'visX' of undefined" when used without columns.
+      // return this._getColToXPosMap()[col].visX;
+      var pos = this._getColToXPosMap()[col];
+      return pos != null ? pos.visX : null;
     },
 
 
@@ -524,7 +527,10 @@ qx.Class.define("qx.ui.table.columnmodel.Basic",
         this.assertInteger(col, "Invalid argument 'col'.");
       }
 
-      return this._getColToXPosMap()[col].overX;
+      // @ITG:Wisej: Prevent "cannot read property 'overX' of undefined" when used without columns.
+      //return this._getColToXPosMap()[col].overX;
+      var pos = this._getColToXPosMap()[col];
+      return pos != null ? pos.overX : null;
     },
 
 
@@ -540,7 +546,10 @@ qx.Class.define("qx.ui.table.columnmodel.Basic",
         this.assertInteger(col, "Invalid argument 'col'.");
       }
 
-      return (this._getColToXPosMap()[col].visX != null);
+      // @ITG:Wisej: Prevent "cannot read property 'overX' of undefined" when used without columns.
+      // return (this._getColToXPosMap()[col].visX != null);
+      var pos = this._getColToXPosMap()[col];
+      return pos != null ? pos.visX != null : false;
     },
 
 

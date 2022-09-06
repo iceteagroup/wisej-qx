@@ -116,7 +116,7 @@ qx.Class.define("qx.event.handler.Mouse",
     __manager : null,
     __window : null,
     __root : null,
-    __preventNextClick: null,
+    __preventNextClick: false,
 
 
 
@@ -346,7 +346,7 @@ qx.Class.define("qx.event.handler.Mouse",
       var target = qx.bom.Event.getTarget(domEvent);
 
       if (type == "click" && this.__preventNextClick) {
-        delete this.__preventNextClick;
+        this.__preventNextClick = false;
         return;
       }
 

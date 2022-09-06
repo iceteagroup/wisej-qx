@@ -180,15 +180,16 @@ qx.Class.define("qx.ui.root.Application",
 
       qx.ui.core.queue.Layout.add(this);
 
-      // close all popups
-      if (qx.ui.popup && qx.ui.popup.Manager) {
-        qx.ui.popup.Manager.getInstance().hideAll();
-      }
+    // @ITG:Wisej: Causes popups to close on Android when the keyboard shows.
+    //  // close all popups
+    //  if (qx.ui.popup && qx.ui.popup.Manager) {
+    //    qx.ui.popup.Manager.getInstance().hideAll();
+    //  }
 
-      // close all menus
-      if (qx.ui.menu && qx.ui.menu.Manager) {
-        qx.ui.menu.Manager.getInstance().hideAll();
-      }
+    //  // close all menus
+    //  if (qx.ui.menu && qx.ui.menu.Manager) {
+    //    qx.ui.menu.Manager.getInstance().hideAll();
+    //  }
     },
 
     // overridden

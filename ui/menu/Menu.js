@@ -63,6 +63,7 @@ qx.Class.define("qx.ui.menu.Menu",
     this.initVisibility();
     this.initKeepFocus();
     this.initKeepActive();
+
   },
 
 
@@ -684,7 +685,7 @@ qx.Class.define("qx.ui.menu.Menu",
       if (this.__onAfterSlideBarAdd)
       {
         this.__onAfterSlideBarAdd.call(this);
-        delete this.__onAfterSlideBarAdd;
+        this.__onAfterSlideBarAdd = null;
       }
     },
 

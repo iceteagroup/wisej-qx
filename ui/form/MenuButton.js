@@ -222,17 +222,20 @@ qx.Class.define("qx.ui.form.MenuButton",
         return;
       }
 
-      var menu = this.getMenu();
-      if (menu) {
-        // Toggle sub menu visibility
-        if (!menu.isVisible()) {
-          this.open();
-        } else {
-          menu.exclude();
-        }
+      // @ITG:Wisej: Don't show menu on touch devices.
+      if (e.getPointerType() != "touch") {
+        var menu = this.getMenu();
+        if (menu) {
+          // Toggle sub menu visibility
+          if (!menu.isVisible()) {
+            this.open();
+          } else {
+            menu.exclude();
+          }
 
-        // Event is processed, stop it for others
-        e.stopPropagation();
+          // Event is processed, stop it for others
+          e.stopPropagation();
+        }
       }
     },
 
@@ -246,6 +249,28 @@ qx.Class.define("qx.ui.form.MenuButton",
       // from getting the event
       e.stopPropagation();
     },
+
+    // overriden
+    _onTap : function (e) {
+
+      this.base(arguments, e);
+
+      // @ITG:Wisej: Don't show menu on touch devices.
+      if (e.getPointerType() == "touch") {
+        var menu = this.getMenu();
+        if (menu) {
+          // Toggle sub menu visibility
+          if (!menu.isVisible()) {
+            this.open();
+          } else {
+            menu.exclude();
+          }
+
+          // Event is processed, stop it for others
+          e.stopPropagation();
+        }
+      }
+	},
 
     // @ITG:Wisej: These overrides cause the "hovered" state to get "stuck" when the pointer is released outside of the target.
     //// overridden

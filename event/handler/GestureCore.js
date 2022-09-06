@@ -316,9 +316,19 @@ qx.Bootstrap.define("qx.event.handler.GestureCore", {
         //  delete this.__gesture[domEvent.pointerId];
         //  return;
         //}
+
         if (target !== gesture.target && document.body.contains(gesture.target)) {
+
+          // @ITG:Wisej: Before dropping the event check if the real end-target is the same as the begin-target.
+          var widget = qx.ui.core.Widget.getWidgetByElement(target);
+          for (; widget && widget.isAnonymous(); widget = widget.getLayoutParent());
+          var originalWidget = qx.ui.core.Widget.getWidgetByElement(gesture.target);
+          for (; originalWidget && originalWidget.isAnonymous(); originalWidget = originalWidget.getLayoutParent());
+
+          if (widget != originalWidget) {
             delete this.__gesture[domEvent.pointerId];
             return;
+          }
         }
 
         this._fireEvent(domEvent, "tap", domEvent.target || target);

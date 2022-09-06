@@ -48,7 +48,7 @@ qx.Class.define("qx.ui.layout.Abstract",
     /** @type {Boolean} Whether the children cache is valid. This field is protected
      *    because sub classes must be able to access it quickly.
      */
-    _invalidChildrenCache : null,
+    _invalidChildrenCache : false,
 
     /** @type {qx.ui.core.Widget} The connected widget */
     __widget : null,

@@ -733,15 +733,19 @@ qx.Class.define("qx.ui.core.scroll.AbstractScrollArea",
 
       // if the widget has not yet been rendered, return and try again in the
       // resize event
-      if (!paneSize || !scrollSize) {
+      if (!paneSize || !scrollSize || !innerSize) {
         return;
       }
 
       // @ITG:Wisej: Skip panes with size 0,0 or we end up in an infinite loop.
       if (paneSize.width == 0 || paneSize.height == 0) {
+        if (paneSize.width == 0) {
           this._excludeChildControl("scrollbar-x");
+        }
+        if (paneSize.height == 0) {
           this._excludeChildControl("scrollbar-y");
-          return;
+        }
+        return;
       }
 
       var scrollbarX = this.getScrollbarX();

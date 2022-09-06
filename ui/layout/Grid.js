@@ -278,7 +278,7 @@ qx.Class.define("qx.ui.layout.Grid",
       this.__colWidths = null;
 
       // Clear invalidation marker
-      delete this._invalidChildrenCache;
+      this._invalidChildrenCache = false;
     },
 
 

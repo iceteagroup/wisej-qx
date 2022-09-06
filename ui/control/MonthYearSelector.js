@@ -75,6 +75,7 @@ qx.Class.define("qx.ui.control.MonthYearSelector", {
 
         // prevent the pointer events from reaching the parent, in case
         // this is being shown in a popup.
+        this.addListener("roll", this.__stopPropagation, this);
         this.addListener("pointerup", this.__stopPropagation, this);
         this.addListener("pointerdown", this.__stopPropagation, this);
 
@@ -217,25 +218,29 @@ qx.Class.define("qx.ui.control.MonthYearSelector", {
             var currentYear = this.__owner.getShownYear();
 
             start = Math.max(minYear, start);
-            var end = Math.min(maxYear, start + 10);
-            var firstLoad = !this.getChildControl("year#0", true);
+            var end = Math.min(maxYear + 1, start + 10);
             var yearFormat = new qx.util.format.DateFormat("yyyy");
 
             this.__yearToLabelMap = {};
+
+            for (var i = 0; i < 10; i++) {
+                this._excludeChildControl("year#" + i);
+            }
 
             for (var y = start, i = 0; y < end; y++) {
 
                 var helpDate = new Date(y, 1);
                 var yearLabel = this.getChildControl("year#" + i);
 
+                yearLabel.show();
                 yearLabel.setUserData("year", y);
                 yearLabel.setValue(yearFormat.format(helpDate));
                 yearLabel.removeState("selected");
 
-                this.__yearToLabelMap[y] = yearLabel;
+                if (y == currentYear)
+                    yearLabel.addState("selected");
 
-                if (firstLoad)
-                    this.add(yearLabel, { row: 1 + (i % 5) | 0, column: 3 + (i < 5 ? 0 : 1) });
+                this.__yearToLabelMap[y] = yearLabel;
 
                 i++;
             }
@@ -290,6 +295,9 @@ qx.Class.define("qx.ui.control.MonthYearSelector", {
                     control.addListener("tap", this.__onYearTap, this);
                     control.addListener("pointerover", this._onPointerOver, this);
                     control.addListener("pointerout", this._onPointerOut, this);
+                    control.exclude();
+                    var pos = parseInt(hash) || 0;
+                    this.add(control, { row: 1 + (pos % 5) | 0, column: 3 + (pos < 5 ? 0 : 1) });
                     break;
 
                 case "navigation-bar":
@@ -321,6 +329,15 @@ qx.Class.define("qx.ui.control.MonthYearSelector", {
             }
 
             return control || this.base(arguments, id);
+        },
+
+        /**
+         * Event handler. Used to handle the key events.
+         *
+         * @param e {qx.event.type.Data} The event.
+         */
+        handleKeyPress: function (e) {
+            this.__onKeyPress(e);
         },
 
         __onKeyPress: function (e) {
@@ -425,24 +442,16 @@ qx.Class.define("qx.ui.control.MonthYearSelector", {
         __onPrevYearExecute: function (e) {
 
             var minYear = this.__minDate.getFullYear();
-            var year = this.getChildControl("year#0").getUserData("year")
-            if (year > minYear) {
-                year = Math.max(minYear, year - 10);
-                this.__populateYears(year);
-            }
+            var year = this.getChildControl("year#0").getUserData("year") - 10;
+            this.__populateYears(Math.max(year, minYear));
         },
 
         __onNextYearExecute: function (e) {
 
             var maxYear = this.__maxDate.getFullYear();
-            var year = this.getChildControl("year#0").getUserData("year")
-
-            if (year < maxYear) {
-                year = Math.min(maxYear, year + 10);
-                this.__populateYears(year);
-            }
-        },
-
+            var year = this.getChildControl("year#0").getUserData("year") + 10;
+            this.__populateYears(Math.min(year, maxYear));
+        }
     }
 });
 

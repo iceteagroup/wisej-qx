@@ -375,7 +375,6 @@ qx.Class.define("qx.ui.control.DateChooser",
           control.setAllowGrowY(true);
           control.setSelectable(false);
           control.setAnonymous(true);
-          control.setCursor("default");
           break;
 
         case "weekday":
@@ -384,16 +383,17 @@ qx.Class.define("qx.ui.control.DateChooser",
           control.setAllowGrowY(true);
           control.setSelectable(false);
           control.setAnonymous(true);
-          control.setCursor("default");
           break;
 
         case "day":
           control = new qx.ui.basic.Label();
           control.setAllowGrowX(true);
           control.setAllowGrowY(true);
-          control.setCursor("default");
-          control.addListener("pointerdown", this._onDayTap, this);
+          control.addListener("tap", this._onDayTap, this);
           control.addListener("dbltap", this._onDayDblTap, this);
+          // @ITG:Wisej: Added "hovered" to the calendar days.
+          control.addListener("pointerover", this.__onDayPointerOverOut, this);
+          control.addListener("pointerout", this.__onDayPointerOverOut, this);
           break;
 
         case "date-pane":
@@ -626,19 +626,22 @@ qx.Class.define("qx.ui.control.DateChooser",
     /**
      * Event handler. Called when a day has been tapped.
      *
-     * @param evt {qx.event.type.Data} The event.
+     * @param e {qx.event.type.Data} The event.
      */
-    _onDayTap : function(evt)
+    _onDayTap : function(e)
     {
-      var time = evt.getCurrentTarget().dateTime;
+      var time = e.getCurrentTarget().dateTime;
       this.setValue(new Date(time));
+      this.execute();
     },
-
 
     /**
      * Event handler. Called when a day has been double-tapped.
      */
-    _onDayDblTap : function() {
+    _onDayDblTap : function(e)
+    {
+      var time = e.getCurrentTarget().dateTime;
+      this.setValue(new Date(time));
       this.execute();
     },
 
@@ -697,8 +700,8 @@ qx.Class.define("qx.ui.control.DateChooser",
             }
             return;
 
-        // @ITG:Wisej: Show the month/year selector on F2.
-        case "F2":
+          // @ITG:Wisej: Show the month/year selector on F2.
+          case "F2":
             this.showMonthYearSelector(true);
             return;
         }
@@ -790,8 +793,13 @@ qx.Class.define("qx.ui.control.DateChooser",
      *
      * @param e {qx.event.type.Data} The event.
      */
-    handleKeyPress : function(e) {
-      this._onKeyPress(e);
+    handleKeyPress: function (e) {
+
+      var selector = this.getChildControl("month-year-selector", true);
+      if (selector && selector.isVisible())
+        selector.handleKeyPress(e);
+      else
+        this._onKeyPress(e);
     },
 
 
@@ -936,21 +944,31 @@ qx.Class.define("qx.ui.control.DateChooser",
 
             selector.exclude();
             datePane.show();
+            datePane.activate();
         }
         else if (!selector.isVisible()) {
 
             datePane.exclude();
             selector.show();
+            selector.activate();
 
             selector.addListenerOnce("disappear", function () {
 
-            	datePane.show();
-            	datePane.getLayoutParent().activate();
+                datePane.show();
+                datePane.getLayoutParent().activate();
             });
         }
     },
 
     __onMonthYearLabelPointerOverOut: function(e)
+    {
+        var target = e.getTarget();
+        e.getType() == "pointerover"
+            ? target.addState("hovered")
+            : target.removeState("hovered")
+    },
+
+    __onDayPointerOverOut: function(e)
     {
         var target = e.getTarget();
         e.getType() == "pointerover"

@@ -61,6 +61,9 @@ qx.Class.define("qx.ui.form.ToggleButton",
     this.addListener("pointerdown", this._onPointerDown);
     this.addListener("pointerup", this._onPointerUp);
 
+    // @ITG:Wisej: Fix for mobile scrolling checking problem.
+    this.addListener("tap", this._onTap);
+
     // register keyboard events
     this.addListener("keydown", this._onKeyDown);
     this.addListener("keyup", this._onKeyUp);
@@ -305,11 +308,24 @@ qx.Class.define("qx.ui.form.ToggleButton",
       if (this.hasState("abandoned")) {
         this.removeState("abandoned");
       } else if (this.hasState("pressed")) {
-        this.execute();
+        // @ITG:Wisej: Fix for mobile scrolling checking problem.
+        this.removeState("pressed");
       }
 
-      this.removeState("pressed");
       e.stopPropagation();
+    },
+
+
+    /**
+    * Listener method for "tap" event which stops the propagation.
+    *
+    * @param e {qx.event.type.Pointer} Pointer event
+    */
+    _onTap: function (e) {
+        // "execute" is fired here so that the button can be dragged
+        // without executing it (e.g. in a TabBar with overflow)
+        this.execute();
+        e.stopPropagation();
     },
 
 

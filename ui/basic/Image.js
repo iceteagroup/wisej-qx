@@ -758,20 +758,28 @@ qx.Class.define("qx.ui.basic.Image",
           var pixel = "px";
           var styles = {};
 
+          //inherit styles from current element
+          var currentStyles = currentContentElement.getAllStyles();
+          if (currentStyles) {
+            for (var prop in currentStyles) {
+              styles[prop] = currentStyles[prop];
+            }
+          }
+
           // Copy dimension and location of the current content element
           var bounds = this.getBounds();
-          if (bounds != null)
-          {
+          if (bounds != null) {
             styles.width = bounds.width + pixel;
             styles.height = bounds.height + pixel;
           }
 
           var insets = this.getInsets();
-          styles.left = parseInt(currentContentElement.getStyle("left") || insets.left) + pixel;
-          styles.top = parseInt(currentContentElement.getStyle("top") || insets.top) + pixel;
-
-           // @ITG:Wisej: Propagate the color as well, it's used by svg icons.
-          styles.color = currentContentElement.getStyle("color");
+          styles.left = 
+              parseInt(currentContentElement.getStyle("left") || insets.left) +
+              pixel;
+          styles.top = 
+              parseInt(currentContentElement.getStyle("top") || insets.top) +
+              pixel;
 
           styles.zIndex = 10;
 
@@ -781,10 +789,14 @@ qx.Class.define("qx.ui.basic.Image",
 
           if (!currentContentElement.isVisible()) {
             elementToAdd.hide();
+          } else if (!elementToAdd.isVisible()) {
+            elementToAdd.show();
           }
 
           if (!currentContentElement.isIncluded()) {
             elementToAdd.exclude();
+          } else if (!elementToAdd.isIncluded()) {
+            elementToAdd.include();
           }
 
           var container = currentContentElement.getParent();
@@ -796,7 +808,9 @@ qx.Class.define("qx.ui.basic.Image",
           }
           // force re-application of source so __setSource is called again
           var hint = newEl.getNodeName();
-          newEl.setSource(null);
+          if (newEl.setSource)
+            newEl.setSource(null);
+
           var currentEl = this.__getContentElement();
           newEl.tagNameHint = hint;
           newEl.setAttribute("class", currentEl.getAttribute("class"));
@@ -812,10 +826,20 @@ qx.Class.define("qx.ui.basic.Image",
           if (this.isVisible())
             elementToAdd.show();
 
+          // @ITG:Wisej: The "qxanonymous" attribute is lost.
+          if (this.isAnonymous())
+            elementToAdd.setAttribute("qxanonymous", "true");
+          else
+            elementToAdd.removeAttribute("qxanonymous");
+
           // copy event listeners
           var listeners = currentContentElement.getListeners() || [];
           listeners.forEach(function(listenerData) {
-            elementToAdd.addListener(listenerData.type, listenerData.handler, listenerData.self, listenerData.capture);
+            elementToAdd.addListener(
+              listenerData.type, 
+              listenerData.handler, 
+              listenerData.self, 
+              listenerData.capture);
           });
 
           if (currentDomEl && newDomEl) {
@@ -948,9 +972,14 @@ qx.Class.define("qx.ui.basic.Image",
     __setSource: function (el, source) {
 
       // @ITG:Wisej: Adapt the SVG image fill and color to the current textColor.
-      var svg = qx.io.ImageLoader.getSvg(source);
-      if (svg)
-        source = this.__changeSvgFillColor(el, svg);
+      if (qx.io.ImageLoader.isLoaded(source)) {
+        var svg = qx.io.ImageLoader.getSvg(source);
+        if (svg)
+          source = this.__changeSvgFillColor(el, svg);
+      }
+      else {
+        return;
+      }
 
       if (el.getNodeName() == "div") {
 
@@ -1198,9 +1227,9 @@ qx.Class.define("qx.ui.basic.Image",
       }
     }
 
-    delete this.__currentContentElement;
+    this.__currentContentElement = null;
     if (this.__wrapper) {
-      delete this.__wrapper;
+      this.__wrapper = null;
     }
 
     this._disposeMap("__contentElements");

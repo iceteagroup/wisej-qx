@@ -742,7 +742,8 @@ qx.Class.define("qx.ui.form.Slider",
 
       // Compute and limit percent
       // @ITG:Wisej: Rtl support.
-      var percent = this.isRtl() ? (avail - position) / avail : position / avail;
+      var isRtl = this.isRtl() && this.getOrientation() == "horizontal"
+      var percent = isRtl ? (avail - position) / avail : position / avail;
       if (percent < 0) {
         percent = 0;
       } else if (percent > 1) {
@@ -793,7 +794,8 @@ qx.Class.define("qx.ui.form.Slider",
 
       // Compute position from available space and percent
       // @ITG:Wisej: Rtl support.
-      return this.isRtl() ? avail - Math.round(avail * percent) : Math.round(avail * percent);
+      var isRtl = this.isRtl() && this.getOrientation() == "horizontal"
+      return isRtl ? avail - Math.round(avail * percent) : Math.round(avail * percent);
     },
 
 

@@ -969,7 +969,7 @@ qx.Class.define("qx.ui.table.Table",
         // @ITG:Wisej: When the last scroller's v-scrollbar is visible, hide the menu instead of excluding it to preserve the scrollbar space.
         var scrollerArr = this._getPaneScrollerArr();
         var lastScroller = scrollerArr[scrollerArr.length - 1];
-        if (lastScroller && lastScroller.getVerticalScrollBarVisible())
+        if (lastScroller && lastScroller.getVerticalScrollBarVisible() && !qx.core.Environment.get("os.scrollBarOverlayed"))
           this._hideChildControl("column-button");
         else
           this._excludeChildControl("column-button");
@@ -1858,7 +1858,7 @@ qx.Class.define("qx.ui.table.Table",
         if (x == null)
           return false;
 
-        // ITG:Wisej: The meta column may return -1 leading to a null scroller.
+        // @ITG:Wisej: The meta column may return -1 leading to a null scroller.
         var metaColumn = this._getMetaColumnAtColumnX(x);
         return metaColumn != -1 ? this.getPaneScroller(metaColumn).isEditing() : false;
       }

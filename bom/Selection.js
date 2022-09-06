@@ -492,11 +492,9 @@ qx.Bootstrap.define("qx.bom.Selection",
 
             // check boundaries
             if (start >= 0 && start <= node.value.length && end >= 0 && end <= node.value.length) {
-              // @ITG:Wisej: Don't force the focus when selecting a text range.
-              //node.focus();
-              //node.select();
+              // @ITG:Wisej: Don't force the focus when selecting the text in a field element.
+              // node.focus();
               node.setSelectionRange(start, end);
-
               return true;
             }
           }

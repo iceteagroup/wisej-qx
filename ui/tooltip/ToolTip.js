@@ -137,7 +137,10 @@ qx.Class.define("qx.ui.tooltip.ToolTip",
     opener :
     {
       check : "qx.ui.core.Widget",
-      nullable : true
+      nullable : true,
+
+      // @ITG:Wisej: Hide the tooltip when the opener is not visible.
+      apply: "_applyOpener"
     },
 
 
@@ -244,6 +247,19 @@ qx.Class.define("qx.ui.tooltip.ToolTip",
       }
 
       this._getLayout().setReversed(value == "right" || value == "below");
-    }
+    },
+
+    // @ITG:Wisej: Hide the tooltip when the opener is not visible.
+    _applyOpener: function (value, old) {
+
+      if (old) {
+        old.removeListener("disappear", this.exclude, this);
+      }
+
+      if (value) {
+        value.addListenerOnce("disappear", this.exclude, this);
+      }
+	}
+
   }
 });

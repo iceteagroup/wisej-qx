@@ -119,6 +119,6 @@ qx.Mixin.define("qx.data.MBinding",
     // restore the object hash for disposing the bindings
     this.$$hash = this.__objectHash;
     this.removeAllBindings();
-    delete this.$$hash;
+    this.$$hash = undefined;
   }
 });

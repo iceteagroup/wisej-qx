@@ -254,7 +254,9 @@ qx.Class.define("qx.ui.menu.AbstractButton",
     {
       if (e.isLeftPressed()) {
         this.execute();
-        qx.ui.menu.Manager.getInstance().hideAll();
+        setTimeout(function () {
+          qx.ui.menu.Manager.getInstance().hideAll();
+        }, 1);
       }
 
       // right click

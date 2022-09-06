@@ -269,6 +269,27 @@ qx.Class.define("qx.locale.Date",
       }
     },
 
+    // @ITG:Wisej: Added date and time separators support.
+
+    /**
+     * Returns the date separator.
+     * 
+     * @param locale {String} optional locale to be used
+     */
+    getDateSeparator : function(locale)
+    {
+      return this.__mgr.localize("cldr_date_separator", [], locale);
+    },
+
+    /**
+     * Returns the time separator.
+     * 
+     * @param locale {String} optional locale to be used
+     */
+    getTimeSeparator : function(locale)
+    {
+      return this.__mgr.localize("cldr_time_separator", [], locale);
+    },
 
     /**
      * Return the day the week starts with

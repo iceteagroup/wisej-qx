@@ -149,7 +149,6 @@ qx.Class.define("qx.ui.form.AbstractSelectBox",
           // @ITG:Wisej: Cannot navigate the list on mobile and tablet devices.
           if (qx.core.Environment.get("device.type") !== "desktop") {
             control.setFocusable(true);
-            control.setKeepFocus(false);
           }
 
           control.addListener("changeSelection", this._onListChangeSelection, this);
@@ -218,7 +217,6 @@ qx.Class.define("qx.ui.form.AbstractSelectBox",
     open : function()
     {
       var popup = this.getChildControl("popup");
-
       popup.placeToWidget(this, true);
       popup.show();
     },
@@ -227,8 +225,11 @@ qx.Class.define("qx.ui.form.AbstractSelectBox",
     /**
      * Hides the list popup.
      */
-    close : function() {
-      this.getChildControl("popup").hide();
+    close : function () {
+      var popup = this.getChildControl("popup", true);
+      if (popup && popup.isVisible()) {
+        popup.hide();
+      }
     },
 
 

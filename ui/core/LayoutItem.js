@@ -376,13 +376,13 @@ qx.Class.define("qx.ui.core.LayoutItem",
     __computedLayout : null,
 
     /** @type {Boolean} Whether the current layout is valid */
-    __hasInvalidLayout : null,
+    __hasInvalidLayout : false,
 
     /** @type {Map} Cached size hint */
     __sizeHint : null,
 
     /** @type {Boolean} Whether the margins have changed and must be updated */
-    __updateMargin : null,
+    __updateMargin : false,
 
     /** @type {Map} user provided bounds of the widget, which override the layout manager */
     __userBounds : null,
@@ -503,13 +503,13 @@ qx.Class.define("qx.ui.core.LayoutItem",
       if (this.__hasInvalidLayout)
       {
         changes.local = true;
-        delete this.__hasInvalidLayout;
+        this.__hasInvalidLayout = false;
       }
 
       if (this.__updateMargin)
       {
         changes.margin = true;
-        delete this.__updateMargin;
+        this.__updateMargin = false;
       }
 
       // Returns changes, especially for deriving classes
@@ -811,7 +811,7 @@ qx.Class.define("qx.ui.core.LayoutItem",
     resetUserBounds : function()
     {
       if (this.__userBounds) {
-        delete this.__userBounds;
+        this.__userBounds = null;
 
         var parent = this.$$parent;
         if (parent) {
@@ -889,7 +889,7 @@ qx.Class.define("qx.ui.core.LayoutItem",
      *
      */
     clearLayoutProperties : function() {
-      delete this.__layoutProperties;
+      this.__layoutProperties = null;
     },
 
 

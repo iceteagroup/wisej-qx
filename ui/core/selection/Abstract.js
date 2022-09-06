@@ -464,11 +464,12 @@ qx.Class.define("qx.ui.core.selection.Abstract",
     {
       var old = this.__leadItem;
 
-      if (old !== null) {
+      // @ITG:Wisej: Avoid unnecessary style updates.
+      if (old !== null && old != value) {
         this._styleSelectable(old, "lead", false);
       }
 
-      if (value !== null) {
+      if (value !== null && value !== old) {
         this._styleSelectable(value, "lead", true);
       }
 
@@ -508,11 +509,12 @@ qx.Class.define("qx.ui.core.selection.Abstract",
     {
       var old = this.__anchorItem;
 
-      if (old != null) {
+      // @ITG:Wisej: Avoid unnecessary style updates.
+      if (old !== null && old !== value) {
         this._styleSelectable(old, "anchor", false);
       }
 
-      if (value != null) {
+      if (value !== null && value !== old) {
         this._styleSelectable(value, "anchor", true);
       }
 
@@ -926,7 +928,8 @@ qx.Class.define("qx.ui.core.selection.Abstract",
         mode !== "one" &&
         !isShiftPressed &&
         !isCtrlPressed &&
-        event.getPointerType() == "mouse"
+        event.getButton() === "left" &&
+        event.getPointerType() === "mouse"
       )
       {
         this._setAnchorItem(item);

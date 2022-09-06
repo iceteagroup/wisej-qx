@@ -644,7 +644,7 @@ qx.Class.define("qx.ui.form.Spinner",
           this.__pageDownMode = false;
           break;
 
-          case "Down":
+        case "Down":
           this.getChildControl("downbutton").release();
           break;
 

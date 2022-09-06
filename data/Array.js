@@ -285,8 +285,10 @@ qx.Class.define("qx.data.Array",
 
       var item = this.__array.shift();
       this.__updateLength();
+
       // remove the possible added event listener
       this._registerEventChaining(null, item, this.length -1);
+
       // as every item has changed its position, we need to update the event bubbling
       this.__updateEventPropagation(0, this.length);
 
@@ -366,20 +368,22 @@ qx.Class.define("qx.data.Array",
         }
       }
       // fire an event for the change
+      var end = 0;
+      var type = "";
       var removed = amount > 0;
       var added = arguments.length > 2;
       if (removed || added) {
         var addedItems = qx.lang.Array.fromArguments(arguments, 2);
 
         if (returnArray.length == 0) {
-          var type = "add";
-          var end = startIndex + addedItems.length;
+          type = "add";
+          end = startIndex + addedItems.length;
         } else if (addedItems.length == 0) {
-          var type = "remove";
-          var end = this.length - 1;
+          type = "remove";
+          end = this.length - 1;
         } else {
-          var type = "add/remove";
-          var end = startIndex + Math.max(addedItems.length, returnArray.length) - 1;
+          type = "add/remove";
+          end = startIndex + Math.max(addedItems.length, returnArray.length) - 1;
         }
 
         this.fireDataEvent("change",
@@ -402,6 +406,7 @@ qx.Class.define("qx.data.Array",
       for (var i = 2; i < arguments.length; i++) {
         this._registerEventChaining(arguments[i], null, startIndex + (i - 2));
       }
+
       // apply event chaining for every item moved
       this.__updateEventPropagation(startIndex + (arguments.length - 2) - amount, this.length);
 
@@ -475,6 +480,7 @@ qx.Class.define("qx.data.Array",
       for (var i = arguments.length - 1; i >= 0; i--) {
         this.__array.unshift(arguments[i]);
         this.__updateLength();
+
         // apply to every item an event listener for the bubbling
         this.__updateEventPropagation(0, this.length);
 
@@ -1057,10 +1063,29 @@ qx.Class.define("qx.data.Array",
      * @param to {Number} End index.
      */
     __updateEventPropagation : function(from, to) {
-      for (var i=from; i < to; i++) {
-        this._registerEventChaining(this.__array[i], this.__array[i], i);
+
+      // defer and aggregate the updating of the event chaining or it freezes the browser when adding many items.
+      if (!this.__updateEventPropagationData) {
+          this.__updateEventPropagationData = {
+          from: 0,
+          to: 0,
+          deferredCall: new qx.util.DeferredCall(function () {
+              var from = this.__updateEventPropagationData.from;
+              var to = this.__updateEventPropagationData.to;
+              for (var i = from; i < to; i++) {
+                this._registerEventChaining(this.__array[i], this.__array[i], i);
+              }
+          }, this)
+        };
       }
-    }
+
+      this.__updateEventPropagationData.from = Math.min(from, this.__updateEventPropagationData.from);
+      this.__updateEventPropagationData.to = Math.max(to, this.__updateEventPropagationData.to);
+      this.__updateEventPropagationData.deferredCall.schedule();
+    },
+
+    /** deferred call data. */
+    __updateEventPropagationData: null
   },
 
 
@@ -1080,6 +1105,12 @@ qx.Class.define("qx.data.Array",
       if (this.isAutoDisposeItems() && item && item instanceof qx.core.Object) {
         item.dispose();
       }
+    }
+
+    // dispose deferred call.
+    if (this.__updateEventPropagationData) {
+      this.__updateEventPropagationData.deferredCall.cancel();
+      this.__updateEventPropagationData.deferredCall.dispose();
     }
 
     this.__array = null;

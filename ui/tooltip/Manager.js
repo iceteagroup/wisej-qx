@@ -231,9 +231,16 @@ qx.Class.define("qx.ui.tooltip.Manager",
      */
     __onShowInterval : function(e)
     {
+      this.__showTimer.stop();
+
       var current = this.getCurrent();
       if (current && !current.isDisposed())
       {
+
+        // @ITG:Wisej: Prevent showing a tooltip after the opener was disposed.
+        if (current.getOpener() != null && current.getOpener().isDisposed())
+          return;
+
         this.__hideTimer.startWith(current.getHideTimeout());
 
         if (current.getPlaceMethod() == "widget") {
@@ -247,8 +254,6 @@ qx.Class.define("qx.ui.tooltip.Manager",
         if (current.getLabel() || current.getIcon())
           current.show();
       }
-
-      this.__showTimer.stop();
     },
 
 

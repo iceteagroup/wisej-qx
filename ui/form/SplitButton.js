@@ -162,7 +162,7 @@ qx.Class.define("qx.ui.form.SplitButton",
 
   members :
   {
-    __cursorIsOut : null,
+    __cursorIsOut : false,
 
 
     /*
@@ -284,7 +284,7 @@ qx.Class.define("qx.ui.form.SplitButton",
       this.addState("hovered");
 
       // Delete cursor out flag
-      delete this.__cursorIsOut;
+      this.__cursorIsOut = false;
     },
 
 

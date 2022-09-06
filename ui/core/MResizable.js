@@ -134,7 +134,8 @@ qx.Mixin.define("qx.ui.core.MResizable",
     __resizeTop : null,
     __resizeStart : null,
     __resizeRange : null,
-
+    __savedCursor: null,
+    __cursorChanged: false,
 
     RESIZE_TOP : 1,
     RESIZE_BOTTOM : 2,
@@ -691,8 +692,8 @@ qx.Mixin.define("qx.ui.core.MResizable",
 
       this.getApplicationRoot().resetGlobalCursor();
 
-      delete this.__savedCursor;
-      delete this.__cursorChanged;
+      this.__savedCursor = null;;
+      this.__cursorChanged = false;
     },
 
     /**

@@ -566,8 +566,11 @@ qx.Class.define("qx.ui.table.pane.Scroller",
           this.__top.add(this.__verticalScrollBarFiller);
 
           if (qx.core.Environment.get("qx.dyntheme")) {
-            qx.theme.manager.Meta.getInstance().addListener("changeTheme", function (e) {
-              this.__verticalScrollBarFiller.setWidth(this.__verScrollBar.getSizeHint().width);
+              qx.theme.manager.Meta.getInstance().addListener("changeTheme", function (e) {
+
+                if (this.__verticalScrollBarFiller && this.isRtl())
+                  this.__verticalScrollBarFiller.setWidth(this.__verScrollBar.getSizeHint().width);
+
             }, this);
           }
         }
@@ -1188,7 +1191,7 @@ qx.Class.define("qx.ui.table.pane.Scroller",
       {
         // The pointer is over a resize region -> Start resizing
         this._startResizeHeader(resizeCol, pageX);
-          e.stopPropagation();
+        e.stopPropagation();
       }
       else
       {
@@ -1197,7 +1200,7 @@ qx.Class.define("qx.ui.table.pane.Scroller",
         if (moveCol != null)
         {
           this._startMoveHeader(moveCol, pageX);
-            e.stopPropagation();
+          e.stopPropagation();
         }
       }
     },

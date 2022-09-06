@@ -223,7 +223,7 @@ qx.Class.define("qx.ui.basic.Label",
   members :
   {
     __font : null,
-    __invalidContentSize : null,
+    __invalidContentSize : false,
     __tapListenerId : null,
     __webfontListenerId : null,
 
@@ -241,7 +241,7 @@ qx.Class.define("qx.ui.basic.Label",
       if (this.__invalidContentSize)
       {
         this.__contentSize = this.__computeContentSize();
-        delete this.__invalidContentSize;
+        this.__invalidContentSize = false;
       }
 
       return {
@@ -354,7 +354,9 @@ qx.Class.define("qx.ui.basic.Label",
       {
         this.__font = qx.theme.manager.Font.getInstance().resolve(value);
         if (this.__font instanceof qx.bom.webfonts.WebFont) {
-          this.__webfontListenerId = this.__font.addListener("changeStatus", this._onWebFontStatusChange, this);
+          if (!this.__font.isValid()) {
+            this.__webfontListenerId = this.__font.addListener("changeStatus", this._onWebFontStatusChange, this);
+          }
         }
         styles = this.__font.getStyles();
       }

@@ -38,7 +38,9 @@ qx.Bootstrap.define("qx.bom.Label",
       fontSize : 1,
       fontWeight : 1,
       fontStyle : 1,
-      lineHeight: 1
+      lineHeight: 1,
+      // @ITG: Wisej: Measure fonts with letterSpacing.
+      letterSpacing: 1
     },
 
 
@@ -306,7 +308,14 @@ qx.Bootstrap.define("qx.bom.Label",
       var element = this._htmlElement || this.__prepareHtml();
 
       // apply width
-      element.style.width = width != undefined ? width + "px" : "auto";
+      if (width == null) {
+        element.style.width = "auto";
+        element.style.whiteSpace = "nowrap";
+      }
+      else {
+        element.style.width = width + "px";
+        element.style.whiteSpace = "normal";
+      }
 
       // insert content
       element.innerHTML = content;

@@ -52,7 +52,8 @@ qx.Class.define("qx.bom.Font",
       fontWeight: null,
       fontStyle: null,
       textDecoration: null,
-      lineHeight: null,
+      lineHeight: "normal",
+      letterSpacing: "normal",
 
       // @ITG:Wisej: Setting the color to null overrides inherited text colors.
       // color: null,
@@ -185,7 +186,8 @@ qx.Class.define("qx.bom.Font",
       fontWeight: "",
       fontStyle: "",
       textDecoration: "",
-      lineHeight: 1.2,
+      lineHeight: "normal",
+      letterSpacing: "normal",
       color: "",
       textShadow: ""
     },
@@ -234,6 +236,16 @@ qx.Class.define("qx.bom.Font",
       apply: "_applyUnit"
     },
 
+	// @ITG:Wisej: Added letter spacing.
+    /** The font size unit: "px" (default) or "pt" or "em". */
+    letterSpacing:
+    {
+      check: "Number",
+      nullable: true,
+      init: "normal",
+      apply: "_applyLetterSpacing"
+    },
+
     /**
      * The line height as scaling factor of the default line height. A value
      * of 1 corresponds to the default line height
@@ -242,6 +254,7 @@ qx.Class.define("qx.bom.Font",
     {
       check : "Number",
       nullable: true,
+      init: "normal",
       apply : "_applyLineHeight"
     },
 
@@ -292,6 +305,14 @@ qx.Class.define("qx.bom.Font",
       nullable : true,
       check : "String",
       apply : "_applyTextShadow"
+    },
+
+    /** The weight property of the font as opposed to just setting it to 'bold' by setting the bold property to true */
+    weight:
+    {
+      nullable: true,
+      check: "String",
+      apply: "_applyWeight"
     }
   },
 
@@ -316,16 +337,20 @@ qx.Class.define("qx.bom.Font",
       // this.__lookupMap.fontSize = value === null ? null : value + "px";
     },
 
+    _applyLineHeight : function(value, old) {
+      this.__lookupMap.lineHeight = value === "normal" ? null : value;
+    },
+
   	// @ITG:Wisej: Added font unit.
     _applyUnit: function (value, old) {
       if (this.getSize() != null)
       	this.__lookupMap.fontSize = this.getSize() + value;
     },
 
-    _applyLineHeight : function(value, old) {
-      this.__lookupMap.lineHeight = value === null ? null : value;
+  	// @ITG:Wisej: Added letter spacing.
+    _applyLetterSpacing: function (value, old) {
+      this.__lookupMap.letterSpacing = value === null ? "normal" : value + "px";
     },
-
 
     // property apply
     _applyFamily : function(value, old)
@@ -381,6 +406,11 @@ qx.Class.define("qx.bom.Font",
       if (value) {
         this.__lookupMap.color = qx.theme.manager.Color.getInstance().resolve(value);
       }
+    },
+
+    // property apply
+    _applyWeight: function(value, old) {
+      this.__lookupMap.fontWeight = value;
     },
 
     // property apply

@@ -53,7 +53,8 @@ qx.Class.define("qx.ui.root.Abstract",
 
     this.initNativeHelp();
 
-    this.addListener("keypress", this.__preventScrollWhenFocused, this);
+    // @ITG:Wisej: Not needed anymore and prevents third party editors from using the Space.
+    // this.addListener("keypress", this.__preventScrollWhenFocused, this);
   },
 
 
@@ -239,41 +240,41 @@ qx.Class.define("qx.ui.root.Abstract",
       e.preventDefault();
     },
 
+    // @ITG:Wisej: Not needed anymore and prevents third party editors from using the Space.
+    ///**
+    //* Fix unexpected scrolling when pressing "Space" while a widget is focused.
+    //*
+    //* @param e {qx.event.type.KeySequence} The KeySequence event
+    //*/
+    //__preventScrollWhenFocused: function(e) {
+    //  // Require space pressed
+    //  if (e.getKeyIdentifier() !== "Space") {
+    //    return;
+    //  }
 
-    /**
-    * Fix unexpected scrolling when pressing "Space" while a widget is focused.
-    *
-    * @param e {qx.event.type.KeySequence} The KeySequence event
-    */
-    __preventScrollWhenFocused: function(e) {
-      // Require space pressed
-      if (e.getKeyIdentifier() !== "Space") {
-        return;
-      }
+    //  var target = e.getTarget();
 
-      var target = e.getTarget();
+    //  // Require focused. Allow scroll when container or root widget.
+    //  var focusHandler = qx.ui.core.FocusHandler.getInstance();
+    //  if (!focusHandler.isFocused(target)) {
+    //    return;
+    //  }
 
-      // Require focused. Allow scroll when container or root widget.
-      var focusHandler = qx.ui.core.FocusHandler.getInstance();
-      if (!focusHandler.isFocused(target)) {
-        return;
-      }
+    //  // Require that widget does not accept text input
+    //  var nodeName = target.getContentElement().getNodeName();
+    //  if (nodeName === "input" || nodeName === "textarea") {
+    //    return;
+    //  }
 
-      // Require that widget does not accept text input
-      var nodeName = target.getContentElement().getNodeName();
-      if (nodeName === "input" || nodeName === "textarea") {
-        return;
-      }
+    //  // do not prevent "space" key for natively focusable elements
+    //  nodeName = qx.dom.Node.getName(e.getOriginalTarget());
+    //  if (nodeName && ["input", "textarea", "select", "a"].indexOf(nodeName) > -1) {
+    //    return;
+    //  }
 
-      // do not prevent "space" key for natively focusable elements
-      nodeName = qx.dom.Node.getName(e.getOriginalTarget());
-      if (nodeName && ["input", "textarea", "select", "a"].indexOf(nodeName) > -1) {
-        return;
-      }
-
-      // Ultimately, prevent default
-      e.preventDefault();
-    },
+    //  // Ultimately, prevent default
+    //  e.preventDefault();
+    //},
 
 
     // property apply

@@ -58,23 +58,24 @@ qx.Class.define("qx.ui.core.queue.Widget",
       // if (!qx.lang.Array.contains(queue, widget)) {
       //  return;
       //}
-      if (!this.contains(widget))
-        return;
 
-      // remove widget and all corresponding jobs, if job param is not given.
-      if (job == null)
-      {
-      	qx.lang.Array.remove(queue, widget);
-      	delete this.__jobs[widget.$$hash];
+      if (!queue.includes(widget)) {
         return;
       }
 
-      if (this.__jobs[hash])
-      {
+      var hash = widget.$$hash;
+
+      // remove widget and all corresponding jobs, if job param is not given.
+      if (job == null) {
+      	qx.lang.Array.remove(queue, widget);
+      	delete this.__jobs[hash];
+        return;
+      }
+
+      if (this.__jobs[hash]) {
         delete this.__jobs[hash][job];
 
-        if (qx.lang.Object.getLength(this.__jobs[hash]) == 0)
-        {
+        if (qx.lang.Object.getLength(this.__jobs[hash]) == 0) {
           qx.lang.Array.remove(queue, widget);
 	    }
       }
@@ -99,37 +100,22 @@ qx.Class.define("qx.ui.core.queue.Widget",
       //  queue.unshift(widget);
       // }
 
-     if (!this.contains(widget)) {
-       queue.push(widget);
-     }
+      if (!queue.includes(widget)) {
+        queue.push(widget);
+      }
 
       //add job
       if (job == null) {
         job = "$$default";
       }
       var hash = widget.$$hash;
-      if (!this.__jobs[hash])
-      {
+      if (!this.__jobs[hash]) {
         this.__jobs[hash] = {};
       }
       this.__jobs[hash][job] = true;
 
       qx.ui.core.queue.Manager.scheduleFlush("widget");
     },
-
-
-  	// @ITG:Wisej: Speed improvement.
-  	/**
-     * Checks if the widget is already in the queue.
-	 * 
-     * @param widget {qx.ui.core.Widget} The widget to look for.
-     *
-     */
-    contains : function (widget)
-    {
-      return !!this.__jobs[widget.$$hash];
-    },
-
 
     /**
      * Flushes the widget queue.
@@ -139,17 +125,18 @@ qx.Class.define("qx.ui.core.queue.Widget",
     flush : function()
     {
       // Process all registered widgets
-      var widget = null;
-      var queue = this.__queue;
       var jobs = this.__jobs;
-      for (var i = 0; i < queue.length; i++) {
-      	widget = queue[i];
-      	widget.syncWidget(jobs[widget.$$hash]);
-      }
-
-      // Recreate the array is cheaper compared to keep a sparse array over time
-      this.__queue = [];
+      var queue = this.__queue;
       this.__jobs = {};
+      this.__queue = [];
+
+      var widget, jobs, hash;
+      for (var i = 0; i < queue.length; i++) {
+        widget = queue[i];
+        hash = widget.$$hash;
+
+      	widget.syncWidget(jobs[hash]);
+      }
     }
   }
 });

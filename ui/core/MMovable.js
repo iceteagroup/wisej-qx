@@ -168,6 +168,28 @@ qx.Mixin.define("qx.ui.core.MMovable",
     ---------------------------------------------------------------------------
     */
 
+    // @ITG:Wisej: Add option to use a custom drag range. Useful when using the move frame.
+    /**
+     * @param top {Integer} Top range limit in pixels.
+     * @param left {Integer} Left range in pixels.
+     * @param right {Integer} Right range limit in pixels.
+     * @param bottom {Integer} Left range limit in pixels.
+     */
+     setDragRange: function (top, left, right, bottom) {
+
+       if (left == undefined) {
+         this.__dragRange = null;
+       }
+       else {
+         this.__dragRange = {
+           left,
+           top,
+           right,
+           bottom
+         };
+       }
+    },
+
     /**
      * Computes the new drag coordinates
      *
@@ -279,7 +301,8 @@ qx.Mixin.define("qx.ui.core.MMovable",
         }
       }
 
-      this.__dragRange =
+      // @ITG:Wisej: Add option to use a custom drag range. Useful when using the move frame.
+      this.__dragRange = this.__dragRange ||
       {
         left : parentLocation.left,
         top : parentLocation.top,
@@ -418,6 +441,8 @@ qx.Mixin.define("qx.ui.core.MMovable",
       // @ITG:Wisej: Notify that this widget is done being dragged.
       this.fireEvent("endmove");
 
+      // @ITG:Wisej: Add option to use a custom drag range. Useful when using the move frame.
+      this.__dragRange = null;
     },
 
 
@@ -443,6 +468,9 @@ qx.Mixin.define("qx.ui.core.MMovable",
 
       // @ITG:Wisej: Notify that this widget is done being dragged.
       this.fireEvent("endmove");
+
+      // @ITG:Wisej: Add option to use a custom drag range. Useful when using the move frame.
+      this.__dragRange = null;
     }
   },
 

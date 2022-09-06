@@ -277,14 +277,14 @@ qx.Class.define("qx.html.Element",
           if (obj.__lazyScrollX != null)
           {
             obj.__element.scrollLeft = obj.__lazyScrollX;
-            delete obj.__lazyScrollX;
+            obj.__lazyScrollX = null;
           }
 
           // ScrollToY
           if (obj.__lazyScrollY != null)
           {
             obj.__element.scrollTop = obj.__lazyScrollY;
-            delete obj.__lazyScrollY;
+            obj.__lazyScrollY = null;
           }
 
           // ScrollIntoViewX
@@ -296,7 +296,7 @@ qx.Class.define("qx.html.Element",
             if (child && child.offsetWidth)
             {
               qx.bom.element.Scroll.intoViewX(child, elem, intoViewX.align);
-              delete obj.__lazyScrollIntoViewX;
+              obj.__lazyScrollIntoViewX = null;
             }
             else
             {
@@ -313,7 +313,7 @@ qx.Class.define("qx.html.Element",
             if (child && child.offsetWidth)
             {
               qx.bom.element.Scroll.intoViewY(child, elem, intoViewY.align);
-              delete obj.__lazyScrollIntoViewY;
+              obj.__lazyScrollIntoViewY = null;
             }
             else
             {
@@ -461,7 +461,7 @@ qx.Class.define("qx.html.Element",
     __eventValues : null,
 
     __children : null,
-    __modifiedChildren : null,
+    __modifiedChildren : false,
 
     __parent : null,
 
@@ -555,7 +555,7 @@ qx.Class.define("qx.html.Element",
         }
       }
 
-      delete this.__modifiedChildren;
+      this.__modifiedChildren = false;
     },
 
 
@@ -771,7 +771,7 @@ qx.Class.define("qx.html.Element",
         // after initial creation. This differs from the
         // handling of styles and attributes where queuing happens
         // through the complete runtime of the application.
-        delete this.__eventValues;
+        this.__eventValues = null;
       }
     },
 
@@ -1517,7 +1517,7 @@ qx.Class.define("qx.html.Element",
         return this;
       }
 
-      delete this.__included;
+      this.__included = true;
 
       if (this.__parent) {
         this.__parent._scheduleChildrenUpdate();
@@ -1643,7 +1643,7 @@ qx.Class.define("qx.html.Element",
         this.__parent._scheduleChildrenUpdate();
       }
 
-      delete this.__visible;
+      this.__visible = true;
       return this;
     },
 
@@ -1731,7 +1731,7 @@ qx.Class.define("qx.html.Element",
         qx.html.Element._scheduleFlush("element");
       }
 
-      delete this.__lazyScrollX;
+      this.__lazyScrollX = null;
     },
 
 
@@ -1771,7 +1771,7 @@ qx.Class.define("qx.html.Element",
         qx.html.Element._scheduleFlush("element");
       }
 
-      delete this.__lazyScrollY;
+      this.__lazyScrollY = null;
     },
 
 
@@ -1788,7 +1788,7 @@ qx.Class.define("qx.html.Element",
       if (lazy !== true && thisEl && thisEl.offsetWidth)
       {
         thisEl.scrollLeft = x;
-        delete this.__lazyScrollX;
+        this.__lazyScrollX = null;
       }
       else
       {
@@ -1797,7 +1797,7 @@ qx.Class.define("qx.html.Element",
         qx.html.Element._scheduleFlush("element");
       }
 
-      delete this.__lazyScrollIntoViewX;
+      this.__lazyScrollIntoViewX = null;
     },
 
 
@@ -1830,7 +1830,7 @@ qx.Class.define("qx.html.Element",
       if (lazy !== true && thisEl && thisEl.offsetWidth)
       {
         thisEl.scrollTop = y;
-        delete this.__lazyScrollY;
+        this.__lazyScrollY = null;
       }
       else
       {
@@ -1839,7 +1839,7 @@ qx.Class.define("qx.html.Element",
         qx.html.Element._scheduleFlush("element");
       }
 
-      delete this.__lazyScrollIntoViewY;
+      this.__lazyScrollIntoViewY = null;
     },
 
 
@@ -1879,7 +1879,7 @@ qx.Class.define("qx.html.Element",
     },
 
 
-    __inScroll : null,
+    __inScroll : false,
 
     /**
      * Handler for the scroll-event
@@ -1893,7 +1893,7 @@ qx.Class.define("qx.html.Element",
         this.__inScroll = true;
         this.__element.scrollTop = 0;
         this.__element.scrollLeft = 0;
-        delete this.__inScroll;
+        this.__inScroll = false;
       }
     },
 

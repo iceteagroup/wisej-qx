@@ -311,8 +311,10 @@ qx.Bootstrap.define("qx.io.ImageLoader",
                         qx.log.Logger.error("Invalid SVG: " + url);
                     }
 
-                    for (var i = 0, l = callbacks.length; i < l; i += 2) {
+                    if (callbacks) {
+                      for (var i = 0, l = callbacks.length; i < l; i += 2) {
                         callbacks[i].call(callbacks[i + 1], url, entry);
+                      }
                     }
                 }
             }
@@ -441,7 +443,7 @@ qx.Bootstrap.define("qx.io.ImageLoader",
         var callbacks = entry.callbacks;
 
         // abort only the specified callbacks.
-        if (context) {
+        if (context && callbacks) {
 
             for (var i = callbacks.length - 2; i > -1; i -= 2) {
 
@@ -465,12 +467,14 @@ qx.Bootstrap.define("qx.io.ImageLoader",
 
         var element = entry.element;
 
-        // Cleanup listeners
-        element.onload = element.onerror = null;
+        // @ITG:Wisej prevent null error when aborting too soon.
+        if (element) {
+          // Cleanup listeners
+          element.onload = element.onerror = null;
 
-        // prevent further loading
-        element.src = "";
-
+          // prevent further loading
+          element.src = "";
+        }
         // Cleanup entry
         delete entry.callbacks;
         delete entry.element;
@@ -479,8 +483,10 @@ qx.Bootstrap.define("qx.io.ImageLoader",
         // Abort
         entry.aborted = true;
 
-        for (var i = 0, l = callbacks.length; i < l; i += 2) {
-          callbacks[i].call(callbacks[i+1], source, entry);
+        if (callbacks) {
+          for (var i = 0, l = callbacks.length; i < l; i += 2) {
+            callbacks[i].call(callbacks[i+1], source, entry);
+          }
         }
       }
 

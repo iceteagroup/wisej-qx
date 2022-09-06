@@ -343,7 +343,7 @@ qx.Class.define("qx.ui.layout.Dock",
       this.__edges = edges;
 
       // Clear invalidation marker
-      delete this._invalidChildrenCache;
+      this._invalidChildrenCache = false;
     },
 
 

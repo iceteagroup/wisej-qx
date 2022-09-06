@@ -74,7 +74,7 @@ qx.Bootstrap.define("qx.util.Function", {
             // except for 'immediate' mode
             if (!this.fired) {
               window.clearInterval(this.intervalId);
-              delete this.intervalId;
+              this.intervalId = undefined;
 
               if (this.immediate === false) {
                 callback.apply(context, this.args);

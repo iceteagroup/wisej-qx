@@ -48,6 +48,7 @@ qx.Class.define("qx.ui.popup.Popup",
 
     // Move using DOM
     this.setDomMove(true);
+
   },
 
 

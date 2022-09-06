@@ -265,7 +265,7 @@ qx.Class.define("qx.ui.layout.VBox",
       this.__children = children;
 
       // Clear invalidation marker
-      delete this._invalidChildrenCache;
+      this._invalidChildrenCache = false;
     },
 
 

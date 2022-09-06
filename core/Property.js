@@ -1093,7 +1093,7 @@ qx.Bootstrap.define("qx.core.Property",
       else if (variant === "resetRuntime")
       {
         code.push('if(this.', this.$$store.runtime[name], '!==undefined)');
-        code.push('delete this.', this.$$store.runtime[name], ';');
+        code.push('this.', this.$$store.runtime[name], '=undefined;');
       }
       else if (variant === "set")
       {
@@ -1102,7 +1102,7 @@ qx.Bootstrap.define("qx.core.Property",
       else if (variant === "reset")
       {
         code.push('if(this.', this.$$store.user[name], '!==undefined)');
-        code.push('delete this.', this.$$store.user[name], ';');
+        code.push('this.', this.$$store.user[name], '=undefined;');
       }
       else if (variant === "setThemed")
       {
@@ -1111,7 +1111,7 @@ qx.Bootstrap.define("qx.core.Property",
       else if (variant === "resetThemed")
       {
         code.push('if(this.', this.$$store.theme[name], '!==undefined)');
-        code.push('delete this.', this.$$store.theme[name], ';');
+        code.push('this.', this.$$store.theme[name], '=undefined;');
       }
       else if (variant === "init" && incomingValue)
       {
@@ -1150,7 +1150,7 @@ qx.Bootstrap.define("qx.core.Property",
       else if (variant === "resetRuntime")
       {
         // Delete field
-        code.push('delete this.', this.$$store.runtime[name], ';');
+        code.push('this.', this.$$store.runtime[name], '=undefined;');
 
         // Complex compution of new value
         code.push('if(this.', this.$$store.user[name], '!==undefined)')
@@ -1174,7 +1174,7 @@ qx.Bootstrap.define("qx.core.Property",
         }
         else if (variant === "reset")
         {
-          code.push('delete this.', this.$$store.user[name], ';');
+          code.push('this.', this.$$store.user[name], '=undefined;');
         }
         else if (variant === "setThemed")
         {
@@ -1182,7 +1182,7 @@ qx.Bootstrap.define("qx.core.Property",
         }
         else if (variant === "resetThemed")
         {
-          code.push('delete this.', this.$$store.theme[name], ';');
+          code.push('this.', this.$$store.theme[name], '=undefined;');
         }
         else if (variant === "init" && incomingValue)
         {
@@ -1216,7 +1216,7 @@ qx.Bootstrap.define("qx.core.Property",
         }
 
         // Delete field
-        code.push('delete this.', this.$$store.user[name], ';');
+        code.push('this.', this.$$store.user[name], '=undefined;');
 
         // Complex computation of new value
         code.push('if(this.', this.$$store.runtime[name], '!==undefined)')
@@ -1253,7 +1253,7 @@ qx.Bootstrap.define("qx.core.Property",
         }
         else if (variant === "resetThemed")
         {
-          code.push('delete this.', this.$$store.theme[name], ';');
+          code.push('this.', this.$$store.theme[name], '=undefined;');
         }
         else if (variant === "init" && incomingValue)
         {
@@ -1295,7 +1295,7 @@ qx.Bootstrap.define("qx.core.Property",
         else if (variant === "resetThemed")
         {
           // Delete entry
-          code.push('delete this.', this.$$store.theme[name], ';');
+          code.push('this.', this.$$store.theme[name], '=undefined;');
 
           // Fallback to init value
           code.push('if(this.', this.$$store.init[name], '!==undefined){');
@@ -1343,7 +1343,7 @@ qx.Bootstrap.define("qx.core.Property",
 
       else if (variant === "set" || variant === "setRuntime" || variant === "setThemed" || variant === "refresh")
       {
-        code.push('delete this.', this.$$store.useinit[name], ';');
+        code.push('this.', this.$$store.useinit[name], '=undefined;');
 
         if (variant === "setRuntime") {
           code.push('computed=this.', this.$$store.runtime[name], '=value;');
@@ -1421,7 +1421,7 @@ qx.Bootstrap.define("qx.core.Property",
         code.push('computed=this.', this.$$store.init[name], ';');
         code.push('this.', this.$$store.useinit[name], '=true;');
       code.push('}else{');
-      code.push('delete this.', this.$$store.useinit[name], ';}');
+      code.push('this.', this.$$store.useinit[name], '=undefined;}');
 
       code.push('}');
 
@@ -1437,7 +1437,7 @@ qx.Bootstrap.define("qx.core.Property",
 
       // Only delete inherited value
       code.push('else if(computed===undefined)');
-      code.push('delete this.', this.$$store.inherit[name], ';');
+      code.push('this.', this.$$store.inherit[name], '=undefined;');
 
       // Store inherited value
       code.push('else this.', this.$$store.inherit[name], '=computed;');

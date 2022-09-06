@@ -304,7 +304,12 @@ qx.Class.define("qx.ui.toolbar.ToolBar",
            }
          }
        } while (width >= requiredWidth && this.__removedItems.length > 0);
-     }
+     } else {
+       if (overflowWidget) {
+         overflowWidget.setVisibility("excluded");
+       }
+	 }
+
     },
 
 
@@ -340,11 +345,11 @@ qx.Class.define("qx.ui.toolbar.ToolBar",
 
     /**
      * Responsible for returning the next item to remove. In It checks the
-     * priorities added by {@link #setRemovePriority}. If all priorized widgets
+     * priorities added by {@link #setRemovePriority}. If all prioritized widgets
      * already excluded, it takes the widget added at last.
      *
      * @return {qx.ui.core.Widget|null} The widget which should be removed next.
-     *   If null is returned, no widget is availablew to remove.
+     *   If null is returned, no widget is available to remove.
      */
     _getNextToHide : function()
     {
@@ -376,7 +381,7 @@ qx.Class.define("qx.ui.toolbar.ToolBar",
     /**
      * The removal of the toolbar items is priority based. You can change these
      * priorities with this method. The higher a priority, the earlier it will
-     * be excluded. Remmeber to use every priority only once! If you want
+     * be excluded. Remember to use every priority only once! If you want
      * override an already set priority, use the override parameter.
      * Keep in mind to only use already added items.
      *
@@ -514,6 +519,7 @@ qx.Class.define("qx.ui.toolbar.ToolBar",
       CHILD HANDLING
     ---------------------------------------------------------------------------
     */
+
     // overridden
     _add : function(child, options) {
       this.base(arguments, child, options);
@@ -522,10 +528,12 @@ qx.Class.define("qx.ui.toolbar.ToolBar",
         child.setShow(this.getShow());
       }
 
+      // @ITG:Wisej: Fixed overflow calculation: should use _getContentHint() or getSizeHint() always returns the set width.
       var newWidth =
-        this.getSizeHint().width +
+        this._getContentHint().width +
         child.getSizeHint().width +
         2 * this.getSpacing();
+
       this._recalculateOverflow(null, newWidth);
     },
 
@@ -538,9 +546,10 @@ qx.Class.define("qx.ui.toolbar.ToolBar",
       }
 
       var newWidth =
-        this.getSizeHint().width +
+        this._getContentHint().width +
         child.getSizeHint().width +
         2 * this.getSpacing();
+
       this._recalculateOverflow(null, newWidth);
     },
 
@@ -553,9 +562,10 @@ qx.Class.define("qx.ui.toolbar.ToolBar",
       }
 
       var newWidth =
-        this.getSizeHint().width +
+        this._getContentHint().width +
         child.getSizeHint().width +
         2 * this.getSpacing();
+
       this._recalculateOverflow(null, newWidth);
     },
 
@@ -568,9 +578,10 @@ qx.Class.define("qx.ui.toolbar.ToolBar",
       }
 
       var newWidth =
-        this.getSizeHint().width +
+        this._getContentHint().width +
         child.getSizeHint().width +
         2 * this.getSpacing();
+
       this._recalculateOverflow(null, newWidth);
     },
 
@@ -578,9 +589,10 @@ qx.Class.define("qx.ui.toolbar.ToolBar",
     _remove : function(child) {
       this.base(arguments, child);
       var newWidth =
-        this.getSizeHint().width -
+        this._getContentHint().width -
         child.getSizeHint().width -
         2 * this.getSpacing();
+
       this._recalculateOverflow(null, newWidth);
     },
 
@@ -589,9 +601,10 @@ qx.Class.define("qx.ui.toolbar.ToolBar",
       var child = this._getChildren()[index];
       this.base(arguments, index);
       var newWidth =
-        this.getSizeHint().width -
+        this._getContentHint().width -
         child.getSizeHint().width -
         2 * this.getSpacing();
+
       this._recalculateOverflow(null, newWidth);
     },
 

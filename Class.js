@@ -674,7 +674,8 @@ qx.Bootstrap.define("qx.Class",
      */
     getInstance : function()
     {
-      if (!this.$$instance)
+      // @ITG:Wisej: Singletons may get disposed.
+      if (!this.$$instance || this.$$instance.isDisposed())
       {
         this.$$allowconstruct = true;
         this.$$instance = new this();

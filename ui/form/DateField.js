@@ -348,7 +348,10 @@ qx.Class.define("qx.ui.form.DateField",
      * Hides the date chooser popup.
      */
     close : function() {
-      this.getChildControl("popup").hide();
+      var popup = this.getChildControl("popup", true);
+      if (popup && popup.isVisible()) {
+        popup.hide();
+      }
     },
 
 
@@ -436,13 +439,11 @@ qx.Class.define("qx.ui.form.DateField",
 
           // @ITG:Wisej: Cannot navigate the calendar on mobile and tablet devices.
           //control.setFocusable(false);
-          //control.setKeepFocus(true);
+          control.setKeepFocus(true);
           if (qx.core.Environment.get("device.type") !== "desktop") {
             control.setFocusable(true);
-            control.setKeepFocus(false);
           } else {
             control.setFocusable(false);
-            control.setKeepFocus(true);
           }
 
           control.addListener("execute", this._onChangeDate, this);
@@ -453,7 +454,6 @@ qx.Class.define("qx.ui.form.DateField",
           control = new qx.ui.popup.Popup(new qx.ui.layout.VBox);
           control.setAutoHide(false);
           control.add(this.getChildControl("list"));
-          control.addListener("pointerup", this._onChangeDate, this);
           control.addListener("changeVisibility", this._onPopupChangeVisibility, this);
           break;
       }
@@ -478,11 +478,12 @@ qx.Class.define("qx.ui.form.DateField",
     _onChangeDate : function(e)
     {
       var textField = this.getChildControl("textfield");
-
       var selectedDate = this.getChildControl("list").getValue();
-
       textField.setValue(this.getDateFormat().format(selectedDate));
+
       this.close();
+
+      e.stop();
     },
 
 
@@ -537,7 +538,7 @@ qx.Class.define("qx.ui.form.DateField",
       //  return;
       //}
       if (!popup || !popup.isVisible()) {
-      	return;
+        return;
       }
 
       // hide the list always on escape
@@ -552,9 +553,9 @@ qx.Class.define("qx.ui.form.DateField",
       if (iden === "Left" || iden === "Right" || iden === "Down" || iden === "Up") {
 
         // @ITG:Wisej: Need to stop bubbling as well or it cannot be used in a table as a cell editor.
-      	e.stopPropagation();
+        e.stopPropagation();
 
-      	e.preventDefault();
+        e.preventDefault();
       }
 
       // forward the rest of the events to the date chooser
@@ -563,14 +564,13 @@ qx.Class.define("qx.ui.form.DateField",
 
     _onChooserKeyPress: function (e)
     {
-    	var iden = e.getKeyIdentifier();
-    	// hide the list always on escape
-    	if (iden == "Escape") {
-    		this.close();
-    		e.stopPropagation();
-    		return;
-    	}
-
+      var iden = e.getKeyIdentifier();
+      // hide the list always on escape
+      if (iden == "Escape") {
+        this.close();
+        e.stopPropagation();
+        return;
+      }
     },
 
     /**

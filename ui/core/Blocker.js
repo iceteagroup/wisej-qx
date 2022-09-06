@@ -249,12 +249,21 @@ qx.Class.define("qx.ui.core.Blocker",
      */
     _updateBlockerBounds : function(bounds)
     {
-      this.getBlockerElement().setStyles({
-        width: bounds.width + "px",
-        height: bounds.height + "px",
-        left: bounds.left + "px",
-        top: bounds.top + "px"
-      });
+      // @ITG:Wisej: Fixed location of blocker when blocking content.
+      if (this.getBlockerElement().getParent() == this._widget.getContentElement()) {
+        this.getBlockerElement().setStyles({
+          width: bounds.width + "px",
+          height: bounds.height + "px"
+        });
+      }
+      else {
+        this.getBlockerElement().setStyles({
+          width: bounds.width + "px",
+          height: bounds.height + "px",
+          left: bounds.left + "px",
+          top: bounds.top + "px"
+        });
+	  }
     },
 
 

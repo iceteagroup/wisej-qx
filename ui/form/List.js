@@ -362,10 +362,10 @@ qx.Class.define("qx.ui.form.List",
         else {
           this.setSelection([matchedItem]);
         }
-
-        // @ITG:Wisej: Stop default processing of the key input char when an item has been found or we may get the char appended to the input text.
-        e.stop();
       }
+
+      // @ITG:Wisej: Stop default processing of the key input char when an item has been found or we may get the char appended to the input text.
+      e.stop();
 
       // Store timestamp
       this.__lastKeyPress = (new Date).valueOf();

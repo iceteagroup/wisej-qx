@@ -39,9 +39,6 @@ qx.Class.define("qx.ui.tree.core.AbstractTreeItem",
     this.base(arguments, label);
 
     this.__children = [];
-
-    // @ITG:Wisej: RightToLeft support.
-    this.addListener("changeRtl", function (e) { this._mirrorChildren(e.getData()); }, this);
   },
 
 

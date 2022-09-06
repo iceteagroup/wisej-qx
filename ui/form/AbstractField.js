@@ -434,10 +434,12 @@ qx.Class.define("qx.ui.form.AbstractField",
     // overridden
     _getContentHint : function()
     {
-      return {
-        width : this.__textSize.width * 10,
-        height : this.__textSize.height || 16
-      };
+      if (this.__textSize) {
+        return {
+          width : this.__textSize.width * 10,
+          height : this.__textSize.height || 16
+        };
+      }
     },
 
 
@@ -460,8 +462,10 @@ qx.Class.define("qx.ui.form.AbstractField",
       if (value)
       {
         this.__font = qx.theme.manager.Font.getInstance().resolve(value);
-        if (this.__font instanceof qx.bom.webfonts.WebFont) {
-          this.__webfontListenerId = this.__font.addListener("changeStatus", this._onWebFontStatusChange, this);
+          if (this.__font instanceof qx.bom.webfonts.WebFont) {
+            if (!this.__font.isValid()) {
+              this.__webfontListenerId = this.__font.addListener("changeStatus", this._onWebFontStatusChange, this);
+            }
         }
         styles = this.__font.getStyles();
       }
@@ -499,7 +503,7 @@ qx.Class.define("qx.ui.form.AbstractField",
       if (value) {
         this.__textSize = qx.bom.Label.getTextSize("A", styles);
       } else {
-        delete this.__textSize;
+        this.__textSize = null;
       }
 
       // Update layout
@@ -576,7 +580,7 @@ qx.Class.define("qx.ui.form.AbstractField",
         var filteredValue = "";
         var index = value.search(this.getFilter());
         var processedValue = value;
-        while(index >= 0)
+        while(index >= 0 && processedValue.length > 0)
         {
           filteredValue = filteredValue + (processedValue.charAt(index));
           processedValue = processedValue.substring(index + 1, processedValue.length);
@@ -666,6 +670,11 @@ qx.Class.define("qx.ui.form.AbstractField",
         }
       }
 
+      // @ITG:Wisej: Stringify dates in case the JSON parser detected a date.
+      if (qx.lang.Type.isDate(value)) {
+        value = value.toJSON();
+      }
+
       if (qx.lang.Type.isString(value))
       {
         var elem = this.getContentElement();
@@ -685,6 +694,7 @@ qx.Class.define("qx.ui.form.AbstractField",
         }
         return value;
       }
+
       throw new Error("Invalid value type: " + value);
     },
 

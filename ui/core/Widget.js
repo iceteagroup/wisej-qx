@@ -834,6 +834,7 @@ qx.Class.define("qx.ui.core.Widget",
     {
       check : "Boolean",
       init : false,
+      inheritable: true,
       event : "changeSelectable",
       apply : "_applySelectable"
     },
@@ -1044,7 +1045,7 @@ qx.Class.define("qx.ui.core.Widget",
 
 
     /** @type {Boolean} Whether insets have changed and must be updated */
-    _updateInsets : null,
+    _updateInsets : false,
 
     // overridden
     renderLayout : function(left, top, width, height)
@@ -1071,13 +1072,14 @@ qx.Class.define("qx.ui.core.Widget",
           var parentBounds = this.$$parent.getBounds();
           if (parentBounds && parentBounds.width !== undefined) {
 
+            changes = changes || {};
+            changes.mirrored = true;
             left = parentBounds.width - width - left;
 
             var decorator = qx.theme.manager.Decoration.getInstance().resolve($$parent.getDecorator());
             if (decorator) {
               var insets = decorator.getInsets();
               if (insets.left || insets.right) {
-                changes = changes || {};
                 changes.position = true;
                 left = left - insets.left - insets.right;
               }
@@ -1107,7 +1109,7 @@ qx.Class.define("qx.ui.core.Widget",
       var contentStyles = null;
 
       // Move content to new position
-      if (changes.position)
+      if (changes.position || changes.mirrored)
       {
         contentStyles = contentStyles || {};
         contentStyles.left = left + pixel;
@@ -1167,7 +1169,7 @@ qx.Class.define("qx.ui.core.Widget",
       }
 
       // Cleanup flags
-      delete this._updateInsets;
+      this._updateInsets = false;
 
       return changes;
     },
@@ -2609,7 +2611,7 @@ qx.Class.define("qx.ui.core.Widget",
 
 
     /** @type {Boolean} Whether the widget has state changes which are not yet queued */
-    $$stateChanges : null,
+    $$stateChanges : false,
 
 
     /** @type {Map} Can be overridden to forward states to the child controls. */
@@ -2907,7 +2909,7 @@ qx.Class.define("qx.ui.core.Widget",
       else if (this.$$stateChanges)
       {
         qx.ui.core.queue.Appearance.add(this);
-        delete this.$$stateChanges;
+        this.$$stateChanges = false;
       }
     },
 
@@ -3117,10 +3119,11 @@ qx.Class.define("qx.ui.core.Widget",
     // property apply
     _applySelectable : function(value, old)
     {
-      // Re-apply cursor if not in "initSelectable"
-      if (old !== null) {
-        this._applyCursor(this.getCursor());
-      }
+      // @ITG:Wisej: Not needed.
+      //// Re-apply cursor if not in "initSelectable"
+      //if (old !== null) {
+      //  this._applyCursor(this.getCursor());
+      //}
 
       // Apply qooxdoo attribute
       this.getContentElement().setSelectable(value);
@@ -3130,7 +3133,7 @@ qx.Class.define("qx.ui.core.Widget",
     // property apply
     _applyEnabled : function(value, old)
     {
-      if (value===false)
+      if (value === false)
       {
         this.addState("disabled");
 
@@ -3867,7 +3870,7 @@ qx.Class.define("qx.ui.core.Widget",
         }
       }
 
-      delete this.__childControls;
+      this.__childControls = null;
     },
 
 

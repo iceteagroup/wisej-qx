@@ -446,7 +446,7 @@ qx.Class.define("qx.ui.table.model.Remote",
 
         for (var block=firstBlock; block<=lastBlock; block++)
         {
-          if ((this._clearCache && !this._loadRowCountRequestRunning)|| this._rowBlockCache[block] == null || this._rowBlockCache[block].isDirty)
+          if ((this._clearCache && !this._loadRowCountRequestRunning) || this._rowBlockCache[block] == null || this._rowBlockCache[block].isDirty)
           {
             // We don't have this block
             if (firstBlockToLoad == -1) {
@@ -717,6 +717,11 @@ qx.Class.define("qx.ui.table.model.Remote",
      */
     insertRow: function (rowIndex, rowData) {
 
+        if (this._clearCache) {
+            this.clearCache();
+            this._clearCache = false;
+        }
+
         var blockSize = this.getBlockSize();
         var blockCount = Math.ceil(this.getRowCount() / blockSize);
         var startBlock = parseInt(rowIndex / blockSize, 10);
@@ -742,14 +747,17 @@ qx.Class.define("qx.ui.table.model.Remote",
                 var lastRowData = blockData.rowDataArr[blockSize];
                 blockData.rowDataArr.splice(blockSize, 1);
 
-                if (lastRowData != null) {
-
-                    if (nextBlockData == null)
+                if (nextBlockData == null) {
+                    if (lastRowData != null)
                         this._setRowBlockData(block + 1, [lastRowData]);
-                    else
-                    	nextBlockData.rowDataArr.splice(0, 0, lastRowData);
+                }
+                else {
+                    nextBlockData.rowDataArr.splice(0, 0, lastRowData);
                 }
             }
+            else if (block == startBlock) {
+                this._setRowBlockData(block, [rowData]);
+	        }
         }
 
         this._rowCount |= 0;
