@@ -547,6 +547,9 @@ qx.Class.define("qx.ui.table.model.Remote",
           lastColumn  : this.getColumnCount() - 1
         };
 
+        // We're not loading any blocks any more
+        this._firstLoadingBlock = -1;
+
         this.fireDataEvent("dataChanged", data);
       }
 
@@ -819,38 +822,37 @@ qx.Class.define("qx.ui.table.model.Remote",
      */
     setRowData: function (rowIndex, rowData) {
 
-        var blockSize = this.getBlockSize();
-        var block = parseInt(rowIndex / blockSize, 10);
-        var blockData = this._rowBlockCache[block];
+      var blockSize = this.getBlockSize();
+      var block = parseInt(rowIndex / blockSize, 10);
+      var blockData = this._rowBlockCache[block];
 
-        if (blockData == null) {
-            // This block is not (yet) loaded
-            return false;
+      if (blockData == null) {
+        // This block is not (yet) loaded
+        return false;
+      }
+      else {
+        blockData.rowDataArr[rowIndex - (block * blockSize)] = rowData;
+        // Update the last recently used counter
+        if (blockData.lru != this._lruCounter) {
+          blockData.lru = ++this._lruCounter;
         }
-        else {
-            blockData.rowDataArr[rowIndex - (block * blockSize)] = rowData;
-
-            // Update the last recently used counter
-            if (blockData.lru != this._lruCounter) {
-                blockData.lru = ++this._lruCounter;
-            }
-        }
+      }
 
 
-        // Inform the listeners
-        if (this.hasListener("dataChanged")) {
-            var data =
-            {
-                firstRow: rowIndex,
-                lastRow: this.getRowCount() - 1,
-                firstColumn: 0,
-                lastColumn: this.getColumnCount() - 1
-            };
+      // Inform the listeners
+      if (this.hasListener("dataChanged")) {
+        var data =
+        {
+          firstRow: rowIndex,
+          lastRow: this.getRowCount() - 1,
+          firstColumn: 0,
+          lastColumn: this.getColumnCount() - 1
+        };
 
-            this.fireDataEvent("dataChanged", data);
-        }
+        this.fireDataEvent("dataChanged", data);
+      }
 
-        return true;
+      return true;
     },
 
 

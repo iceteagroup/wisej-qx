@@ -79,10 +79,20 @@ qx.Class.define("qx.theme.manager.Font",
      */
     resolve : function(value)
     {
-      // @ITG:Wisej: When the value is font property map, need to generate a key.
+      if (!value)
+        return;
+
       var key = value;
-      if (typeof key !== "string")
+
+      // @ITG:Wisej: When the value is font property map, need to generate a key.
+      if (typeof key !== "string") {
+
+        // use "default" font if missing from the config.
+        if (!(value.family instanceof Array))
+          value.family = ["default"];
+
         key = qx.lang.String.toHashCode(JSON.stringify(value));
+      }
 
       var cache = this._dynamic;
       var resolved = cache[key];
@@ -99,22 +109,24 @@ qx.Class.define("qx.theme.manager.Font",
         // or "qx.Theme.patch"), since these methods only merging the keys of
         // the theme and are not updating the cache
         var theme = this.getTheme();
-        if (theme !== null && theme.fonts[value])
+        if (theme !== null && theme.fonts)
         {
-          var font = this.__getFontClass(theme.fonts[value]);
-          return cache[key] = (new font).set(theme.fonts[value]);
+          var themeFont = theme.fonts[value];
+          if (themeFont) {
+            var font = this.__getFontClass(themeFont);
+            return cache[key] = (new font).set(themeFont);
+          }
         }
-      }
 
-      // @ITG:Wisej: Added fallback resolution for CSS-style font strings.
-      if (typeof value === "string") {
+        // @ITG:Wisej: Added fallback resolution for CSS-style font strings.
         return cache[key] = qx.bom.Font.fromString(value);
       }
 
       // @ITG:Wisej: Added fallback for font configurations.
       if (value)
       {
-        var config = value;
+        var config = qx.lang.Object.clone(value);
+
         if (config.family && config.family.length > 0)
         {
           var family = [];
@@ -153,8 +165,6 @@ qx.Class.define("qx.theme.manager.Font",
           return cache[key] = (new font).set(config);
         }
       }
-
-      return value;
     },
 
 
@@ -212,6 +222,7 @@ qx.Class.define("qx.theme.manager.Font",
       }
     },
 
+    // @ITG:Wisej: Fixed clearing the cache when switching themes.
 
     // apply method
     _applyTheme : function(value)
@@ -220,12 +231,10 @@ qx.Class.define("qx.theme.manager.Font",
 
       for (var key in dest)
       {
-        if (dest[key].themed)
-        {
           dest[key].dispose();
-          delete dest[key];
-        }
       }
+
+      dest = {};
 
       if (value)
       {

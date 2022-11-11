@@ -181,11 +181,11 @@ qx.Mixin.define("qx.ui.core.MMovable",
          this.__dragRange = null;
        }
        else {
-         this.__dragRange = {
-           left,
-           top,
-           right,
-           bottom
+           this.__dragRange = {
+           left: left,
+           top: top,
+           right: right,
+           bottom: bottom
          };
        }
     },

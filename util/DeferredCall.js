@@ -44,7 +44,7 @@ qx.Class.define("qx.util.DeferredCall",
    */
   construct : function(callback, context)
   {
-    this.base(arguments);
+    this.base(arguments, true /*weakReference*/);
 
     this.__callback = callback;
     this.__context = context || null;

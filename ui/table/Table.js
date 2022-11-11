@@ -735,12 +735,6 @@ qx.Class.define("qx.ui.table.Table",
     __columnModel : null,
     __emptyTableModel : null,
 
-    __hadVerticalScrollBar : null,
-    __hadHorizontalScrollBar : null,
-
-    __timer : null,
-
-
     // overridden
     _createChildControlImpl : function(id, hash)
     {
@@ -1585,7 +1579,8 @@ qx.Class.define("qx.ui.table.Table",
 
       var data = evt.getData();
       if (this.__columnMenuButtons != null && data.col != null &&
-          data.visible != null) {
+          data.visible != null && this.__columnMenuButtons[data.col] != null) {
+        
         this.__columnMenuButtons[data.col].setVisible(data.visible);
       }
 
@@ -2073,6 +2068,8 @@ qx.Class.define("qx.ui.table.Table",
 
     /**
      * Updates the visibility of the scrollbars in the meta columns.
+     * 
+     * @return {Boolean} true if any of the scrollbars changed visibility.
      */
     _updateScrollBarVisibility : function()
     {
@@ -2085,9 +2082,14 @@ qx.Class.define("qx.ui.table.Table",
       var scrollerArr = this._getPaneScrollerArr();
 
       // Check which scroll bars are needed
+      var changed = false;
       var horNeeded = false;
       var verNeeded = false;
+      var hadVerticalScrollBar = false;
+      var hadHorizontalScrollBar = false;
 
+      // Determine whether we need to render horizontal scrollbars for meta
+      // columns that don't themselves actually require it
       for (var i=0; i<scrollerArr.length; i++)
       {
         var isLast = (i == (scrollerArr.length - 1));
@@ -2113,18 +2115,8 @@ qx.Class.define("qx.ui.table.Table",
         if (isLast)
         {
           // ... then get the current (old) use of scroll bars
-          if (this.__hadVerticalScrollBar == null || this.__hadHorizontalScrollBar == null) {
-            this.__hadVerticalScrollBar = scrollerArr[i].getVerticalScrollBarVisible();
-            this.__hadHorizontalScrollBar = scrollerArr[i].getHorizontalScrollBarVisible();
-            this.__timer = qx.event.Timer.once(function()
-            {
-              // reset the last visible state of the scroll bars
-              // in a timeout to prevent infinite loops.
-              this.__hadVerticalScrollBar = null;
-              this.__hadHorizontalScrollBar = null;
-              this.__timer = null;
-            }, this, 0);
-          }
+          hadVerticalScrollBar = scrollerArr[i].getVerticalScrollBarVisible();
+          hadHorizontalScrollBar = scrollerArr[i].getHorizontalScrollBarVisible();
         }
 
         scrollerArr[i].setHorizontalScrollBarVisible(horNeeded);
@@ -2134,21 +2126,24 @@ qx.Class.define("qx.ui.table.Table",
 
         // If this is the last meta-column and the use of a vertical scroll bar
         // has changed...
-        if (isLast && verNeeded != this.__hadVerticalScrollBar)
+        if (isLast && verNeeded != hadVerticalScrollBar)
         {
+          changed = true;
           // ... then dispatch an event to any awaiting listeners
           this.fireDataEvent("verticalScrollBarChanged", verNeeded);
         }
 
         // If this is the last meta-column and the use of a horizontal scroll bar
         // has changed...
-        if (isLast && horNeeded != this.__hadHorizontalScrollBar)
+        if (isLast && horNeeded != hadHorizontalScrollBar)
         {
+          changed = true;
           // ... then dispatch an event to any awaiting listeners
           this.fireDataEvent("horizontalScrollBarChanged", horNeeded);
         }
-
       }
+
+      return changed;
     },
 
 
@@ -2346,7 +2341,7 @@ qx.Class.define("qx.ui.table.Table",
     this._disposeObjects(
       "__selectionManager", "__scrollerParent",
       "__emptyTableModel", "__emptyTableModel",
-      "__columnModel", "__timer"
+      "__columnModel"
     );
     this._disposeMap("__columnMenuButtons");
   }

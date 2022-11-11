@@ -1084,7 +1084,6 @@ qx.Class.define("qx.ui.table.pane.Scroller",
     _onPointermoveHeader : function(e)
     {
       var table = this.getTable();
-
       if (! table.getEnabled()) {
         return;
       }
